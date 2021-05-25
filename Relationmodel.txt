@@ -1,0 +1,65 @@
+# Shop, Productgroup and Item
+    # Entity
+        Shop(shop_name:PK, street:PK, ZIP:PK)
+        Productgroup(pgroup:PK)
+        Item(item_id:PK, title, rate(?), salesranking, image[0...1], pgroup:FK on Productgroup)
+    # n:m
+        Item-Shop(
+            item_id:PK:FK on Item, 
+            shop_name:PK:FK on Shop,
+            street:PK:FK on Shop,
+            ZIP:PK:FK on Shop,
+            price, mult, currency, availability(?), state, )
+
+# Book
+    # Entity
+        Book(item_id:PK:FK on Item, pages, publication_date, isbn)
+        Author(author:PK)
+        Publisher(publisher:PK)
+    # n:m
+        Book-Author(item_id:PK:FK on Book, author:PK:FK on Author)
+        Book-Publisher(item_id:PK:FK on Book, publisher:PK:FK on Publisher)
+
+# DVD
+    # Entity
+        DVD(item_id:PK:FK on Item, format, runningtime, regioncode)
+        Actor(actor:PK)
+        Creator(creator:PK)
+        Director(director:PK)
+    # n:m    
+        DVD-Actor(item_id:PK:FK on DVD, actor:PK:FK on Actor)
+        DVD-Creator(item_id:PK:FK on DVD, creator:PK:FK on Creator)
+        DVD-Director(item_id:PK:FK on DVD, director:PK:FK on Director)
+
+# Music_CD
+    # Entity
+        Music_CD(item_id:PK:FK on Item, artist[1..*]:FK on Artist, release_date)
+        Artist(artist:PK)
+        Label(label:PK)
+        Title(item_id:PK:FK on Music_CD, title:PK)
+    # n:m    
+        Music_CD-Other_Artists(item_id:PK:FK on Music_CD, artist:PK:FK on Artist)
+        Music_CD-Label(item_id:PK:FK on Music_CD, label:PK:FK on Label)
+
+# Category
+    # Entity
+        Category(category_id:PK, category_name)
+    # n:m
+        Category-Subcategory(category_id:PK:FK on Category, sub_category_id:PK:FK on Category)
+        Item-Category(item_id:PK:FK on Item, category_id:PK:FK on Category)
+
+# Similar Items
+    # n:m
+        Item-Similars(item_id:PK:FK on Item, similiar_item_id:PK:FK on Item)
+
+# Customer
+    # Entity
+        Customer(customer_id:PK, address, account_number)
+
+# Purchase
+    # Entity
+        Purchase(customer_id:PK:FK on Customer, order_date_time:PK, item_id:PK:FK on Item)
+
+# Review
+    # Entity
+        Review(item_id:PK,Fk on Item, customer_id:PK:FK on Customer, review_date, review_summary, review_content)
