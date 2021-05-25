@@ -60,8 +60,7 @@ CREATE TABLE public."item-shop"
 
 
 
-
---here!!
+-- ends here!!
 ALTER TABLE public.shop
     OWNER to postgres;
 
