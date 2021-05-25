@@ -58,7 +58,7 @@
 
 # Purchase
     # Entity
-        Purchase(customer_id:PK:FK on Customer, order_date_time:PK, item_id:PK:FK on Item)
+        Purchase(customer_id:PK:FK on Customer, order_date_time:PK, item_id:PK:FK on Item, shop_name:PK:FK on Shop, street:PK:FK on Shop, ZIP:PK:FK on Shop)
 
 # Review
     # Entity
