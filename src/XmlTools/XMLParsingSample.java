@@ -1,3 +1,4 @@
+package XmlTools;
 
 import java.io.File;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -7,7 +8,7 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 
-public class Sample {
+public class XMLParsingSample {
 
 	public static void main(String[] args) {
 	      try {
