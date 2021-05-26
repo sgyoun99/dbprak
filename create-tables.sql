@@ -42,18 +42,16 @@ CREATE TABLE public."item-shop"
     availabilty boolean,
     state character varying(10) COLLATE pg_catalog."default",
     CONSTRAINT "pk_item-shop" PRIMARY KEY (item_id, shop_name, street, zip),
-    CONSTRAINT "fk_item-shop-item_id" FOREIGN KEY (item_id)
+    CONSTRAINT fk_item_id FOREIGN KEY (item_id)
         REFERENCES public.item (item_id) MATCH SIMPLE
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION,
-    CONSTRAINT "fk_item-shop-shop_name" FOREIGN KEY (shop_name)
-        REFERENCES public.shop (shop_name) MATCH SIMPLE
-        ON UPDATE CASCADE
-        ON DELETE NO ACTION,
-    CONSTRAINT "fk_item-shop-street" FOREIGN KEY (street)
-        REFERENCES public.shop (street) MATCH SIMPLE
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT fk_shop FOREIGN KEY (shop_name, zip, street)
+        REFERENCES public.shop (shop_name, zip, street) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE NO ACTION
+        NOT VALID
 )
 
 
