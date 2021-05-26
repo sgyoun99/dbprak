@@ -58,42 +58,17 @@ CREATE TABLE public."item-shop"
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 -- ends here!!
 ALTER TABLE public.shop
     OWNER to postgres;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
---alter sample
-ALTER TABLE public.author
-    ADD CONSTRAINT const1 FOREIGN KEY (test)
-    REFERENCES public.author (test2) MATCH SIMPLE
-    ON UPDATE CASCADE
-    ON DELETE NO ACTION;
---샘플
-CREATE TABLE `sample_db`.`event_list` (
-  `event_id` VARCHAR(32) NOT NULL,
-  `event_type` TINYINT UNSIGNED NOT NULL,
-  `bg_image_url` TEXT,
-  `target` text,
-  `title` VARCHAR(128) NOT NULL,
-  `desc` VARCHAR(256) NOT NULL,
-  `start_datetime` TIMESTAMP NOT NULL,
-  `end_datetime` TIMESTAMP NOT NULL,
-  `last_update` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`event_id`,`event_type`),
-  INDEX `idx_end_date` (`end_datetime`)
-  );
