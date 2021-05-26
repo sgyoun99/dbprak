@@ -91,15 +91,16 @@ public class XmlStructureAnalyzer {
 	}
 	
 	public void printCounts() {
+		System.out.println(">> Occurence counting...");
 		for (Map.Entry<String, NodeCount> entry : counts.entrySet()) {
 		    String nodeName = entry.getKey();
 		    NodeCount nc = entry.getValue();
-		    System.out.print(nc.levelCountMap.size() + " " + nodeName);
+		    System.out.print("Number of Levels="+nc.levelCountMap.size() + " <" + nodeName +">");
 		    for(Map.Entry<Integer, Integer> lc : nc.levelCountMap.entrySet()) {
-				System.out.print("  #Elem:Level" + lc.getKey()+":"+ lc.getValue() );
+				System.out.print("  #Lv." + lc.getKey()+"="+ lc.getValue() );
 		    }
 		    for(Map.Entry<String, Integer> ac : nc.attributeCountMap.entrySet()) {
-				System.out.print("  &Attr:" + ac.getKey()+":"+ ac.getValue() );
+				System.out.print("  &Attr:" + ac.getKey()+"="+ ac.getValue() );
 		    }
 		    System.out.println();
 		}
@@ -108,10 +109,13 @@ public class XmlStructureAnalyzer {
 	
 	public static void main(String[] args) {
 		
-		XmlStructureAnalyzer xsa = new XmlStructureAnalyzer("./data/dresden.xml");
+		XmlStructureAnalyzer xsa = new XmlStructureAnalyzer("./data/dresden.xml__to__UTF-8.xml");
 		//XmlStructureAnalyzer xsa = new XmlStructureAnalyzer("./data/leipzig_transformed.xml");
-		//xsa.countNodes(xsa.doc.getDocumentElement(), 0);
-		//xsa.printCounts();
+
+		xsa.countNodes(xsa.doc.getDocumentElement(), 0);
+		xsa.printCounts();
+		
+		/*
 		NodeList nl = xsa.doc.getElementsByTagName("item");
 		for (int i = 0; i < nl.getLength(); i++) {
 				if(nl.item(i).hasAttributes()) {
@@ -119,6 +123,7 @@ public class XmlStructureAnalyzer {
 					System.out.println(nl.item(i).getNodeName());
 				}
 		}
+		 */
 
 
 	}

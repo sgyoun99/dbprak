@@ -1,4 +1,4 @@
-package Dresden;
+package dresden;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -41,12 +41,12 @@ public class Dresden {
 		System.out.println(el.getAttribute("name"));
 		System.out.println(el.getAttribute("street"));
 		System.out.println(el.getAttribute("zip"));
+		
 	}
 	
 	
 	
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 
 		Dresden dresden = new Dresden();
 		dresden.encodeDresdenXmlToUTF_8();
