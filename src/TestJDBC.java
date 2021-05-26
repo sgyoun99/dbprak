@@ -11,7 +11,6 @@ public class TestJDBC {
 			Connection conn = DriverManager.getConnection(url);
 			
 			Statement st = conn.createStatement();
-			st.executeUpdate("drop table JDBC_TEST;");
 			st.executeUpdate("create table JDBC_TEST(name varchar(255), age int);");
 			st.executeUpdate("insert into JDBC_TEST(name, age) values ('Kim', 10);");
 			st.executeUpdate("insert into JDBC_TEST(name, age) values ('Yun', 11);");
@@ -20,6 +19,7 @@ public class TestJDBC {
 			while(rs.next()) {
 				System.out.println(rs.getString(1));
 			}
+			st.executeUpdate("drop table JDBC_TEST;");
 			rs.close();
 
 			/*
@@ -35,10 +35,8 @@ public class TestJDBC {
 			st.close();
 
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
