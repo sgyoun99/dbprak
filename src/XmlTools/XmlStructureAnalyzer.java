@@ -107,6 +107,7 @@ public class XmlStructureAnalyzer {
 	}
 	
 	
+	
 	public static void main(String[] args) {
 		
 		XmlStructureAnalyzer xsa = new XmlStructureAnalyzer("./data/dresden.xml__to__UTF-8.xml");

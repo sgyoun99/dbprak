@@ -4,15 +4,13 @@ CREATE TABLE public.shop
     street character varying(255) COLLATE pg_catalog."default" NOT NULL,
     zip character varying(5) COLLATE pg_catalog."default" NOT NULL,
     CONSTRAINT pk_shop PRIMARY KEY (shop_name, street, zip),
-    CONSTRAINT shop_name UNIQUE (shop_name),
-    CONSTRAINT street UNIQUE (street),
-    CONSTRAINT zip UNIQUE (zip)
-)
+    CONSTRAINT uniqeu_shop UNIQUE (shop_name, street, zip)
+);
 
 CREATE TABLE public.productgroup
 (
-    pgroup character varying(10) NOT NULL,
-    PRIMARY KEY (pgroup)
+    pgroup character varying(10) COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT productgroup_pkey PRIMARY KEY (pgroup)
 );
 
 CREATE TABLE public.item
@@ -28,7 +26,7 @@ CREATE TABLE public.item
         REFERENCES public.productgroup (pgroup) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
-)
+);
 
 CREATE TABLE public."item-shop"
 (
@@ -45,14 +43,12 @@ CREATE TABLE public."item-shop"
     CONSTRAINT fk_item_id FOREIGN KEY (item_id)
         REFERENCES public.item (item_id) MATCH SIMPLE
         ON UPDATE NO ACTION
-        ON DELETE NO ACTION
-        NOT VALID,
+        ON DELETE NO ACTION,
     CONSTRAINT fk_shop FOREIGN KEY (shop_name, zip, street)
         REFERENCES public.shop (shop_name, zip, street) MATCH SIMPLE
         ON UPDATE CASCADE
         ON DELETE NO ACTION
-        NOT VALID
-)
+);
 
 
 
