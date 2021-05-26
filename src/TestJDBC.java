@@ -3,7 +3,6 @@ import java.sql.*;
 public class TestJDBC {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		
 		try {
 			Class.forName("org.postgresql.Driver");
@@ -12,17 +11,23 @@ public class TestJDBC {
 			Connection conn = DriverManager.getConnection(url);
 			
 			Statement st = conn.createStatement();
-			//ResultSet rs = st.executeQuery("SELECT * FROM mytable WHERE columnfoo = 500");
-			//st.executeQuery("create table Author(name varchar(255), test int)");
-			//st.executeQuery("insert into author(name, test) values('Kim', 30)");
-			//st.executeQuery("drop table Author");
+			st.executeUpdate("drop table JDBC_TEST;");
+			st.executeUpdate("create table JDBC_TEST(name varchar(255), age int);");
+			st.executeUpdate("insert into JDBC_TEST(name, age) values ('Kim', 10);");
+			st.executeUpdate("insert into JDBC_TEST(name, age) values ('Yun', 11);");
+			st.executeUpdate("insert into JDBC_TEST(name, age) values ('Park', 11);");
+			ResultSet rs = st.executeQuery("SELECT * FROM JDBC_TEST WHERE age = 11;");
+			while(rs.next()) {
+				System.out.println(rs.getString(1));
+			}
+			rs.close();
+
 			/*
-			ResultSet rs = st.executeQuery("show all");
+			ResultSet rs = st.executeQuery("SHOW ALL;");
 			while (rs.next())
 			{
-			    //System.out.print("Column 1 returned ");
-			    System.out.print(rs.getString(1));
-			    System.out.print(rs.getString(2));
+			    System.out.print(rs.getString(1)+"\t");
+			    System.out.print(rs.getString(2)+"\t");
 			    System.out.println(rs.getString(3));
 			}
 			rs.close();

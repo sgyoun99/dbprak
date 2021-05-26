@@ -48,6 +48,7 @@ public class XmlTool {
 		return this.doc;
 	}
 	
+	// encodes a xml file into UTF-8 and create a xml file name with "__to__UTF-8.xml" in the end.
 	public void encodeFileToUTF_8() {
 		String encodedFilePath = this.filePath+"__to__UTF-8.xml";
 		try {
@@ -77,10 +78,10 @@ public class XmlTool {
 				fos.write("\n".getBytes());
 
 			}
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 		System.out.println(">> Encoding Complete: " + encodedFilePath);
