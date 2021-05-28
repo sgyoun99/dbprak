@@ -4,7 +4,7 @@ package main;
 import XmlTools.XmlTool;
 import entity.Shop;
 
-public class ProjectMain {
+public class Main {
 	public static void main(String[] args) {
 		
 		XmlTool xt = new XmlTool();
