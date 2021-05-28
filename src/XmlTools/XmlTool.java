@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -28,8 +29,8 @@ public class XmlTool {
 
 	public Document doc;
 	private String filePath;
-	List<Node> allNodes = new ArrayList<Node>();
-	public int allNodeCount = 0;
+	public List<Node> allNodes = new ArrayList<Node>();
+	private boolean printOption = false;
 	
 	public XmlTool() {
 		
@@ -59,12 +60,34 @@ public class XmlTool {
 		return this.doc;
 	}
 	
-	public int countDirectChiledElementNodes(Node node) {
-		int res = 0;
+	public void printOptionOn() {
+		this.printOption = true;
+	}
+	
+	public void printOptionOff() {
+		this.printOption = false;
+	}
+	
+	public void printlnWithOption(String message) {
+		if(this.printOption)
+			System.out.println(message);
+	}
+	public void printlnWithOption() {
+		if(this.printOption)
+			System.out.println();
+	}
+	
+	public void printWithOption(String message) {
+		if(this.printOption)
+			System.out.print(message);
+	}
+	
+	public List<Node> getDirectChiledElementNodes(Node node) {
+		List<Node> res = new ArrayList<Node>();
 		NodeList nl = node.getChildNodes();
 		for (int i = 0; i < nl.getLength(); i++) {
 			if(nl.item(i).getNodeType() == Node.ELEMENT_NODE) {
-				res++;
+				res.add(nl.item(i));
 			}
 		}
 		return res;
@@ -119,34 +142,35 @@ public class XmlTool {
 		return "";
 	}
 	
-	public List<Node> findAllElementNodeDFS() {
-		this.visitAllElementNodeDFS(null);
+	public List<Node> findAllElementNodesDFS() {
+		this.allNodes = this.visitAllElementNodesDFS(null);
 		return this.allNodes;
 
 	}
-	public int visitChildElementNodesDFS(Node startNode, XmlToolWorkable worker) {
-		int visitedNodes = 0;
-		List<Node> allNodes = new ArrayList<>();
+
+	public List<Node> visitAllElementNodesDFS(XmlToolWorkable worker) {
+		return this.visitChildElementNodesDFS(this.doc, worker);
+	}
+	
+	public List<Node> visitChildElementNodesDFS(Node startNode, XmlToolWorkable worker) {
+		List<Node> visitedNodes = new ArrayList<>();
 		Node currentNode = this.getDocument().getDocumentElement();
 		Stack<Node> dfsStack = new Stack<Node>();
-		dfsStack.push(this.doc);
+		dfsStack.push(startNode);
 		int level = 1;
 		while(currentNode != null) {
 			if(currentNode.getNodeType() == Node.ELEMENT_NODE) {
-				
-				this.allNodeCount++;
-				allNodes.add(currentNode);
+				visitedNodes.add(currentNode);
 				if(worker != null) {
 					worker.work(currentNode, level, this);
 				}
-				System.out.print(String.format("%8d:",this.allNodeCount));
-				System.out.print(" ".repeat(level*2));
-				System.out.print("<");
-				System.out.print(currentNode.getNodeName());
-				System.out.print(">");
-				System.out.print(this.getTextContent(currentNode));
-				System.out.println();
-
+				this.printWithOption(String.format("%8d:", visitedNodes.size()));
+				this.printWithOption(" ".repeat(level*2));
+				this.printWithOption("<");
+				this.printWithOption(currentNode.getNodeName());
+				this.printWithOption(">");
+				this.printWithOption(this.getTextContent(currentNode));
+				this.printlnWithOption();;
 			}
 			if(currentNode.hasChildNodes()) {
 				dfsStack.push(currentNode);
@@ -160,16 +184,20 @@ public class XmlTool {
 						try{
 							currentNode = dfsStack.pop();
 							level--;
+							if(level == 0) {
+								break;
+							}
 						} catch (EmptyStackException e) {
+							System.out.println(e);
 							break;
 						}
 
-						System.out.print("         ");
-						System.out.print(" ".repeat(level*2));
-						System.out.print("</");
-						System.out.print(currentNode.getNodeName());
-						System.out.print(">");
-						System.out.println();
+						this.printWithOption(" ".repeat(8+1));
+						this.printWithOption(" ".repeat(level*2));
+						this.printWithOption("</");
+						this.printWithOption(currentNode.getNodeName());
+						this.printWithOption(">");
+						this.printlnWithOption();
 
 					}
 
@@ -181,18 +209,15 @@ public class XmlTool {
 		return visitedNodes;
 	}
 
-	public int visitAllElementNodeDFS(XmlToolWorkable worker) {
-		return this.visitChildElementNodesDFS(this.doc, worker);
-	}
-	
 	public List<Node> findAllElementNodeBFS() { 
 		this.visitAllElementNodeBFS(null);
 		return this.allNodes;
 	}
 	
 	public void visitAllElementNodeBFS(XmlToolWorkable worker) {
+		int allNodeCount = 0;
 		List<Node> allNodes = new ArrayList<Node>();
-		this.allNodeCount = 0;
+		allNodeCount = 0;
 		Queue<Node> q = new LinkedList<>();
 		NodeList nl = this.getDocument().getChildNodes();
 		for (int i = 0; i < nl.getLength(); i++) {
@@ -205,9 +230,9 @@ public class XmlTool {
 		while(!q.isEmpty()) {
 			Node node = q.poll();
 			if(worker != null) {
-				worker.work(node, this);
+				worker.work(node, 0, this);
 			}
-			this.allNodeCount++;
+			allNodeCount++;
 			System.out.println(node.getNodeName());
 			if(node.getNodeType()==Node.TEXT_NODE) {
 				System.out.println(node.getTextContent());
@@ -228,9 +253,35 @@ public class XmlTool {
 	
 	public static void main(String[] args) {
 		XmlTool xt = new XmlTool();
-		xt.loadXML("./data/dresden.xml__to__UTF-8.xml");
-		xt.visitAllElementNodeBFS(null);
-//		xt.visitAllElementNodeDFS(null);
+//		xt.loadXML("./data/dresden.xml__to__UTF-8.xml");
+		xt.loadXML("./data/leipzig_transformed.xml");
+//		xt.printOptionOn();
+//		xt.visitAllElementNodeBFS(null);
+//		xt.visitAllElementNodesDFS(null);
+		xt.visitAllElementNodesDFS(new XmlToolWorkable() {
+			
+			@Override
+			public void work(Node node, int level, XmlTool xmlTool) {
+				Element el = (Element)node;
+				if(el.hasAttribute("asin")) {
+					String asin = el.getAttribute("asin");
+					if(asin.length() != 10) {
+						System.out.println(asin);
+						System.out.println(node.getTextContent());
+					}
+				}
+				
+			}
+		});
+		/*
+		
+		Iterator<String> it = nl.iterator();
+		while (it.hasNext()) {
+			String type = it.next();
+			if(type.length() != 10)
+				System.out.println(type);
+		}
+		 */
 
 		/*
 		System.out.println(((Element)xt.getDocument().getElementsByTagName("listmania").item(2)).getChildNodes().item(19).getParentNode().getNextSibling().getNodeName());
