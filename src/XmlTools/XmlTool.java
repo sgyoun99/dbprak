@@ -20,6 +20,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+
+import main.Config;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -94,8 +97,8 @@ public class XmlTool {
 	}
 	
 	// encodes a xml file into UTF-8 and create a xml file name with "__to__UTF-8.xml" in the end.
-	public void encodeFileToUTF_8() {
-		String encodedFilePath = this.filePath+"__to__UTF-8.xml";
+	public void encodeFileToUTF_8(String xmlFilePath) {
+		String encodedFilePath = xmlFilePath+"__to__UTF-8.xml";
 		try {
 			//to prevent from endless extending to the existing encoded xml,
 			//delete the existing encoded file which was created by this program.
@@ -105,12 +108,12 @@ public class XmlTool {
 			// ok. do nothing
 		}
 
-		System.out.println(">> Encoding start: " + this.filePath);
+		System.out.println(">> Encoding start: " + xmlFilePath);
 
 		try (
 			FileOutputStream fos = new FileOutputStream(encodedFilePath, true);
 			BufferedReader br = new BufferedReader(new InputStreamReader(
-									new FileInputStream(this.filePath), StandardCharsets.UTF_8));) {
+									new FileInputStream(xmlFilePath), StandardCharsets.UTF_8));) {
 			
 			
 
@@ -215,9 +218,7 @@ public class XmlTool {
 	}
 	
 	public void visitAllElementNodeBFS(XmlToolWorkable worker) {
-		int allNodeCount = 0;
 		List<Node> allNodes = new ArrayList<Node>();
-		allNodeCount = 0;
 		Queue<Node> q = new LinkedList<>();
 		NodeList nl = this.getDocument().getChildNodes();
 		for (int i = 0; i < nl.getLength(); i++) {
@@ -232,7 +233,6 @@ public class XmlTool {
 			if(worker != null) {
 				worker.work(node, 0, this);
 			}
-			allNodeCount++;
 			System.out.println(node.getNodeName());
 			if(node.getNodeType()==Node.TEXT_NODE) {
 				System.out.println(node.getTextContent());
@@ -251,54 +251,33 @@ public class XmlTool {
 		this.allNodes = allNodes;
 	}
 	
-	public static void main(String[] args) {
+	private void testDresdenEncodeToUTF8() {
 		XmlTool xt = new XmlTool();
-//		xt.loadXML("./data/dresden.xml__to__UTF-8.xml");
-		xt.loadXML("./data/leipzig_transformed.xml");
-//		xt.printOptionOn();
-//		xt.visitAllElementNodeBFS(null);
-//		xt.visitAllElementNodesDFS(null);
-		xt.visitAllElementNodesDFS(new XmlToolWorkable() {
-			
-			@Override
-			public void work(Node node, int level, XmlTool xmlTool) {
-				Element el = (Element)node;
-				if(el.hasAttribute("asin")) {
-					String asin = el.getAttribute("asin");
-					if(asin.length() != 10) {
-						System.out.println(asin);
-						System.out.println(node.getTextContent());
-					}
-				}
-				
-			}
-		});
-		/*
-		
-		Iterator<String> it = nl.iterator();
-		while (it.hasNext()) {
-			String type = it.next();
-			if(type.length() != 10)
-				System.out.println(type);
-		}
-		 */
+		xt.loadXML(Config.DRESDEN_ORIGINAL);
 
-		/*
-		System.out.println(((Element)xt.getDocument().getElementsByTagName("listmania").item(2)).getChildNodes().item(19).getParentNode().getNextSibling().getNodeName());
-		System.out.println(((Element)xt.getDocument().getElementsByTagName("listmania").item(2)).getChildNodes().item(19).getNodeName());
-		System.out.println(((Element)xt.getDocument().getElementsByTagName("listmania").item(2)).getChildNodes().item(19).getTextContent());
-		 */
-		
-		/*
-		System.out.println(((Element)xt.getDocument().getElementsByTagName("listmania").item(2)).getChildNodes().item(17).getChildNodes().item(0).getNodeType());
-		System.out.println(((Element)xt.getDocument().getElementsByTagName("listmania").item(2)).getChildNodes().item(17).getChildNodes().item(0).getTextContent());
-		System.out.println(((Element)xt.getDocument().getElementsByTagName("listmania").item(2)).getChildNodes().item(17).getTextContent());
+		//before encoding
 
-		System.out.println(xt.getDocument().getElementsByTagName("item").item(0).getChildNodes().item(4));
-		System.out.println(xt.getDocument().getElementsByTagName("item").item(0).getChildNodes().item(4).getChildNodes().item(0));
-		System.out.println(xt.getDocument().getElementsByTagName("item").item(0).getChildNodes().item(4).getChildNodes().item(1));
-		 */
+		Document doc = xt.getDocument();
+		Node node = doc.getElementsByTagName("shop").item(0);
+		Element el = (Element)node;
 
-			}
+		System.out.println("=== Before encoding ===");
+		System.out.println(el.getAttribute("name"));
+		System.out.println(el.getAttribute("street"));
+		System.out.println(el.getAttribute("zip"));
+
+		//after encoding
+		xt.encodeFileToUTF_8(Config.DRESDEN_ORIGINAL);
+
+		xt.loadXML(Config.DRESDEN_ENCODED);
+		doc = xt.getDocument();
+		node = doc.getElementsByTagName("shop").item(0);
+		el = (Element)node;
+
+		System.out.println("=== After encoding ===");
+		System.out.println(el.getAttribute("name"));
+		System.out.println(el.getAttribute("street"));
+		System.out.println(el.getAttribute("zip"));	
+	}
 
 }

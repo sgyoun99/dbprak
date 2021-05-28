@@ -3,9 +3,10 @@ package JDBCTools;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class JDBCTool {
-
+	
 	public static Connection getConnection() {
 		Connection con = null;
 		try {
@@ -18,5 +19,33 @@ public class JDBCTool {
 			e.printStackTrace();
 		}
 		return con;
+	}
+	
+	public static void executeUpdate(SQLExecutable worker) throws Exception {
+		Connection con = getConnection();
+		try {
+			con.setAutoCommit (false);
+			Statement st = con.createStatement();
+			
+			//Implemented class will do this job.
+			worker.work(con, st);
+			
+			st.close();
+			con.commit ();
+			} catch (SQLException e) {
+				System.out.println(e);
+				try { 
+					con.rollback (); 
+				} catch (SQLException e2) {
+					System.out.println(e2);
+				} 
+			} finally {
+				try { 
+					con.setAutoCommit (true); 
+					con.close();
+				} catch (SQLException e3) {
+					System.out.println(e3);
+				} 
+			}
 	}
 }

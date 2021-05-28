@@ -1,3 +1,4 @@
+package main;
 import java.sql.*;
 
 public class CreateTables {
@@ -9,13 +10,11 @@ public class CreateTables {
 			Class.forName("org.postgresql.Driver");
 
 			
-			//String url = "jdbc:postgresql://localhost/postgres?user=postgres&password=postgres&ssl=false";
 			String url = "jdbc:postgresql://localhost/postgres?user=postgres&password=postgres&ssl=false";
 			Connection conn = DriverManager.getConnection(url);
 			
 			
 			Statement st = conn.createStatement();
-			
 
             createEnum("pgroup", "'Book', 'Music_CD', 'DVD'", st);
 
@@ -68,21 +67,22 @@ public class CreateTables {
 
     public static void createEnum(String enumName, String enumValues, Statement st){
         try{
-				st.executeUpdate("CREATE TYPE " + enumName + "AS ENUM (" + enumValues + ");");
-				System.out.println(enumName);
+				st.executeUpdate("CREATE TYPE " + enumName + " AS ENUM (" + enumValues + ");");
+				System.out.println("Enum "+enumName+"is created.");
 			}
 			catch (SQLException e){
-				System.out.println("Enum " + enumName + " already exists");
+				System.out.println(e);
 			}
     }
 
 	public static void createTable(String tableName, String sqlStr, Statement st){
 		try{
 				st.executeUpdate(sqlStr);
-				System.out.println(tableName);
+				System.out.println("table " + tableName + " is created.");
 			}
 			catch (SQLException e){
-				System.out.println("table " + tableName + " already exists");
+				System.out.println("table " + tableName + " can not be created.");
+				System.out.println(e);
 			}
 	}
 
