@@ -35,6 +35,7 @@ class NodeCount {
 public class XmlStructureAnalyzer {
 	Document doc;
 	HashMap<String, NodeCount> counts = new HashMap<>();
+	private int count;
 
 	public  XmlStructureAnalyzer(String filePath) {
 		try {
@@ -62,6 +63,7 @@ public class XmlStructureAnalyzer {
 				NodeCount nc = new NodeCount(nodeName);
 				nc.increaseLevelCount(level);
 				counts.put(nodeName, nc);
+				this.count++;
 				//
 				if(node.hasAttributes()) {
 					NamedNodeMap attributes =  node.getAttributes();
@@ -73,6 +75,7 @@ public class XmlStructureAnalyzer {
 			} 
 		} else {
 			counts.get(nodeName).increaseLevelCount(level);
+			this.count++;
 			//
 			if(node.hasAttributes()) {
 				NamedNodeMap attributes =  node.getAttributes();
@@ -115,6 +118,7 @@ public class XmlStructureAnalyzer {
 
 		xsa.countNodes(xsa.doc.getDocumentElement(), 0);
 		xsa.printCounts();
+		System.out.println(xsa.count);
 		
 		/*
 		NodeList nl = xsa.doc.getElementsByTagName("item");

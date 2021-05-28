@@ -1,4 +1,5 @@
-package dresden;
+package productGroup;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,20 +12,20 @@ import org.w3c.dom.NodeList;
 
 import JDBCTools.JDBCTool;
 import XmlTools.XmlTool;
+import dresden.Shop;
 
-public class Shop {
-	
+public class ProductGroup {
 	Connection con;
 
 	String shop_name;
 	String street;
 	String zip;
 	
-	public Shop() {
+	public ProductGroup() {
 		this.con = JDBCTool.getConnection();
 	}
 	
-	public void readShop() {
+	public void getAllProductgroup() {
 		XmlTool xt = new XmlTool();
 		xt.loadXML("./data/dresden.xml__to__UTF-8.xml");
 		
@@ -38,9 +39,9 @@ public class Shop {
 		System.out.println(shop_name);
 		System.out.println(street);
 		System.out.println(zip);
-		
-	}
-
+	
+}
+	
 	public void insertIntoShop() {
 		try {
 			con.setAutoCommit (false);
@@ -85,10 +86,10 @@ public class Shop {
 
 	public static void main(String[] args) {
 
-		Shop shop = new Shop();
-		shop.readShop();
-		shop.insertIntoShop();
+		ProductGroup pgroup = new ProductGroup();
+		pgroup.insertIntoShop();
 
 	}
 
 }
+

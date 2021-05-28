@@ -62,4 +62,4 @@
 
 # Review
     # Entity
-        Review(item_id:PK,Fk on Item, customer_id:PK:FK on Customer, review_date, review_summary, review_content)
+        Review(item_id:PK,Fk on Item, customer_id:PK:FK on Customer, rating, review_date, review_summary, review_content)
