@@ -30,8 +30,9 @@ public class Item {
 	private Pgroup productgroup;
 //	private String productgroup;
 
-	private Node currenctNode;
+	private Node currentNode;
 	public int insertCount = 0;
+	public int errorCount = 0;
 
 	public String getItem_id() {
 		return item_id;
@@ -98,27 +99,26 @@ public class Item {
 	Predicate<String> predicate_image = img -> true;
 	
 
-	public boolean testDresdenItem() throws XmlDataException {
-		if(!predicate_item_id.test(this.getItem_id())) {throw new XmlDataException("item_id Error"); }
-		if(!predicate_title.test(this.getTitle())) {throw new XmlDataException("title Error"); }
-	//	if(!predicate_rating.test(this.getRating())) {throw new XmlDataException("item Error"); } // how??
+	public boolean testItem() throws XmlDataException {
+		if(!predicate_item_id.test(this.getItem_id())) {throw new XmlDataException("item_id Error (length not 10)"); }
+		if(!predicate_title.test(this.getTitle())) {throw new XmlDataException("title Error (title empty)"); }
+	//	if(!predicate_rating.test(this.getRating())) {throw new XmlDataException("rating Error (out of range"); } // how??
 		if(!predicate_salesranking.test(this.getSalesranking())) {throw new XmlDataException("salesranking Error"); }
 		if(!predicate_image.test(this.getImage())) {throw new XmlDataException("img Error"); }
 		return true;
 	}
 	
-	public int dresden() {
+	public void dresden() {
 		XmlTool xt = new XmlTool(Config.DRESDEN_ENCODED);
 		List<Node> items = xt.filterElementNodesDFS(xt.getDocumentNode(), 
 			level -> level == 3, 
 			node -> node.getNodeName().equals("item")
 		);
 		items.forEach(node -> {
-			this.currenctNode = node;
+			this.currentNode = node;
 			try {
 			//xml data
 				setItem_id(xt.getAttributeTextContent(node, "asin"));
-//				System.out.println(this.getItem_id());
 				xt.getDirectChildElementNodes(node).forEach(nd -> {
 					if(nd.getNodeName().equals("title") && xt.isLeafElementNode(nd)) {
 						setTitle(nd.getTextContent());
@@ -135,7 +135,7 @@ public class Item {
 				if(salesRank.length() == 0) {
 					setSalesranking(0);
 				} else {
-					setSalesranking(Integer.valueOf(xt.getAttributeTextContent(node, "salesrank")));
+					setSalesranking(Integer.valueOf(salesRank));
 				}
 				String pgroup = xt.getAttributeTextContent(node, "pgroup");
 				if(pgroup.equals("Music")) {
@@ -145,7 +145,82 @@ public class Item {
 				setProductgroup(pgr);
 		
 			//insert
-				this.testDresdenItem();
+				this.testItem();
+				JDBCTool.executeUpdate((con, st) ->	{
+					String sql = "INSERT INTO ITEM (item_id, title, rating, salesranking, image, productgroup) values (?,?,?,?,?,?::Pgroup)";
+					PreparedStatement ps = con.prepareStatement(sql);
+					ps.setString(1, this.getItem_id());
+					ps.setString(2, this.getTitle());
+//					ps.setDouble(3, this.getRating());
+					ps.setDouble(3, 0); // temporary
+					ps.setInt(4, this.getSalesranking());
+					ps.setString(5, this.getImage());
+					ps.setString(6, this.getProductgroup().toString());
+					ps.executeUpdate();
+					ps.close();
+					
+				});
+			} catch (IllegalArgumentException e) {
+				this.errorCount++;
+				System.out.println();
+				xt.printNodeContents(this.currentNode);
+				e.printStackTrace();
+				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
+			} catch (XmlDataException e) {
+				this.errorCount++;
+				System.out.println();
+				xt.printNodeContents(this.currentNode);
+				e.printStackTrace();
+				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
+			} catch (SQLException e) {
+				this.errorCount++;
+				// to-do : Logging
+				System.out.println();
+				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
+				xt.printNodeContents(this.currentNode);
+				e.printStackTrace();
+			} catch (Exception e) {
+				this.errorCount++;
+				System.out.println();
+				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
+				xt.printNodeContents(this.currentNode);
+				e.printStackTrace();
+			}
+		});
+	}
+	
+	public void leipzig() {
+		XmlTool xt = new XmlTool(Config.LEIPZIG);
+		List<Node> items = xt.filterElementNodesDFS(xt.getDocumentNode(), 
+				level -> level == 3, 
+				node -> node.getNodeName().equals("item")
+		);
+		items.forEach(node -> {
+			this.currentNode = node;
+			try {
+			//xml data
+				setItem_id(xt.getAttributeTextContent(node, "asin"));
+				xt.getDirectChildElementNodes(node).forEach(nd -> {
+					if(nd.getNodeName().equals("title") && xt.isLeafElementNode(nd)) {
+						setTitle(nd.getTextContent());
+					}
+				});
+				String salesRank = xt.getAttributeTextContent(node, "salesrank");
+				if(salesRank.length() == 0) {
+					setSalesranking(0);
+				} else {
+					setSalesranking(Integer.valueOf(salesRank));
+				}
+				setImage(xt.getAttributeTextContent(node, "picture"));
+				String pgroup = xt.getAttributeTextContent(node, "pgroup");
+				if(pgroup.equals("Music")) {
+					pgroup = "Music_CD";
+				}
+				Pgroup pgr = Pgroup.valueOf(pgroup);
+				setProductgroup(pgr);
+		
+			//insert
+				this.testItem();
 				JDBCTool.executeUpdate((con, st) ->	{
 					String sql = "INSERT INTO ITEM (item_id, title, rating, salesranking, image, productgroup) values (?,?,?,?,?,?::Pgroup)";
 					PreparedStatement ps = con.prepareStatement(sql);
@@ -161,40 +236,34 @@ public class Item {
 					
 				});
 			} catch (IllegalArgumentException e) {
+				this.errorCount++;
 				System.out.println();
-				XmlTool xt2 = new XmlTool();
-				xt2.printOptionOn();
-				xt2.visitChildElementNodesDFS(this.currenctNode, null);
+				xt.printNodeContents(this.currentNode);
 				e.printStackTrace();
 				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
 			} catch (XmlDataException e) {
+				this.errorCount++;
 				System.out.println();
-				XmlTool xt2 = new XmlTool();
-				xt2.printOptionOn();
-				xt2.visitChildElementNodesDFS(this.currenctNode, null);
+				xt.printNodeContents(this.currentNode);
 				e.printStackTrace();
 				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
 			} catch (SQLException e) {
+				this.errorCount++;
 				// to-do : Logging
 				System.out.println();
-				XmlTool xt2 = new XmlTool();
-				xt2.printOptionOn();
-				xt2.visitChildElementNodesDFS(this.currenctNode, null);
-				e.printStackTrace();
 				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
+				xt.printNodeContents(this.currentNode);
+				e.printStackTrace();
 			} catch (Exception e) {
+				this.errorCount++;
 				System.out.println();
-				XmlTool xt2 = new XmlTool();
-				xt2.printOptionOn();
-				xt2.visitChildElementNodesDFS(this.currenctNode, null);
-				e.printStackTrace();
 				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
+				xt.printNodeContents(this.currentNode);
+				e.printStackTrace();
 			}
-			this.insertCount++;
 		});
-		return this.insertCount;
 	}
-	
+
 	public static void main(String[] args) {
 		
 		DropTables.dropTables();
@@ -202,7 +271,8 @@ public class Item {
 		
 		Item item = new Item();
 		item.dresden();
-		System.out.println(item.insertCount);
+		item.leipzig();
+		System.out.println("errorCount: "+item.errorCount);
 		
 	}
 	/*

@@ -9,7 +9,7 @@
             shop_name:PK:FK on Shop,
             street:PK:FK on Shop,
             ZIP:PK:FK on Shop,
-            price, mult, currency, availability(?), state, )
+            price, mult, currency, availability(?), condition )
 
 # Book
     # Entity
