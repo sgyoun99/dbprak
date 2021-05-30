@@ -2,6 +2,7 @@ package entity;
 
 import java.util.function.*;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,8 +11,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import JDBCTools.JDBCTool;
+import XmlTools.XmlDataException;
 import XmlTools.XmlTool;
+import XmlTools.XmlUploadException;
 import main.Config;
+import main.CreateTables;
+import main.DropTables;
 import main.Pgroup;
 
 public class Item {
@@ -90,16 +95,14 @@ public class Item {
 //	Predicate<String> predicate_image = img -> img.length() != 0;
 	Predicate<String> predicate_image = img -> true;
 	
-	public <T> boolean test(T value, Predicate<T> predicate) {
-		return predicate.test(value);
-	}
 
-	public boolean test() {
-		return  predicate_item_id.test(this.getItem_id()) &&
-				predicate_title.test(this.getTitle()) &&
-//				predicate_rating.test(this.getRating()) && // how??
-				predicate_salesranking.test(this.getSalesranking()) &&
-				predicate_image.test(this.getImage());
+	public boolean testDresdenItem() throws XmlDataException {
+		if(!predicate_item_id.test(this.getItem_id())) {throw new XmlDataException("item_id Error"); }
+		if(!predicate_title.test(this.getTitle())) {throw new XmlDataException("title Error"); }
+	//	if(!predicate_rating.test(this.getRating())) {throw new XmlDataException("item Error"); } // how??
+		if(!predicate_salesranking.test(this.getSalesranking())) {throw new XmlDataException("salesranking Error"); }
+		if(!predicate_image.test(this.getImage())) {throw new XmlDataException("img Error"); }
+		return true;
 	}
 	
 	public int dresden() {
@@ -110,6 +113,7 @@ public class Item {
 		);
 		items.forEach(node -> {
 			try {
+			//xml data
 				setItem_id(xt.getAttributeTextContent(node, "asin"));
 //				System.out.println(this.getItem_id());
 				xt.getDirectChildElementNodes(node).forEach(nd -> {
@@ -117,7 +121,11 @@ public class Item {
 						setTitle(nd.getTextContent());
 					}
 					if(nd.getNodeName().equals("details")) {
-						setImage(xt.getAttributeTextContent(nd, "img"));
+						try {
+							setImage(xt.getAttributeTextContent(nd, "img"));
+						} catch (XmlDataException e) {
+							e.printStackTrace();
+						}
 					}
 				});
 				String salesRank = xt.getAttributeTextContent(node, "salesrank");
@@ -132,51 +140,57 @@ public class Item {
 				}
 				Pgroup pgr = Pgroup.valueOf(pgroup);
 				setProductgroup(pgr);
-			} catch (Exception e) {
-				System.out.print("Error handling needed: " + this.getItem_id());
-				System.out.println(" : " + this.getTitle());
-				System.out.println(e);
-			}
 		
 			//insert
-			if(this.test()) {
-				try {
-					JDBCTool.executeUpdate((con, st) ->	{
-						String sql = "INSERT INTO ITEM (item_id, title, rating, salesranking, image, productgroup) values (?,?,?,?,?,?::Pgroup)";
-						PreparedStatement ps = con.prepareStatement(sql);
-						ps.setString(1, this.getItem_id());
-						ps.setString(2, this.getTitle());
+				this.testDresdenItem();
+				JDBCTool.executeUpdate((con, st) ->	{
+					String sql = "INSERT INTO ITEM (item_id, title, rating, salesranking, image, productgroup) values (?,?,?,?,?,?::Pgroup)";
+					PreparedStatement ps = con.prepareStatement(sql);
+					ps.setString(1, this.getItem_id());
+					ps.setString(2, this.getTitle());
 //						ps.setDouble(3, this.getRating());
-						ps.setDouble(3, 0); // temporary
-						ps.setInt(4, this.getSalesranking());
-						ps.setString(5, this.getImage());
-						ps.setString(6, this.getProductgroup().toString());
-						ps.executeUpdate();
-						ps.close();
-						
-					});
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-				this.insertCount++;
-			} else {
-				System.out.print("Test failed : " + this.getItem_id());
-				System.out.println(" : " + this.getTitle());
+					ps.setDouble(3, 0); // temporary
+					ps.setInt(4, this.getSalesranking());
+					ps.setString(5, this.getImage());
+					ps.setString(6, this.getProductgroup().toString());
+					ps.executeUpdate();
+					ps.close();
+					
+				});
+			} catch (IllegalArgumentException e) {
+				System.out.println();
+				e.printStackTrace();
+				System.out.println("Error in the item: " + this.getItem_id() + "/ title: " + this.getTitle());
+			} catch (XmlDataException e) {
+				System.out.println();
+				e.printStackTrace();
+				System.out.println("Error in the item: " + this.getItem_id() + "/ title: " + this.getTitle());
+			} catch (SQLException e) {
+				// to-do : Logging
+				System.out.println();
+				e.printStackTrace();
+				System.out.println("SQL Error in the item: " + this.getItem_id() + "/ title: " + this.getTitle());
+			} catch (Exception e) {
+				System.out.println();
+				e.printStackTrace();
+				System.out.println("Error in the item: " + this.getItem_id() + "/ title: " + this.getTitle());
 			}
+			this.insertCount++;
 		});
 		return this.insertCount;
 	}
 	
+	/*
 	public static void main(String[] args) {
 		
+		DropTables.dropTables();
+		CreateTables.createTables();
+		
 		Item item = new Item();
-		try {
-			item.dresden();
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		item.dresden();
 		System.out.println(item.insertCount);
 		
 	}
+	 */
 	
 }

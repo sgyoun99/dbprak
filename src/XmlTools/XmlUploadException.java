@@ -1,7 +1,7 @@
 package XmlTools;
 
-//public class XmlUploadException extends Exception {
-public class XmlUploadException extends RuntimeException {
+public class XmlUploadException extends Exception {
+//public class XmlUploadException extends RuntimeException {
 	
 	/**
 	 * 

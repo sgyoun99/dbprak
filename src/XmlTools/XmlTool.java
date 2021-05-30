@@ -158,12 +158,13 @@ public class XmlTool {
 		return false;
 	}
 	
-	public String getAttributeTextContent(Node node, String attributeName) {
+	public String getAttributeTextContent(Node node, String attributeName) throws XmlDataException{
 		if(hasAttribute(node, attributeName)) {
 			Element el = (Element)node;
 			return el.getAttribute(attributeName);
+		} else {
+			throw new XmlDataException("<"+node.getNodeName()+"> does not have Attribute: " + attributeName);
 		}
-		return "";
 	}
 	
 
@@ -387,22 +388,27 @@ public class XmlTool {
 		Map<String,Integer> pgroup = new HashMap<String, Integer>();
 		xt.visitAllElementNodesDFS((n,l,x)->{
 			if(xt.hasAttribute(n, "pgroup")) {
-				String pgr = xt.getAttributeTextContent(n, "pgroup");
-				if(pgr.equals("Buch")) {
-					System.out.println("Buch" + xt.getAttributeTextContent(n, "asin"));
-				}
-				if(pgr.equals("Musical")) {
-					System.out.println("Musical" + xt.getAttributeTextContent(n, "asin"));
-				}
-				pgroup.compute(pgr, (k,v)->
-					{
-						if(v == null) {
-							return 1;
-						} else {
-							return v+1;
-						}
+				String pgr;
+				try {
+					pgr = xt.getAttributeTextContent(n, "pgroup");
+					if(pgr.equals("Buch")) {
+						System.out.println("Buch" + xt.getAttributeTextContent(n, "asin"));
 					}
-				);
+					if(pgr.equals("Musical")) {
+						System.out.println("Musical" + xt.getAttributeTextContent(n, "asin"));
+					}
+					pgroup.compute(pgr, (k,v)->
+						{
+							if(v == null) {
+								return 1;
+							} else {
+								return v+1;
+							}
+						}
+					);
+				} catch (XmlDataException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 		
