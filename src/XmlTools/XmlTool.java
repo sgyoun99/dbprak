@@ -225,7 +225,7 @@ public class XmlTool {
 				this.printlnWithOption(">");
 				this.printWithOption(" ".repeat(level*2));
 				this.printWithOption(String.format("            %s",this.getTextContent(currentNode)));
-				this.printlnWithOption();;
+				this.printlnWithOption();
 			}
 
 			if(currentNode.hasChildNodes()) {
@@ -390,10 +390,10 @@ public class XmlTool {
 		
 		XmlTool xt = new XmlTool();
 		xt.loadXML(Config.LEIPZIG);
-//		xt.analyseAttributesInItem("item");
+		xt.analyseAttributesInItem("item");
 
 		xt.loadXML(Config.DRESDEN_ENCODED);
-//		xt.analyseAttributesInItem("item");
+		xt.analyseAttributesInItem("item");
 		
 		/*
 		Map<String,Integer> pgroup = new HashMap<String, Integer>();
@@ -429,6 +429,7 @@ public class XmlTool {
 //		xt.filterElementNodesDFS(xt.getDocumentNode(), l -> l == 3, node -> !xt.hasAttribute(node, "asin")).forEach(n -> System.out.println(xt.getTextContent(n)));
 //		xt.filterElementNodesDFS(xt.getDocumentNode(), l -> l == 3, node -> !xt.hasAttribute(node, "asin")).forEach(n -> System.out.println(n.getTextContent()));
 		
+		System.out.println();
 		Node node = xt.filterElementNodesDFS(xt.getDocumentNode(), l -> l == 3, n -> {
 			try {
 				return xt.getAttributeTextContent(n, "asin").equals("3405156211");
