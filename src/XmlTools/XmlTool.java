@@ -217,10 +217,17 @@ public class XmlTool {
 				this.printWithOption(" ".repeat(level*2));
 				this.printWithOption("<");
 				this.printWithOption(currentNode.getNodeName());
-				this.printWithOption(">");
-				this.printWithOption(this.getTextContent(currentNode));
+				for (int i = 0; i < currentNode.getAttributes().getLength(); i++) {
+					String attrName = currentNode.getAttributes().item(i).getNodeName();
+					this.printWithOption(String.format(" %s=", attrName));
+					this.printWithOption(String.format("\"%s\"",((Element)currentNode).getAttribute(attrName)));
+				}
+				this.printlnWithOption(">");
+				this.printWithOption(" ".repeat(level*2));
+				this.printWithOption(String.format("            %s",this.getTextContent(currentNode)));
 				this.printlnWithOption();;
 			}
+
 			if(currentNode.hasChildNodes()) {
 				dfsStack.push(currentNode);
 				level++;
