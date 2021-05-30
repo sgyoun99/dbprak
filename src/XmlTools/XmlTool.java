@@ -85,6 +85,41 @@ public class XmlTool {
 			System.out.print(message);
 	}
 	
+	public void printNodeContentsDFS(Node startNode) {
+		this.printOptionOn();
+		this.visitChildElementNodesDFS(startNode, null);
+		this.printOptionOff();
+	}
+	public String printOpeningNodeWithOption(Node node, int level) {
+		StringBuilder sb = new StringBuilder();
+			sb.append(" ".repeat((level+1)*2));
+			sb.append("<");
+			sb.append(node.getNodeName());
+			sb.append(getAllAttributeContents(node));
+			sb.append(">\n");
+			sb.append(" ".repeat(12));
+			sb.append(" ".repeat((level+1)*2));
+			sb.append(this.getTextContent(node));
+			sb.append("\n");
+	
+		if(this.printOption) {
+			System.out.print(sb.toString());
+		}
+		return sb.toString();
+	}
+	public String printClosingNodeWithOption(Node node, int level) {
+		StringBuilder sb = new StringBuilder();
+			sb.append(" ".repeat(8+1));
+			sb.append(" ".repeat((level+1)*2));
+			sb.append("</");
+			sb.append(node.getNodeName());
+			sb.append(">\n");
+			
+		if(this.printOption) {
+			System.out.print(sb.toString());
+		}
+		return sb.toString();
+	}
 	// encodes a xml file into UTF-8 and create a xml file name with "__to__UTF-8.xml" in the end.
 	public void encodeFileToUTF_8(String xmlFilePath) {
 		String encodedFilePath = xmlFilePath + Config.UTF8_SURFIX;
@@ -130,6 +165,8 @@ public class XmlTool {
 		if(node.getFirstChild() != null && node.getFirstChild().getNodeType() == Node.TEXT_NODE) {
 			// \n between Nodes will be ignored.
 			return "\n".compareTo(node.getFirstChild().getTextContent()) == 0 ? false : true;
+		} else if(node.getFirstChild() == null) {
+			return true;
 		} else {
 			return false;
 		}
@@ -151,6 +188,17 @@ public class XmlTool {
 			return "";
 		}
 	}
+	
+	public int getLevel(Node node) {
+		int level = 0;
+		while(node.getParentNode() != null) {
+			node = node.getParentNode();
+			
+			level++;
+		}
+		return level;
+	}
+	
 	public boolean hasAttribute(Node node, String attributeName) {
 		Element el = (Element)node;
 		if(el.hasAttribute(attributeName)) {
@@ -175,96 +223,6 @@ public class XmlTool {
 		return res;
 	}
 	
-	public void visitAllElementNodesDFS(XmlToolWorkable worker) {
-		this.visitChildElementNodesDFS(this.documentNode, worker);
-	}
-	
-	public void visitChildElementNodesDFS(Node startNode, XmlToolWorkable worker) {
-		this.visitChildElementNodesDFS(startNode, 1, worker);
-	}
-	
-	public List<Node> filterElementNodesDFS(Node startNode, IntPredicate levelPredicate) {
-		return this.filterElementNodesDFS(startNode, levelPredicate, _x -> true);
-	}
-	
-	public List<Node> filterElementNodesDFS(Node startNode, Predicate<Node> predicate) {
-		return this.filterElementNodesDFS(startNode, _x -> true, predicate);
-	}
-	public List<Node> filterElementNodesDFS(Node startNode, IntPredicate levelPredicate, Predicate<Node> predicate) {
-		List<Node> res = new ArrayList<Node>();
-		this.visitChildElementNodesDFS(startNode, (node, level) -> {
-			if(levelPredicate.test(level) && predicate.test(node)) {
-				res.add(node);
-			}
-		});
-		return res;
-	}
-	
-	
-	private void visitChildElementNodesDFS(Node startNode, int relativeLevel, XmlToolWorkable worker) {
-		int visitedNodes = 0;
-		Node currentNode = startNode;
-		Stack<Node> dfsStack = new Stack<Node>();
-		dfsStack.push(startNode);
-		int startLevel = relativeLevel;
-		int level = relativeLevel;
-		dfs:while(currentNode != null) {
-			if(currentNode.getNodeType() == Node.ELEMENT_NODE) {
-				visitedNodes++;
-				if(worker != null) {
-					worker.work(currentNode, level);
-				}
-				this.printWithOption(String.format("%8d:", visitedNodes));
-				this.printWithOption(" ".repeat(level*2));
-				this.printWithOption("<");
-				this.printWithOption(currentNode.getNodeName());
-				this.printWithOption(getAllAttributeContents(currentNode));
-				this.printlnWithOption(">");
-				this.printWithOption(" ".repeat(12));
-				this.printWithOption(" ".repeat(level*2));
-				this.printWithOption(this.getTextContent(currentNode));
-				this.printlnWithOption();
-			}
-
-			if(currentNode.hasChildNodes()) {
-				dfsStack.push(currentNode);
-				level++;
-				currentNode = currentNode.getFirstChild();
-			} else {
-				if(currentNode.getNextSibling() != null) {
-					currentNode = currentNode.getNextSibling();
-				} else {
-					while(currentNode.getNextSibling() == null) {
-						try{
-							currentNode = dfsStack.pop();
-							level--;
-							this.printWithOption(" ".repeat(8+1));
-							this.printWithOption(" ".repeat(level*2));
-							this.printWithOption("</");
-							this.printWithOption(currentNode.getNodeName());
-							this.printWithOption(">");
-							this.printlnWithOption();
-							if(level == startLevel) {
-								break dfs;
-							}
-							//if(currentNode == startNode) { break dfs; }
-								
-						} catch (EmptyStackException e) {
-							System.out.println(e);
-							break;
-						}
-
-						
-
-					}
-
-					currentNode = currentNode.getNextSibling();
-					
-				}
-			}
-		} 
-	}
-
 	public List<Node> getDirectChildElementNodes(Node node) {
 		List<Node> res = new ArrayList<Node>();
 		NodeList nl = node.getChildNodes();
@@ -276,6 +234,78 @@ public class XmlTool {
 		return res;
 	}
 	
+	public void visitAllElementNodesDFS(XmlToolWorkable worker) {
+		this.visitChildElementNodesDFS(this.documentNode, worker);
+	}
+	
+	//DFS
+	public void visitChildElementNodesDFS(Node startNode, XmlToolWorkable worker) {
+		int visitedNodes = 0;
+		if(this.isLeafElementNode(startNode)) {
+			int level = this.getLevel(startNode);
+			this.printWithOption(String.format("%8d:", ++visitedNodes));
+			this.printOpeningNodeWithOption(startNode, level);
+			this.printClosingNodeWithOption(startNode, level);
+			if(worker != null) {
+				worker.work(startNode, level);
+			}
+		} else {
+			Node currentNode = startNode;
+			Stack<Node> dfsStack = new Stack<Node>();
+			dfsStack.push(startNode);
+			int level = 0;
+			dfs:while(currentNode != null) {
+				if(currentNode.getNodeType() == Node.ELEMENT_NODE) {
+					visitedNodes++;
+					if(worker != null) {
+						worker.work(currentNode, level);
+					}
+					this.printWithOption(String.format("%8d:", visitedNodes));
+					this.printOpeningNodeWithOption(currentNode, level);
+				}
+				
+				if(currentNode.hasChildNodes()) {
+					dfsStack.push(currentNode);
+					level++;
+					currentNode = currentNode.getFirstChild();
+				} else if(currentNode.getNextSibling() != null) {
+					currentNode = currentNode.getNextSibling();
+				} else {
+					while(currentNode.getNextSibling() == null) {
+						try{
+							currentNode = dfsStack.pop();
+							level--;
+							this.printClosingNodeWithOption(currentNode, level);
+							if(currentNode.isSameNode(startNode)) { break dfs; }
+								
+						} catch (EmptyStackException e) {
+							e.printStackTrace();
+							break;
+						}
+					}
+					currentNode = currentNode.getNextSibling();
+					
+				}
+			} 
+		}
+	}
+	public List<Node> filterElementNodesDFS(Node startNode, IntPredicate levelPredicate, Predicate<Node> predicate) {
+		List<Node> res = new ArrayList<Node>();
+		this.visitChildElementNodesDFS(startNode, (node, level) -> {
+			if(levelPredicate.test(level) && predicate.test(node)) {
+				res.add(node);
+			}
+		});
+		return res;
+	}
+	public List<Node> filterElementNodesDFS(Node startNode, IntPredicate levelPredicate) {
+		return this.filterElementNodesDFS(startNode, levelPredicate, n -> true);
+	}
+	public List<Node> filterElementNodesDFS(Node startNode, Predicate<Node> predicate) {
+		return this.filterElementNodesDFS(startNode, n -> true, predicate);
+	}
+
+	/*
 	public void visitAllElementNodesBFS(XmlToolWorkable worker) {
 		List<Node> allNodes = new ArrayList<Node>();
 		Queue<Node> q = new LinkedList<>();
@@ -310,8 +340,9 @@ public class XmlTool {
 			}
 		}
 	}
+	 */
 	
-	//find all attribute names within the Element Node
+	//find all attribute within the Element Node with the given name
 	public void analyseAttributesInItem(String nodeName) {
 		Map<Integer, Map<String, Integer>> level_AttrName_Occurence = new HashMap<Integer, Map<String,Integer>>();
 
@@ -383,12 +414,6 @@ public class XmlTool {
 		System.out.println(el.getAttribute("zip"));	
 	}
 	
-	public void printNodeContents(Node node) {
-		this.printOptionOn();
-		this.visitChildElementNodesDFS(node, null);
-		this.printOptionOff();
-	}
-	
 	public String getAllAttributeContents(Node node) {
 		String res = "";
 		for (int i = 0; i < node.getAttributes().getLength(); i++) {
@@ -409,12 +434,13 @@ public class XmlTool {
 		
 		XmlTool xt = new XmlTool();
 		xt.loadXML(Config.LEIPZIG);
-		xt.analyseAttributesInItem("item");
+		xt.analyseAttributesInItem("price");
 
 		xt.loadXML(Config.DRESDEN_ENCODED);
-		xt.analyseAttributesInItem("item");
+		xt.analyseAttributesInItem("price");
 		
 		
+	/*
 		System.out.println();
 		//Print <item> Node which does not have asin as attribute
 		xt.filterElementNodesDFS(xt.getDocumentNode(), l -> l == 3, n -> {
@@ -427,11 +453,19 @@ public class XmlTool {
 			return false;
 		}).forEach( node -> xt.printNodeContents(node));
 		
-
-		xt.filterElementNodesDFS(xt.getDocumentNode(), l -> l==3, n -> {
-			return !n.getNodeName().equals("item");
-		}).forEach(n -> xt.printNodeContents(n));
-	}
-	/*
 	 */
+
+		xt.loadXML(Config.LEIPZIG);
+//		xt.loadXML(Config.DRESDEN_ENCODED);
+		Map<Integer,Integer> tmp = new HashMap<Integer, Integer>();
+		xt.filterElementNodesDFS(xt.getDocumentNode(), l -> l==3, n -> {
+			return n.getNodeName().equals("price");
+		}).forEach(nd -> {
+			tmp.compute(nd.getTextContent().length(), (k,v)-> v==null?1:v+1);
+		});
+		tmp.forEach((k,v)-> System.out.println(k+":"+v));
+		
+//		xt.filterElementNodesDFS(xt.getDocumentNode(), (int l) -> l==3).forEach(n -> System.out.println(n.getNodeName()));
+		
+	}
 }

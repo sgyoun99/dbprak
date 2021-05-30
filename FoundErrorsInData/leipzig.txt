@@ -2,3 +2,7 @@
 # asin length is not 10
     line 45434
         Artemis Fowl, Die Rache, 5 Audio-CDs
+
+# currency EUREUR
+    line 165438, 36842, 77513
+        <price mult="0.01" state="new" currency="EUREUR"/>

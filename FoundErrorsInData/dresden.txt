@@ -11,3 +11,7 @@
 # without asin in <item>
     line 34266
         <item pgroup="DVD" salesrank="193"><title>Robbie Williams - The Robbie Williams Show</title>
+
+# currency EUREUREUR in <price>
+    line 21360
+        <price state="new" mult="0.01" currency="EUREUREUR"></price>

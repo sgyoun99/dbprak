@@ -3,6 +3,7 @@ package main;
 
 import XmlTools.XmlTool;
 import entity.Item;
+import entity.Item_Shop;
 import entity.Shop;
 
 public class Main {
@@ -13,12 +14,13 @@ public class Main {
 		DropTables.dropTables();
 		CreateTables.createTables();
 		
+		//Encoding to UTF-8
 		XmlTool xt = new XmlTool();
 		xt.encodeFileToUTF_8(Config.DRESDEN_ORIGINAL);
 
 		/*
 		 */
-		//shop
+		//Shop
 		Shop shop = new Shop(Config.DRESDEN_ENCODED);
 		shop.readShop();
 		shop.insertShop();
@@ -27,11 +29,13 @@ public class Main {
 		shop.insertShop();
 		shop.selectShop();
 		
-//		xt.loadXML(Config.DRESDEN_ENCODED);
-//		xt.filterElementNodesDFS(xt.getDocumentNode(), level -> level > 3, node -> xt.hasAttribute(node, "asin")).forEach(node -> System.out.println(node.getTextContent()));
-		
+		//Item
 		Item item = new Item();
+		item.leipzig();
 		item.dresden();
-		System.out.println(item.insertCount);
+		
+		Item_Shop item_shop = new Item_Shop();
+		item_shop.dresden();
+		
 	}
 }

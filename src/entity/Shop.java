@@ -21,6 +21,18 @@ public class Shop {
 	private String street;
 	private String zip;
 	private String xmlPath;
+	
+	
+
+	public String getShop_name() {
+		return shop_name;
+	}
+	public String getStreet() {
+		return street;
+	}
+	public String getZip() {
+		return zip;
+	}
 
 	public Shop(String xmlPath) {
 		this.xmlPath = xmlPath;
@@ -29,10 +41,8 @@ public class Shop {
 
 		XmlTool xt = new XmlTool();
 		xt.loadXML(this.xmlPath);
-//		xt.printOptionOn();
 
-//		xt.visitAllElementNodesDFS(new XmlToolWorkable() {
-		xt.visitAllElementNodesBFS(new XmlToolWorkable() {
+		xt.visitAllElementNodesDFS(new XmlToolWorkable() {
 			
 			@Override
 			public void work(Node node, int level) {
