@@ -199,8 +199,7 @@ public class XmlTool {
 		return res;
 	}
 	
-	
-	public void visitChildElementNodesDFS(Node startNode, int relativeLevel, XmlToolWorkable worker) {
+	public void visitChildElementNodesDFS2(Node startNode, int relativeLevel, XmlToolWorkable worker) {
 		int visitedNodes = 0;
 		Node currentNode = startNode;
 		Stack<Node> dfsStack = new Stack<Node>();
@@ -247,6 +246,67 @@ public class XmlTool {
 						this.printWithOption(currentNode.getNodeName());
 						this.printWithOption(">");
 						this.printlnWithOption();
+
+					}
+
+					currentNode = currentNode.getNextSibling();
+					
+				}
+			}
+		} 
+	}
+	
+	
+	public void visitChildElementNodesDFS(Node startNode, int relativeLevel, XmlToolWorkable worker) {
+		int visitedNodes = 0;
+		Node currentNode = startNode;
+		Stack<Node> dfsStack = new Stack<Node>();
+		dfsStack.push(startNode);
+		int startLevel = relativeLevel;
+		int level = relativeLevel;
+		dfs:while(currentNode != null) {
+			if(currentNode.getNodeType() == Node.ELEMENT_NODE) {
+				visitedNodes++;
+				if(worker != null) {
+					worker.work(currentNode, level, this);
+				}
+				this.printWithOption(String.format("%8d:", visitedNodes));
+				this.printWithOption(" ".repeat(level*2));
+				this.printWithOption("<");
+				this.printWithOption(currentNode.getNodeName());
+				this.printWithOption(">");
+				this.printWithOption(this.getTextContent(currentNode));
+				this.printlnWithOption();;
+			}
+			if(currentNode.hasChildNodes()) {
+				dfsStack.push(currentNode);
+				level++;
+				currentNode = currentNode.getFirstChild();
+			} else {
+				if(currentNode.getNextSibling() != null) {
+					currentNode = currentNode.getNextSibling();
+				} else {
+					while(currentNode.getNextSibling() == null) {
+						try{
+							currentNode = dfsStack.pop();
+							level--;
+							this.printWithOption(" ".repeat(8+1));
+							this.printWithOption(" ".repeat(level*2));
+							this.printWithOption("</");
+							this.printWithOption(currentNode.getNodeName());
+							this.printWithOption(">");
+							this.printlnWithOption();
+							if(level == startLevel) {
+								break dfs;
+							}
+							//if(currentNode == startNode) { break dfs; }
+								
+						} catch (EmptyStackException e) {
+							System.out.println(e);
+							break;
+						}
+
+						
 
 					}
 
@@ -380,11 +440,12 @@ public class XmlTool {
 		
 		XmlTool xt = new XmlTool();
 		xt.loadXML(Config.LEIPZIG);
-		xt.analyseAttributesInItem("item");
+//		xt.analyseAttributesInItem("item");
 
 		xt.loadXML(Config.DRESDEN_ENCODED);
-		xt.analyseAttributesInItem("item");
+//		xt.analyseAttributesInItem("item");
 		
+		/*
 		Map<String,Integer> pgroup = new HashMap<String, Integer>();
 		xt.visitAllElementNodesDFS((n,l,x)->{
 			if(xt.hasAttribute(n, "pgroup")) {
@@ -413,9 +474,21 @@ public class XmlTool {
 		});
 		
 		pgroup.forEach((k,v) -> System.out.println(k + ": "+ v));
+		 */
 		
 //		xt.filterElementNodesDFS(xt.getDocumentNode(), l -> l == 3, node -> !xt.hasAttribute(node, "asin")).forEach(n -> System.out.println(xt.getTextContent(n)));
-		xt.filterElementNodesDFS(xt.getDocumentNode(), l -> l == 3, node -> !xt.hasAttribute(node, "asin")).forEach(n -> System.out.println(n.getTextContent()));
+//		xt.filterElementNodesDFS(xt.getDocumentNode(), l -> l == 3, node -> !xt.hasAttribute(node, "asin")).forEach(n -> System.out.println(n.getTextContent()));
+		
+		Node node = xt.filterElementNodesDFS(xt.getDocumentNode(), l -> l == 3, n -> {
+			try {
+				return xt.getAttributeTextContent(n, "asin").equals("3405156211");
+			} catch (XmlDataException e) {
+			}
+			return false;
+		}).get(0);
+		
+		xt.printOptionOn();
+		xt.visitChildElementNodesDFS(node, null);
 
 	}
 	/*

@@ -13,6 +13,7 @@ import org.w3c.dom.Node;
 import JDBCTools.JDBCTool;
 import XmlTools.XmlDataException;
 import XmlTools.XmlTool;
+import XmlTools.XmlToolWorkable;
 import XmlTools.XmlUploadException;
 import main.Config;
 import main.CreateTables;
@@ -29,6 +30,7 @@ public class Item {
 	private Pgroup productgroup;
 //	private String productgroup;
 
+	private Node currenctNode;
 	public int insertCount = 0;
 
 	public String getItem_id() {
@@ -112,6 +114,7 @@ public class Item {
 			node -> node.getNodeName().equals("item")
 		);
 		items.forEach(node -> {
+			this.currenctNode = node;
 			try {
 			//xml data
 				setItem_id(xt.getAttributeTextContent(node, "asin"));
@@ -159,28 +162,39 @@ public class Item {
 				});
 			} catch (IllegalArgumentException e) {
 				System.out.println();
+				XmlTool xt2 = new XmlTool();
+				xt2.printOptionOn();
+				xt2.visitChildElementNodesDFS(this.currenctNode, null);
 				e.printStackTrace();
-				System.out.println("Error in the item: " + this.getItem_id() + "/ title: " + this.getTitle());
+				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
 			} catch (XmlDataException e) {
 				System.out.println();
+				XmlTool xt2 = new XmlTool();
+				xt2.printOptionOn();
+				xt2.visitChildElementNodesDFS(this.currenctNode, null);
 				e.printStackTrace();
-				System.out.println("Error in the item: " + this.getItem_id() + "/ title: " + this.getTitle());
+				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
 			} catch (SQLException e) {
 				// to-do : Logging
 				System.out.println();
+				XmlTool xt2 = new XmlTool();
+				xt2.printOptionOn();
+				xt2.visitChildElementNodesDFS(this.currenctNode, null);
 				e.printStackTrace();
-				System.out.println("SQL Error in the item: " + this.getItem_id() + "/ title: " + this.getTitle());
+				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
 			} catch (Exception e) {
 				System.out.println();
+				XmlTool xt2 = new XmlTool();
+				xt2.printOptionOn();
+				xt2.visitChildElementNodesDFS(this.currenctNode, null);
 				e.printStackTrace();
-				System.out.println("Error in the item: " + this.getItem_id() + "/ title: " + this.getTitle());
+				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
 			}
 			this.insertCount++;
 		});
 		return this.insertCount;
 	}
 	
-	/*
 	public static void main(String[] args) {
 		
 		DropTables.dropTables();
@@ -191,6 +205,7 @@ public class Item {
 		System.out.println(item.insertCount);
 		
 	}
+	/*
 	 */
 	
 }
