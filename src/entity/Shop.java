@@ -35,7 +35,7 @@ public class Shop {
 		xt.visitAllElementNodesBFS(new XmlToolWorkable() {
 			
 			@Override
-			public void work(Node node, int level, XmlTool xmlTool) {
+			public void work(Node node, int level) {
 				Element el = (Element)node;
 				if(el.getNodeName().equals("shop")) {
 						shop_name = el.getAttribute("name");

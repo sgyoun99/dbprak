@@ -170,7 +170,7 @@ public class XmlTool {
 
 	public List<Node> getAllElementNodesDFS() {
 		List<Node> res = new ArrayList<Node>();
-		this.visitChildElementNodesDFS(this.documentNode, (node, level, xmlTool) -> res.add(node));
+		this.visitChildElementNodesDFS(this.documentNode, (node, level) -> res.add(node));
 		return res;
 	}
 	
@@ -191,7 +191,7 @@ public class XmlTool {
 	}
 	public List<Node> filterElementNodesDFS(Node startNode, IntPredicate levelPredicate, Predicate<Node> predicate) {
 		List<Node> res = new ArrayList<Node>();
-		this.visitChildElementNodesDFS(startNode, (node, level, xt) -> {
+		this.visitChildElementNodesDFS(startNode, (node, level) -> {
 			if(levelPredicate.test(level) && predicate.test(node)) {
 				res.add(node);
 			}
@@ -211,20 +211,17 @@ public class XmlTool {
 			if(currentNode.getNodeType() == Node.ELEMENT_NODE) {
 				visitedNodes++;
 				if(worker != null) {
-					worker.work(currentNode, level, this);
+					worker.work(currentNode, level);
 				}
 				this.printWithOption(String.format("%8d:", visitedNodes));
 				this.printWithOption(" ".repeat(level*2));
 				this.printWithOption("<");
 				this.printWithOption(currentNode.getNodeName());
-				for (int i = 0; i < currentNode.getAttributes().getLength(); i++) {
-					String attrName = currentNode.getAttributes().item(i).getNodeName();
-					this.printWithOption(String.format(" %s=", attrName));
-					this.printWithOption(String.format("\"%s\"",((Element)currentNode).getAttribute(attrName)));
-				}
+				this.printWithOption(getAllAttributeContents(currentNode));
 				this.printlnWithOption(">");
+				this.printWithOption(" ".repeat(12));
 				this.printWithOption(" ".repeat(level*2));
-				this.printWithOption(String.format("            %s",this.getTextContent(currentNode)));
+				this.printWithOption(this.getTextContent(currentNode));
 				this.printlnWithOption();
 			}
 
@@ -292,7 +289,7 @@ public class XmlTool {
 		while(!q.isEmpty()) {
 			Node node = q.poll();
 			if(worker != null) {
-				worker.work(node, 0, this);
+				worker.work(node, 0);
 			}
 			printWithOption("<");
 			printWithOption(node.getNodeName());
@@ -317,7 +314,7 @@ public class XmlTool {
 	public void analyseAttributesInItem(String nodeName) {
 		Map<Integer, Map<String, Integer>> level_AttrName_Occurence = new HashMap<Integer, Map<String,Integer>>();
 
-		this.visitAllElementNodesDFS((node, level, xmlTool) -> {
+		this.visitAllElementNodesDFS((node, level) -> {
 				if (node.getNodeName().equals(nodeName)) {
 					Element el = (Element) node;
 					for (int i = 0; i < el.getAttributes().getLength(); i++) {
@@ -385,7 +382,28 @@ public class XmlTool {
 		System.out.println(el.getAttribute("zip"));	
 	}
 	
+	public void printNodeContents(Node node) {
+		this.printOptionOn();
+		this.visitChildElementNodesDFS(node, null);
+		this.printOptionOff();
+	}
 	
+	public String getAllAttributeContents(Node node) {
+		String res = "";
+		for (int i = 0; i < node.getAttributes().getLength(); i++) {
+			String attrName = node.getAttributes().item(i).getNodeName();
+			res += String.format(" %s=", attrName);
+			res += String.format("\"%s\"",((Element)node).getAttribute(attrName));
+		}
+		return res;
+	}
+	
+	
+	public Map<String,String> getNodeContentMap(Node node){
+		Map<String,String> res = new HashMap<String, String>();
+		this.visitChildElementNodesDFS(node, null);
+		return res;
+	}
 	public static void main(String[] args) {
 		
 		XmlTool xt = new XmlTool();
@@ -439,7 +457,7 @@ public class XmlTool {
 		}).get(0);
 		
 		xt.printOptionOn();
-		xt.visitChildElementNodesDFS(node, null);
+		xt.printNodeContents(node);
 
 	}
 	/*
