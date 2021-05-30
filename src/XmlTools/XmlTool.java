@@ -199,65 +199,8 @@ public class XmlTool {
 		return res;
 	}
 	
-	public void visitChildElementNodesDFS2(Node startNode, int relativeLevel, XmlToolWorkable worker) {
-		int visitedNodes = 0;
-		Node currentNode = startNode;
-		Stack<Node> dfsStack = new Stack<Node>();
-		dfsStack.push(startNode);
-		int startLevel = relativeLevel;
-		int level = relativeLevel;
-		while(currentNode != null) {
-			if(currentNode.getNodeType() == Node.ELEMENT_NODE) {
-				visitedNodes++;
-				if(worker != null) {
-					worker.work(currentNode, level, this);
-				}
-				this.printWithOption(String.format("%8d:", visitedNodes));
-				this.printWithOption(" ".repeat(level*2));
-				this.printWithOption("<");
-				this.printWithOption(currentNode.getNodeName());
-				this.printWithOption(">");
-				this.printWithOption(this.getTextContent(currentNode));
-				this.printlnWithOption();;
-			}
-			if(currentNode.hasChildNodes()) {
-				dfsStack.push(currentNode);
-				level++;
-				currentNode = currentNode.getFirstChild();
-			} else {
-				if(currentNode.getNextSibling() != null) {
-					currentNode = currentNode.getNextSibling();
-				} else {
-					while(currentNode.getNextSibling() == null) {
-						try{
-							currentNode = dfsStack.pop();
-							level--;
-							if(level == startLevel -1 ) {
-								break;
-							}
-						} catch (EmptyStackException e) {
-							System.out.println(e);
-							break;
-						}
-
-						this.printWithOption(" ".repeat(8+1));
-						this.printWithOption(" ".repeat(level*2));
-						this.printWithOption("</");
-						this.printWithOption(currentNode.getNodeName());
-						this.printWithOption(">");
-						this.printlnWithOption();
-
-					}
-
-					currentNode = currentNode.getNextSibling();
-					
-				}
-			}
-		} 
-	}
 	
-	
-	public void visitChildElementNodesDFS(Node startNode, int relativeLevel, XmlToolWorkable worker) {
+	private void visitChildElementNodesDFS(Node startNode, int relativeLevel, XmlToolWorkable worker) {
 		int visitedNodes = 0;
 		Node currentNode = startNode;
 		Stack<Node> dfsStack = new Stack<Node>();
