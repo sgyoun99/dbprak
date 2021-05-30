@@ -7,6 +7,10 @@ import java.sql.Statement;
 public class DropTables {
 
 	public static void main(String[] args) {
+		dropTables();
+	}
+	
+	public static void dropTables() {
 		
 		try {
 		

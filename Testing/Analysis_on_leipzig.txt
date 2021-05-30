@@ -1,46 +1,48 @@
-1 studio  #3:1004
-1 shop  #0:1
-1 regioncode  #3:580
-1 audiotext  #2:2327
-1 artist  #3:1160
-1 creators  #2:2327
-1 directors  #2:2327
-1 isbn  #3:309
-1 binding  #3:1747
-1 edition  #3:309
-1 language  #3:833
-1 releasedate  #3:2018
-3 title  #2:2325  #3:31100  #4:2175
-1 dvdspec  #2:2327
-1 audioformat  #3:833
-1 listmania  #2:2327
-1 pages  #3:309
-1 artists  #2:2327
-1 price  #2:2327
-1 publication  #3:309
-1 publishers  #2:2327
-1 runningtime  #3:580
-1 sim_product  #3:2175
-1 theatr_release  #3:580
-1 item  #1:2327
-1 num_discs  #3:1438
-1 creator  #3:3112
-1 studios  #2:2327
-1 package  #3:309
-1 author  #3:441
-1 director  #3:201
-1 similars  #2:2327
-1 format  #3:2018
-1 upc  #3:2018
-1 label  #3:2384
-1 list  #3:3047
-1 bookspec  #2:2327
-1 tracks  #2:2327
-1 musicspec  #2:2327
-1 labels  #2:2327
-1 aspectratio  #3:580
-1 actor  #3:580
-1 actors  #2:2327
-1 publisher  #3:369
-1 asin  #4:2175
-1 authors  #2:2327
+>> Occurence counting...
+Number of Levels=1 <studio>  #Lv.4=1004  &Attr:name=1004
+Number of Levels=1 <shop>  #Lv.1=1  &Attr:zip=1  &Attr:street=1  &Attr:name=1
+Number of Levels=1 <regioncode>  #Lv.4=580
+Number of Levels=1 <audiotext>  #Lv.3=2327
+Number of Levels=1 <artist>  #Lv.4=1160  &Attr:name=1160
+Number of Levels=1 <creators>  #Lv.3=2327
+Number of Levels=1 <directors>  #Lv.3=2327
+Number of Levels=1 <isbn>  #Lv.4=309  &Attr:val=309
+Number of Levels=1 <binding>  #Lv.4=1747
+Number of Levels=1 <edition>  #Lv.4=309  &Attr:val=309
+Number of Levels=1 <language>  #Lv.4=833  &Attr:type=833
+Number of Levels=1 <releasedate>  #Lv.4=2018
+Number of Levels=3 <title>  #Lv.3=2325  #Lv.4=31100  #Lv.5=2175
+Number of Levels=1 <dvdspec>  #Lv.3=2327
+Number of Levels=1 <audioformat>  #Lv.4=833
+Number of Levels=1 <listmania>  #Lv.3=2327
+Number of Levels=1 <pages>  #Lv.4=309
+Number of Levels=1 <artists>  #Lv.3=2327
+Number of Levels=1 <price>  #Lv.3=2327  &Attr:mult=2327  &Attr:currency=2327  &Attr:state=2327
+Number of Levels=1 <publication>  #Lv.4=309  &Attr:date=309
+Number of Levels=1 <publishers>  #Lv.3=2327
+Number of Levels=1 <runningtime>  #Lv.4=580
+Number of Levels=1 <sim_product>  #Lv.4=2175
+Number of Levels=1 <theatr_release>  #Lv.4=580
+Number of Levels=1 <item>  #Lv.2=2327  &Attr:pgroup=2327  &Attr:ean=2327  &Attr:detailpage=2327  &Attr:asin=2326  &Attr:state=753  &Attr:salesrank=2327  &Attr:picture=2327
+Number of Levels=1 <num_discs>  #Lv.4=1438
+Number of Levels=1 <creator>  #Lv.4=3112  &Attr:name=3112
+Number of Levels=1 <studios>  #Lv.3=2327
+Number of Levels=1 <package>  #Lv.4=309  &Attr:length=309  &Attr:weight=309  &Attr:height=309
+Number of Levels=1 <author>  #Lv.4=441  &Attr:name=441
+Number of Levels=1 <director>  #Lv.4=201  &Attr:name=201
+Number of Levels=1 <similars>  #Lv.3=2327
+Number of Levels=1 <format>  #Lv.4=2018  &Attr:value=1438
+Number of Levels=1 <upc>  #Lv.4=2018  &Attr:val=580
+Number of Levels=1 <label>  #Lv.4=2384  &Attr:name=2384
+Number of Levels=1 <list>  #Lv.4=3047  &Attr:name=3047
+Number of Levels=1 <bookspec>  #Lv.3=2327
+Number of Levels=1 <tracks>  #Lv.3=2327
+Number of Levels=1 <musicspec>  #Lv.3=2327
+Number of Levels=1 <labels>  #Lv.3=2327
+Number of Levels=1 <aspectratio>  #Lv.4=580
+Number of Levels=1 <actor>  #Lv.4=580  &Attr:name=580
+Number of Levels=1 <actors>  #Lv.3=2327
+Number of Levels=1 <publisher>  #Lv.4=369  &Attr:name=369
+Number of Levels=1 <asin>  #Lv.5=2175
+Number of Levels=1 <authors>  #Lv.3=2327
+106578

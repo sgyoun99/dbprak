@@ -9,6 +9,9 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
+
+import main.Config;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -113,10 +116,10 @@ public class XmlStructureAnalyzer {
 	
 	public static void main(String[] args) {
 		
-		XmlStructureAnalyzer xsa = new XmlStructureAnalyzer("./data/dresden.xml__to__UTF-8.xml");
-		//XmlStructureAnalyzer xsa = new XmlStructureAnalyzer("./data/leipzig_transformed.xml");
+		XmlStructureAnalyzer xsa = new XmlStructureAnalyzer(Config.DRESDEN_ENCODED);
+//		XmlStructureAnalyzer xsa = new XmlStructureAnalyzer(Config.LEIPZIG);
 
-		xsa.countNodes(xsa.doc.getDocumentElement(), 0);
+		xsa.countNodes(xsa.doc.getDocumentElement(), 1);
 		xsa.printCounts();
 		System.out.println(xsa.count);
 		

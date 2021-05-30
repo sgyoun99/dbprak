@@ -7,9 +7,15 @@ import entity.Shop;
 public class Main {
 	public static void main(String[] args) {
 		
+		/*
+		DropTables.dropTables();
+		CreateTables.createTables();
+		 */
+		
 		XmlTool xt = new XmlTool();
-		xt.encodeFileToUTF_8(Config.DRESDEN_ORIGINAL);
+//		xt.encodeFileToUTF_8(Config.DRESDEN_ORIGINAL);
 
+		/*
 		//shop
 		Shop shop = new Shop(Config.DRESDEN_ENCODED);
 		shop.readShop();
@@ -18,5 +24,10 @@ public class Main {
 		shop.readShop();
 		shop.insertShop();
 		shop.selectShop();
+		 */
+		
+		xt.loadXML(Config.DRESDEN_ENCODED);
+		xt.filterElementNodesDFS(xt.getDocumentNode(), level -> level > 3, node -> xt.hasAttribute(node, "asin")).forEach(node -> System.out.println(node.getTextContent()));
+		
 	}
 }

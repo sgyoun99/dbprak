@@ -29,7 +29,10 @@ public class Shop {
 
 		XmlTool xt = new XmlTool();
 		xt.loadXML(this.xmlPath);
-		xt.visitAllElementNodesDFS(new XmlToolWorkable() {
+//		xt.printOptionOn();
+
+//		xt.visitAllElementNodesDFS(new XmlToolWorkable() {
+		xt.visitAllElementNodesBFS(new XmlToolWorkable() {
 			
 			@Override
 			public void work(Node node, int level, XmlTool xmlTool) {
