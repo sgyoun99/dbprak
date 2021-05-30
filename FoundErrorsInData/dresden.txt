@@ -1,2 +1,12 @@
 # asin length is not 10
     line 50805
+
+# pgroup error
+    line 13290
+        Buch asin=3551065020
+    line 49856
+        Musical asin=B0007SK9OW
+
+# without asin in <item>
+    line 34266
+        <item pgroup="DVD" salesrank="193"><title>Robbie Williams - The Robbie Williams Show</title>

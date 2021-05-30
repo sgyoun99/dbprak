@@ -383,6 +383,34 @@ public class XmlTool {
 
 		xt.loadXML(Config.DRESDEN_ENCODED);
 		xt.analyseAttributesInItem("item");
+		
+		Map<String,Integer> pgroup = new HashMap<String, Integer>();
+		xt.visitAllElementNodesDFS((n,l,x)->{
+			if(xt.hasAttribute(n, "pgroup")) {
+				String pgr = xt.getAttributeTextContent(n, "pgroup");
+				if(pgr.equals("Buch")) {
+					System.out.println("Buch" + xt.getAttributeTextContent(n, "asin"));
+				}
+				if(pgr.equals("Musical")) {
+					System.out.println("Musical" + xt.getAttributeTextContent(n, "asin"));
+				}
+				pgroup.compute(pgr, (k,v)->
+					{
+						if(v == null) {
+							return 1;
+						} else {
+							return v+1;
+						}
+					}
+				);
+			}
+		});
+		
+		pgroup.forEach((k,v) -> System.out.println(k + ": "+ v));
+		
+//		xt.filterElementNodesDFS(xt.getDocumentNode(), l -> l == 3, node -> !xt.hasAttribute(node, "asin")).forEach(n -> System.out.println(xt.getTextContent(n)));
+		xt.filterElementNodesDFS(xt.getDocumentNode(), l -> l == 3, node -> !xt.hasAttribute(node, "asin")).forEach(n -> System.out.println(n.getTextContent()));
+
 	}
 	/*
 	 */
