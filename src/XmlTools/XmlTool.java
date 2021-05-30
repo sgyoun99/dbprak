@@ -145,7 +145,8 @@ public class XmlTool {
 	
 	public String getTextContent(Node node) {
 		if(isLeafElementNode(node)) {
-			return node.getTextContent();
+			String textContent = node.getTextContent();
+			return textContent.equals("\n") ? "" : textContent.trim();
 		} else {
 			return "";
 		}
@@ -413,52 +414,23 @@ public class XmlTool {
 		xt.loadXML(Config.DRESDEN_ENCODED);
 		xt.analyseAttributesInItem("item");
 		
-		/*
-		Map<String,Integer> pgroup = new HashMap<String, Integer>();
-		xt.visitAllElementNodesDFS((n,l,x)->{
-			if(xt.hasAttribute(n, "pgroup")) {
-				String pgr;
-				try {
-					pgr = xt.getAttributeTextContent(n, "pgroup");
-					if(pgr.equals("Buch")) {
-						System.out.println("Buch" + xt.getAttributeTextContent(n, "asin"));
-					}
-					if(pgr.equals("Musical")) {
-						System.out.println("Musical" + xt.getAttributeTextContent(n, "asin"));
-					}
-					pgroup.compute(pgr, (k,v)->
-						{
-							if(v == null) {
-								return 1;
-							} else {
-								return v+1;
-							}
-						}
-					);
-				} catch (XmlDataException e) {
-					e.printStackTrace();
-				}
-			}
-		});
-		
-		pgroup.forEach((k,v) -> System.out.println(k + ": "+ v));
-		 */
-		
-//		xt.filterElementNodesDFS(xt.getDocumentNode(), l -> l == 3, node -> !xt.hasAttribute(node, "asin")).forEach(n -> System.out.println(xt.getTextContent(n)));
-//		xt.filterElementNodesDFS(xt.getDocumentNode(), l -> l == 3, node -> !xt.hasAttribute(node, "asin")).forEach(n -> System.out.println(n.getTextContent()));
 		
 		System.out.println();
-		Node node = xt.filterElementNodesDFS(xt.getDocumentNode(), l -> l == 3, n -> {
+		//Print <item> Node which does not have asin as attribute
+		xt.filterElementNodesDFS(xt.getDocumentNode(), l -> l == 3, n -> {
 			try {
-				return xt.getAttributeTextContent(n, "asin").equals("3405156211");
+				return xt.getAttributeTextContent(n, "asin").equals("");
 			} catch (XmlDataException e) {
+				xt.printNodeContents(n);
+//				e.printStackTrace();
 			}
 			return false;
-		}).get(0);
+		}).forEach( node -> xt.printNodeContents(node));
 		
-		xt.printOptionOn();
-		xt.printNodeContents(node);
 
+		xt.filterElementNodesDFS(xt.getDocumentNode(), l -> l==3, n -> {
+			return !n.getNodeName().equals("item");
+		}).forEach(n -> xt.printNodeContents(n));
 	}
 	/*
 	 */
