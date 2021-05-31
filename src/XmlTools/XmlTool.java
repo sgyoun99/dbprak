@@ -340,7 +340,12 @@ public class XmlTool {
 			int level = 0;
 			dfs:while(currentNode != null) {
 				if(currentNode.getNodeType() == Node.ELEMENT_NODE) {
-					sb.append(this.getPrintOpeningNode(currentNode, level));
+					if(this.isLeafElementNode(currentNode)) {
+						sb.append(this.getPrintOpeningNode(currentNode, level));
+						sb.append(this.getPrintClosingNode(currentNode, level));
+					} else {
+						sb.append(this.getPrintOpeningNode(currentNode, level));
+					}
 				}
 				
 				if(currentNode.hasChildNodes()) {
