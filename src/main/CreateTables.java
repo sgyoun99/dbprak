@@ -7,6 +7,7 @@ public class CreateTables {
 		createTables();
 	}
 	
+	// we need CASCADE, NO ACTION 
 	public static void createTables() {
 		try {
 			

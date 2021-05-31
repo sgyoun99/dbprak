@@ -153,16 +153,35 @@ public class XmlTool {
         
 	}
 	
-	public boolean isLeafElementNode(Node node) {
+	// error
+	// does not working with the leipzig.xml
+	public boolean isLeafElementNode2(Node currentNode) {
+		Node node = currentNode.getFirstChild();
 		// only when the node is a leaf Element node(= has only one Text child node.)
-		if(node.getFirstChild() != null && node.getFirstChild().getNodeType() == Node.TEXT_NODE) {
+		if(node != null 
+				&& node.getNodeType() == Node.TEXT_NODE
+				&& node.getTextContent().trim().length() == 0) {
 			// \n between Nodes will be ignored.
-			return "\n".compareTo(node.getFirstChild().getTextContent()) == 0 ? false : true;
-		} else if(node.getFirstChild() == null) {
+			return true;
+		} else if(currentNode.getFirstChild() == null) {
 			return true;
 		} else {
 			return false;
 		}
+	}
+	
+	//test
+	public boolean isLeafElementNode(Node currentNode) {
+		NodeList nodeList = currentNode.getChildNodes();
+		if(nodeList == null) {
+			return true;
+		}
+		for (int i = 0; i < nodeList.getLength(); i++) {
+			if(nodeList.item(i).getNodeType() != Node.TEXT_NODE) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	public boolean hasTextContent(Node node) {
@@ -176,7 +195,8 @@ public class XmlTool {
 	public String getTextContent(Node node) {
 		if(isLeafElementNode(node)) {
 			String textContent = node.getTextContent();
-			return textContent.equals("\n") ? "" : textContent.trim();
+//			return textContent.equals("\n") ? "" : textContent.trim();
+			return textContent.trim();
 		} else {
 			return "";
 		}
@@ -213,26 +233,33 @@ public class XmlTool {
 	}
 	
 	//test if attribute name exists and return text content
-	public String getAttributeTextContent(Node node, String attributeName) throws XmlDataException{
+	public String getAttributeValue(Node node, String attributeName) throws XmlDataException{
 		if(hasAttribute(node, attributeName)) {
 			Element el = (Element)node;
 			return el.getAttribute(attributeName);
 		} else {
-			throw new XmlDataException("<"+node.getNodeName()+"> does not have Attribute: " + attributeName);
+			StringBuilder sb = new StringBuilder();
+			sb.append("<");
+			sb.append(node.getNodeName());
+			sb.append("> does not have Attribute: ");
+			sb.append(attributeName);
+			sb.append("\n");
+//			sb.append(this.getNodeContentDFS(node));
+			throw new XmlDataException(sb.toString());
 		}
 	}
 	
 	public String getNodeContentDFS(Node startNode) {
 		StringBuilder sb = new StringBuilder();
+		Node currentNode = startNode;
 
-		if(this.isLeafElementNode(startNode)) {
-			int level = this.getLevel(startNode);
-			sb.append(this.getPrintOpeningNode(startNode, level));
-			sb.append(this.getPrintClosingNode(startNode, level));
+		if(this.isLeafElementNode(currentNode)) {
+			int level = this.getLevel(currentNode);
+			sb.append(this.getPrintOpeningNode(currentNode, level));
+			sb.append(this.getPrintClosingNode(currentNode, level));
 		} else {
-			Node currentNode = startNode;
 			Stack<Node> dfsStack = new Stack<Node>();
-			dfsStack.push(startNode);
+			dfsStack.push(currentNode);
 			int level = 0;
 			dfs:while(currentNode != null) {
 				if(currentNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -259,8 +286,9 @@ public class XmlTool {
 						}
 					}
 					currentNode = currentNode.getNextSibling();
+					
 				}
-			}
+			} 
 		}
 		return sb.toString();
 	}
@@ -289,19 +317,19 @@ public class XmlTool {
 	//DFS
 	public void visitChildElementNodesDFS(Node startNode, XmlToolWorkable worker) {
 //		int visitedNodes = 0;
-		if(this.isLeafElementNode(startNode)) {
-			int level = this.getLevel(startNode);
+		Node currentNode = startNode;
+		if(this.isLeafElementNode(currentNode)) {
+			int level = this.getLevel(currentNode);
 			if(this.printOption) {
-				System.out.println(this.getPrintOpeningNode(startNode, level));
-				System.out.println(this.getPrintClosingNode(startNode, level));
+				System.out.println(this.getPrintOpeningNode(currentNode, level));
+				System.out.println(this.getPrintClosingNode(currentNode, level));
 			}
 			if(worker != null) {
-				worker.work(startNode, level);
+				worker.work(currentNode, level);
 			}
 		} else {
-			Node currentNode = startNode;
 			Stack<Node> dfsStack = new Stack<Node>();
-			dfsStack.push(startNode);
+			dfsStack.push(currentNode);
 			int level = 0;
 			dfs:while(currentNode != null) {
 				if(currentNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -480,10 +508,10 @@ public class XmlTool {
 		
 		XmlTool xt = new XmlTool();
 		xt.loadXML(Config.LEIPZIG);
-		xt.analyseAttributesInItem("price");
+//		xt.analyseAttributesInItem("price");
 
 		xt.loadXML(Config.DRESDEN_ENCODED);
-		xt.analyseAttributesInItem("price");
+//		xt.analyseAttributesInItem("price");
 		
 		
 	/*
@@ -503,14 +531,41 @@ public class XmlTool {
 
 		/*
 		 */
-		xt.loadXML(Config.DRESDEN_ENCODED);
-//		xt.loadXML(Config.LEIPZIG);
-		Node node = xt.filterElementNodesDFS(xt.getDocumentNode(), l -> l==2, n -> {
-			return n.getNodeName().equals("item");
-		}).get(0);		
-//		xt.printOptionOn();
-//		xt.visitChildElementNodesDFS(node, null);
-		System.out.println(xt.getNodeContentDFS(node));
+//		xt.loadXML(Config.DRESDEN_ENCODED);
+		xt.loadXML(Config.LEIPZIG);
+		xt.filterElementNodesDFS(xt.getDocumentNode(), l -> l==3, n -> {
+			return n.getNodeName().equals("price");
+		}).forEach( node ->{
+			System.out.println(xt.getNodeContentDFS(node));
+		});
+
+		/*
+		NodeList nl = node.getChildNodes();
+		for (int i = 0; i < nl.getLength(); i++) {
+			System.out.print(nl.item(i).getNodeType());
+			System.out.print(":");
+//			System.out.print(nl.item(i).getTextContent().trim().length());
+			System.out.print(nl.item(i).getTextContent().length());
+			System.out.print(":");
+			System.out.println(nl.item(i).getTextContent().trim());
+		}
+		 */
+		
+		List<Node> nodeList = xt.filterElementNodesDFS(xt.getDocumentNode(), 
+				l -> l == 2, 
+				n -> {
+					try {
+						return n.getNodeName() == "item" && xt.getAttributeValue(n, "asin").equals("B00002DGW7");
+					} catch (XmlDataException e) {
+//							e.printStackTrace();
+						return false;
+					}
+				}
+		);
+
+		Node node = nodeList.get(0);
+		xt.printNodeContentsDFS(node);
+
 		
 	}
 }

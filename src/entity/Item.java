@@ -31,9 +31,6 @@ public class Item {
 	private Pgroup productgroup;
 //	private String productgroup;
 
-	private Node currentNode;
-	public int insertCount = 0;
-	public int errorCount = 0;
 
 	public String getItem_id() {
 		return item_id;
@@ -84,11 +81,11 @@ public class Item {
 		this.productgroup = productgroup;
 	}
 
-	Predicate<String> predicate_item_id = id -> id.length() == 10;
-	Predicate<String> predicate_title = title -> title.length() != 0;
-	Predicate<Double> predicate_rating = rating -> rating >= 0 && rating <= 5;
-	Predicate<Integer> predicate_salesranking = ranking -> ranking >= 0;
-	Predicate<String> predicate_image = img -> true; // null allowed
+	public Predicate<String> predicate_item_id = id -> id.length() == 10;
+	public Predicate<String> predicate_title = title -> title.length() != 0;
+	public Predicate<Double> predicate_rating = rating -> rating >= 0 && rating <= 5;
+	public Predicate<Integer> predicate_salesranking = ranking -> ranking >= 0;
+	public Predicate<String> predicate_image = img -> true; // null allowed
 	
 
 	public boolean test() throws XmlDataException {
@@ -107,29 +104,28 @@ public class Item {
 			node -> node.getNodeName().equals("item")
 		);
 		items.forEach(node -> {
-			this.currentNode = node;
 			try {
 			//xml data
-				setItem_id(xt.getAttributeTextContent(node, "asin"));
+				setItem_id(xt.getAttributeValue(node, "asin"));
 				xt.getDirectChildElementNodes(node).forEach(nd -> {
 					if(nd.getNodeName().equals("title") && xt.isLeafElementNode(nd)) {
 						setTitle(nd.getTextContent());
 					}
 					if(nd.getNodeName().equals("details")) {
 						try {
-							setImage(xt.getAttributeTextContent(nd, "img"));
+							setImage(xt.getAttributeValue(nd, "img"));
 						} catch (XmlDataException e) {
 							e.printStackTrace();
 						}
 					}
 				});
-				String salesRank = xt.getAttributeTextContent(node, "salesrank");
+				String salesRank = xt.getAttributeValue(node, "salesrank");
 				if(salesRank.length() == 0) {
 					setSalesranking(0);
 				} else {
 					setSalesranking(Integer.valueOf(salesRank));
 				}
-				String pgroup = xt.getAttributeTextContent(node, "pgroup");
+				String pgroup = xt.getAttributeValue(node, "pgroup");
 				if(pgroup.equals("Music")) {
 					pgroup = "Music_CD";
 				}
@@ -153,28 +149,13 @@ public class Item {
 					
 				});
 			} catch (IllegalArgumentException e) {
-				this.errorCount++;
-				System.out.println();
-				xt.printNodeContentsDFS(this.currentNode);
-				e.printStackTrace();
-				ErrorLogger.write("Item", "IllegalArgument Exception", e.getMessage(), xt.getNodeContentDFS(node));
-				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
+				ErrorLogger.write("Item(dresden)", "IllegalArgumentException", e.getMessage(), xt.getNodeContentDFS(node));
 			} catch (XmlDataException e) {
-				this.errorCount++;
-				System.out.println();
-				ErrorLogger.write("Item", "XMLData Exception", e.getMessage(), xt.getNodeContentDFS(node));
-				xt.printNodeContentsDFS(this.currentNode);
+				ErrorLogger.write("Item(dresden)", "XMLDataException", e.getMessage(), xt.getNodeContentDFS(node));
 			} catch (SQLException e) {
-				this.errorCount++;
-				// to-do : Logging
-				System.out.println();
-				ErrorLogger.write("Item", "SQL Exception", e.getMessage(), xt.getNodeContentDFS(node));
-				xt.printNodeContentsDFS(this.currentNode);
+				ErrorLogger.write("Item(dresden)", "SQLException", e.getMessage(), xt.getNodeContentDFS(node));
 			} catch (Exception e) {
-				this.errorCount++;
-				System.out.println();
-				ErrorLogger.write("Item", "Exception", e.getMessage(), xt.getNodeContentDFS(node));
-				xt.printNodeContentsDFS(this.currentNode);
+				ErrorLogger.write("Item(dresden)", "Exception", e.getMessage(), xt.getNodeContentDFS(node));
 			}
 		});
 	}
@@ -186,23 +167,22 @@ public class Item {
 				node -> node.getNodeName().equals("item")
 		);
 		items.forEach(node -> {
-			this.currentNode = node;
 			try {
 			//xml data
-				setItem_id(xt.getAttributeTextContent(node, "asin"));
+				setItem_id(xt.getAttributeValue(node, "asin"));
 				xt.getDirectChildElementNodes(node).forEach(nd -> {
 					if(nd.getNodeName().equals("title") && xt.isLeafElementNode(nd)) {
 						setTitle(nd.getTextContent());
 					}
 				});
-				String salesRank = xt.getAttributeTextContent(node, "salesrank");
+				String salesRank = xt.getAttributeValue(node, "salesrank");
 				if(salesRank.length() == 0) {
 					setSalesranking(0);
 				} else {
 					setSalesranking(Integer.valueOf(salesRank));
 				}
-				setImage(xt.getAttributeTextContent(node, "picture"));
-				String pgroup = xt.getAttributeTextContent(node, "pgroup");
+				setImage(xt.getAttributeValue(node, "picture"));
+				String pgroup = xt.getAttributeValue(node, "pgroup");
 				if(pgroup.equals("Music")) {
 					pgroup = "Music_CD";
 				}
@@ -226,34 +206,13 @@ public class Item {
 					
 				});
 			} catch (IllegalArgumentException e) {
-				this.errorCount++;
-				System.out.println();
-				xt.printNodeContentsDFS(this.currentNode);
-				e.printStackTrace();
-				ErrorLogger.write("Item", "IllegalArgument Exception", e.getMessage(), xt.getNodeContentDFS(node));
-				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
+				ErrorLogger.write("Item(leipzig)", "IllegalArgumentException", e.getMessage(), xt.getNodeContentDFS(node));
 			} catch (XmlDataException e) {
-				this.errorCount++;
-				System.out.println();
-				ErrorLogger.write("Item", "XMLData Exception", e.getMessage(), xt.getNodeContentDFS(node));
-				xt.printNodeContentsDFS(this.currentNode);
-				e.printStackTrace();
-				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
+				ErrorLogger.write("Item(leipzig)", "XMLDataException", e.getMessage(), xt.getNodeContentDFS(node));
 			} catch (SQLException e) {
-				this.errorCount++;
-				// to-do : Logging
-				System.out.println();
-				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
-				ErrorLogger.write("Item", "SQL Exception", e.getMessage(), xt.getNodeContentDFS(node));
-				xt.printNodeContentsDFS(this.currentNode);
-				e.printStackTrace();
+				ErrorLogger.write("Item(leipzig)", "SQLException", e.getMessage(), xt.getNodeContentDFS(node));
 			} catch (Exception e) {
-				this.errorCount++;
-				System.out.println();
-				ErrorLogger.write("Item", "Exception", e.getMessage(), xt.getNodeContentDFS(node));
-				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
-				xt.printNodeContentsDFS(this.currentNode);
-				e.printStackTrace();
+				ErrorLogger.write("Item(leipzig)", "Exception", e.getMessage(), xt.getNodeContentDFS(node));
 			}
 		});
 	}
@@ -266,7 +225,6 @@ public class Item {
 		Item item = new Item();
 		item.dresden();
 		item.leipzig();
-		System.out.println("errorCount: "+item.errorCount);
 		
 	}
 	/*

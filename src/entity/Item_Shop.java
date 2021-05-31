@@ -14,7 +14,6 @@ import XmlTools.XmlDataException;
 import XmlTools.XmlTool;
 import main.Config;
 import main.ErrorLogger;
-import main.Pgroup;
 
 public class Item_Shop {
 
@@ -27,8 +26,6 @@ public class Item_Shop {
 	private Boolean availaility;
 	private String condition;
 
-	private Node currentNode;
-	public int errorCount = 0;
 
 	public String getItem_id() {
 		return item_id;
@@ -102,9 +99,9 @@ public class Item_Shop {
 	
 	
 	
-	Predicate<Double> pred_price = price -> price >= 0 && price<9999999 ;
-	Predicate<String> pred_currency = curr -> Arrays.asList("EUR","").contains(curr);
-	BiPredicate<Double,Boolean> pred_avaliablity = (price, avail) -> {
+	public Predicate<Double> pred_price = price -> price >= 0 && price<9999999 ;
+	public Predicate<String> pred_currency = curr -> Arrays.asList("EUR","").contains(curr);
+	public BiPredicate<Double,Boolean> pred_avaliablity = (price, avail) -> {
 		if(price > 0 && avail) {
 			return true;
 		} else if(price == 0 && !avail) {
@@ -114,7 +111,7 @@ public class Item_Shop {
 		}
 
 	}; 
-	Predicate<String> pred_condition = cond -> Arrays.asList("new","","second-hand").contains(cond);
+	public Predicate<String> pred_condition = cond -> Arrays.asList("new","","second-hand").contains(cond);
 	
 	
 
@@ -136,10 +133,9 @@ public class Item_Shop {
 				node ->  node.getNodeName().equals("item")
 		);
 		itemList.forEach(node -> {
-			this.currentNode = node;
 			try {
 			//xml data
-				setItem_id(xt.getAttributeTextContent(node, "asin"));
+				setItem_id(xt.getAttributeValue(node, "asin"));
 				setShop_name(shopDresden.getShop_name());
 				setStreet(shopDresden.getStreet());
 				setZip(shopDresden.getZip());
@@ -149,9 +145,9 @@ public class Item_Shop {
 						String state = "";
 						String currency = "";
 						try {
-							mult = xt.getAttributeTextContent(nd, "mult");
-							currency = xt.getAttributeTextContent(nd, "currency");
-							state = xt.getAttributeTextContent(nd, "state");
+							mult = xt.getAttributeValue(nd, "mult");
+							currency = xt.getAttributeValue(nd, "currency");
+							state = xt.getAttributeValue(nd, "state");
 						} catch (XmlDataException e) {
 							//get information
 							xt.printNodeContentsDFS(node.getParentNode());
@@ -185,23 +181,13 @@ public class Item_Shop {
 					
 				});
 			} catch (IllegalArgumentException e) {
-				this.errorCount++;
-				System.out.println();
-				xt.printNodeContentsDFS(this.currentNode);
+				ErrorLogger.write("Item_Shop", "IllegalArgumentException", e.getMessage(), xt.getNodeContentDFS(node));
 			} catch (XmlDataException e) {
-				this.errorCount++;
-				System.out.println();
-				xt.printNodeContentsDFS(this.currentNode);
+				ErrorLogger.write("Item_Shop", "XmlDataException", e.getMessage(), xt.getNodeContentDFS(node));
 			} catch (SQLException e) {
-				this.errorCount++;
-				// to-do : Logging
-				System.out.println();
-				xt.printNodeContentsDFS(this.currentNode);
+				ErrorLogger.write("Item_Shop", "SQLException", e.getMessage(), xt.getNodeContentDFS(node));
 			} catch (Exception e) {
-				this.errorCount++;
-				System.out.println();
-//				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
-				xt.printNodeContentsDFS(this.currentNode);
+				ErrorLogger.write("Item_Shop", "Exception", e.getMessage(), xt.getNodeContentDFS(node));
 			}			
 		});
 	}
