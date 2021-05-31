@@ -98,6 +98,7 @@ public class Item {
 	}
 	
 	public void dresden() {
+		System.out.println("Item Dresden");
 		XmlTool xt = new XmlTool(Config.DRESDEN_ENCODED);
 		List<Node> items = xt.filterElementNodesDFS(xt.getDocumentNode(), 
 			level -> level == 2, 
@@ -161,6 +162,7 @@ public class Item {
 	}
 	
 	public void leipzig() {
+		System.out.println("Item Leipzig");
 		XmlTool xt = new XmlTool(Config.LEIPZIG);
 		List<Node> items = xt.filterElementNodesDFS(xt.getDocumentNode(), 
 				level -> level == 2, 

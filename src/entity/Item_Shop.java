@@ -124,6 +124,7 @@ public class Item_Shop {
 	}
 	
 	public void dresden() {
+		System.out.println("Item_Shop Dresden");
 		XmlTool xt = new XmlTool(Config.DRESDEN_ENCODED);
 		Shop shopDresden = new Shop(Config.DRESDEN_ENCODED);
 		shopDresden.readShop();
