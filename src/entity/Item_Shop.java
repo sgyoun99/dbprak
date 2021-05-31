@@ -13,6 +13,7 @@ import JDBCTools.JDBCTool;
 import XmlTools.XmlDataException;
 import XmlTools.XmlTool;
 import main.Config;
+import main.ErrType;
 import main.ErrorLogger;
 
 public class Item_Shop {
@@ -182,13 +183,13 @@ public class Item_Shop {
 					
 				});
 			} catch (IllegalArgumentException e) {
-				ErrorLogger.write("Item_Shop", "IllegalArgumentException", e.getMessage(), xt.getNodeContentDFS(node));
+				ErrorLogger.write("Item_Shop(Dresden)", ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
 			} catch (XmlDataException e) {
-				ErrorLogger.write("Item_Shop", "XmlDataException", e.getMessage(), xt.getNodeContentDFS(node));
+				ErrorLogger.write("Item_Shop(Dresden)", ErrType.XML, e, xt.getNodeContentDFS(node));
 			} catch (SQLException e) {
-				ErrorLogger.write("Item_Shop", "SQLException", e.getMessage(), xt.getNodeContentDFS(node));
+				ErrorLogger.write("Item_Shop(Dresden)", ErrType.SQL, e, xt.getNodeContentDFS(node));
 			} catch (Exception e) {
-				ErrorLogger.write("Item_Shop", "Exception", e.getMessage(), xt.getNodeContentDFS(node));
+				ErrorLogger.write("Item_Shop(Dresden)", ErrType.PROGRAM, e, xt.getNodeContentDFS(node));
 			}			
 		});
 	}
@@ -196,6 +197,7 @@ public class Item_Shop {
 	public static void main(String[] args) {
 	
 		Item_Shop is = new Item_Shop();
-		is.dresden();
+//		is.dresden();
+		
 	}
 }

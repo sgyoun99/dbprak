@@ -18,6 +18,7 @@ import XmlTools.XmlUploadException;
 import main.Config;
 import main.CreateTables;
 import main.DropTables;
+import main.ErrType;
 import main.ErrorLogger;
 import main.Pgroup;
 
@@ -150,13 +151,13 @@ public class Item {
 					
 				});
 			} catch (IllegalArgumentException e) {
-				ErrorLogger.write("Item(dresden)", "IllegalArgumentException", e.getMessage(), xt.getNodeContentDFS(node));
+				ErrorLogger.write("Item(leipzig)", ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
 			} catch (XmlDataException e) {
-				ErrorLogger.write("Item(dresden)", "XMLDataException", e.getMessage(), xt.getNodeContentDFS(node));
+				ErrorLogger.write("Item(leipzig)", ErrType.XML, e, xt.getNodeContentDFS(node));
 			} catch (SQLException e) {
-				ErrorLogger.write("Item(dresden)", "SQLException", e.getMessage(), xt.getNodeContentDFS(node));
+				ErrorLogger.write("Item(leipzig)", ErrType.SQL, e, xt.getNodeContentDFS(node));
 			} catch (Exception e) {
-				ErrorLogger.write("Item(dresden)", "Exception", e.getMessage(), xt.getNodeContentDFS(node));
+				ErrorLogger.write("Item(leipzig)", ErrType.PROGRAM, e, xt.getNodeContentDFS(node));
 			}
 		});
 	}
@@ -208,13 +209,13 @@ public class Item {
 					
 				});
 			} catch (IllegalArgumentException e) {
-				ErrorLogger.write("Item(leipzig)", "IllegalArgumentException", e.getMessage(), xt.getNodeContentDFS(node));
+				ErrorLogger.write("Item(leipzig)", ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
 			} catch (XmlDataException e) {
-				ErrorLogger.write("Item(leipzig)", "XMLDataException", e.getMessage(), xt.getNodeContentDFS(node));
+				ErrorLogger.write("Item(leipzig)", ErrType.XML, e, xt.getNodeContentDFS(node));
 			} catch (SQLException e) {
-				ErrorLogger.write("Item(leipzig)", "SQLException", e.getMessage(), xt.getNodeContentDFS(node));
+				ErrorLogger.write("Item(leipzig)", ErrType.SQL, e, xt.getNodeContentDFS(node));
 			} catch (Exception e) {
-				ErrorLogger.write("Item(leipzig)", "Exception", e.getMessage(), xt.getNodeContentDFS(node));
+				ErrorLogger.write("Item(leipzig)", ErrType.PROGRAM, e, xt.getNodeContentDFS(node));
 			}
 		});
 	}

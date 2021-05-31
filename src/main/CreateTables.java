@@ -21,6 +21,7 @@ public class CreateTables {
 			Statement st = conn.createStatement();
 
             createEnum("pgroup", "'Book', 'Music_CD', 'DVD'", st);
+            createEnum("ErrType", "'XML', 'SQL', 'PROGRAM'", st);
 
 //			createTable("Item", "CREATE TABLE item(item_id CHAR(10) PRIMARY KEY, title TEXT, rating SMALLINT, salesranking INTEGER, image TEXT, productgroup pgroup NOT NULL);", st);
 			createTable("Item", "CREATE TABLE item(item_id CHAR(10) PRIMARY KEY, title TEXT, rating numeric(2,1), salesranking INTEGER, image TEXT, productgroup pgroup NOT NULL);", st);
@@ -57,7 +58,7 @@ public class CreateTables {
 			createTable("Purchase", "CREATE TABLE purchase(customer_id TEXT REFERENCES customer(customer_id), item_id CHAR(10) REFERENCES item(item_id), shop_name TEXT NOT NULL, street TEXT NOT NULL, zip CHAR(5) NOT NULL, order_date DATE NOT NULL, FOREIGN KEY(shop_name, street, zip) REFERENCES shop(shop_name, street, zip), PRIMARY KEY(item_id, shop_name, street, zip, order_date));", st);
 			createTable("Review", "CREATE TABLE review(item_id CHAR(10) REFERENCES item(item_id), customer_id TEXT REFERENCES customer(customer_id), review_date DATE, summary TEXT, contect TEXT, rating SMALLINT, PRIMARY KEY(item_id, customer_id));", st);
 
-			createTable("Errors", "CREATE TABLE errors(error_id SERIAL PRIMARY KEY, location TEXT, exception TEXT, error_message TEXT, contents TEXT);", st);
+			createTable("Errors", "CREATE TABLE errors(error_id SERIAL PRIMARY KEY, location TEXT, errtype ErrType, exception TEXT, error_message TEXT, contents TEXT);", st);
 
             
 			st.close();

@@ -59,6 +59,7 @@ public class DropTables {
             droptable("Shop", "DROP TABLE shop;", st);
 			droptable("Item", "DROP TABLE item;", st);
 
+            dropEnum("ErrType", st);
             dropEnum("pgroup", st);
 			
 
