@@ -188,24 +188,20 @@ public class Item_Shop {
 				this.errorCount++;
 				System.out.println();
 				xt.printNodeContentsDFS(this.currentNode);
-				e.printStackTrace();
 			} catch (XmlDataException e) {
 				this.errorCount++;
 				System.out.println();
 				xt.printNodeContentsDFS(this.currentNode);
-				e.printStackTrace();
 			} catch (SQLException e) {
 				this.errorCount++;
 				// to-do : Logging
 				System.out.println();
-				e.printStackTrace();
 				xt.printNodeContentsDFS(this.currentNode);
 			} catch (Exception e) {
 				this.errorCount++;
 				System.out.println();
 //				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
 				xt.printNodeContentsDFS(this.currentNode);
-				e.printStackTrace();
 			}			
 		});
 	}

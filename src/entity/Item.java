@@ -164,23 +164,17 @@ public class Item {
 				System.out.println();
 				ErrorLogger.write("Item", "XMLData Exception", e.getMessage(), xt.getNodeContentDFS(node));
 				xt.printNodeContentsDFS(this.currentNode);
-				e.printStackTrace();
-				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
 			} catch (SQLException e) {
 				this.errorCount++;
 				// to-do : Logging
 				System.out.println();
-				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
 				ErrorLogger.write("Item", "SQL Exception", e.getMessage(), xt.getNodeContentDFS(node));
 				xt.printNodeContentsDFS(this.currentNode);
-				e.printStackTrace();
 			} catch (Exception e) {
 				this.errorCount++;
 				System.out.println();
 				ErrorLogger.write("Item", "Exception", e.getMessage(), xt.getNodeContentDFS(node));
-				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
 				xt.printNodeContentsDFS(this.currentNode);
-				e.printStackTrace();
 			}
 		});
 	}
