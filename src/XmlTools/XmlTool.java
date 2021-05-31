@@ -505,18 +505,19 @@ public class XmlTool {
 		
 		XmlTool xt = new XmlTool();
 		xt.loadXML(Config.LEIPZIG);
-//		xt.analyseAttributesInItem("price");
+		xt.analyseAttributesInItem("item");
 
-		xt.loadXML(Config.DRESDEN_ENCODED);
+//		xt.loadXML(Config.DRESDEN_ENCODED);
 //		xt.analyseAttributesInItem("price");
 		
 		
 		
-		//Print <item> Node which does not have asin as attribute
+		/*
 		xt.filterElementNodesDFS(xt.getDocumentNode(), l -> l == 2, n -> {
 			return n.getNodeName().equals("item");
 		}).forEach( node -> System.out.println(xt.getLevel(node)));
 		
+		 */
 
 
 		

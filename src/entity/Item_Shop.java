@@ -124,11 +124,12 @@ public class Item_Shop {
 		return true;
 	}
 	
+	//finished
 	public void dresden() {
-		System.out.println("Item_Shop Dresden");
+		System.out.println(">> start Item_Shop Dresden");
 		XmlTool xt = new XmlTool(Config.DRESDEN_ENCODED);
-		Shop shopDresden = new Shop(Config.DRESDEN_ENCODED);
-		shopDresden.readShop();
+		Shop shop = new Shop(Config.DRESDEN_ENCODED);
+		shop.readShop();
 		
 		List<Node> itemList = xt.filterElementNodesDFS(xt.getDocumentNode(), 
 				level -> level == 2, 
@@ -138,9 +139,9 @@ public class Item_Shop {
 			try {
 			//xml data
 				setItem_id(xt.getAttributeValue(node, "asin"));
-				setShop_name(shopDresden.getShop_name());
-				setStreet(shopDresden.getStreet());
-				setZip(shopDresden.getZip());
+				setShop_name(shop.getShop_name());
+				setStreet(shop.getStreet());
+				setZip(shop.getZip());
 				xt.visitChildElementNodesDFS(node, (nd, lv) -> {
 					if(nd.getNodeName().equals("price")) {
 						String mult = "";
@@ -152,8 +153,8 @@ public class Item_Shop {
 							state = xt.getAttributeValue(nd, "state");
 						} catch (XmlDataException e) {
 							//get information
-							xt.printNodeContentsDFS(node.getParentNode());
-							e.printStackTrace();
+//							xt.printNodeContentsDFS(node.getParentNode());
+//							e.printStackTrace();
 						} finally {
 							setCurrency(currency);
 							setPrice(xt.getTextContent(nd),mult);
@@ -194,10 +195,81 @@ public class Item_Shop {
 		});
 	}
 	
+	public void leipzig() {
+		System.out.println(">> start Item_Shop Leipzig");
+		XmlTool xt = new XmlTool(Config.LEIPZIG);
+		Shop shop = new Shop(Config.LEIPZIG);
+		shop.readShop();
+		
+		List<Node> itemList = xt.filterElementNodesDFS(xt.getDocumentNode(), 
+				level -> level == 2, 
+				node ->  node.getNodeName().equals("item")
+		);
+		itemList.forEach(node -> {
+			try {
+			//xml data
+				setItem_id(xt.getAttributeValue(node, "asin"));
+				setShop_name(shop.getShop_name());
+				setStreet(shop.getStreet());
+				setZip(shop.getZip());
+				xt.visitChildElementNodesDFS(node, (nd, lv) -> {
+					if(nd.getNodeName().equals("price")) {
+						String mult = "";
+						String state = "";
+						String currency = "";
+						try {
+							mult = xt.getAttributeValue(nd, "mult");
+							currency = xt.getAttributeValue(nd, "currency");
+							state = xt.getAttributeValue(nd, "state");
+						} catch (XmlDataException e) {
+							//get information
+//							xt.printNodeContentsDFS(node.getParentNode());
+//							e.printStackTrace();
+						} finally {
+							setCurrency(currency);
+							setPrice(xt.getTextContent(nd),mult);
+							setAvailaility(getPrice());
+							setCondition(state);
+						}
+					}
+				});
+		
+			//insert
+				this.test();
+				JDBCTool.executeUpdate((con, st) ->	{
+					String sql = "INSERT INTO ITEM_SHOP "
+							+ "(item_id, shop_name, street, zip, currency, price, availability, condition) "
+							+ "values (?,?,?,?,?,?,?,?)";
+					PreparedStatement ps = con.prepareStatement(sql);
+					ps.setString(1, getItem_id());
+					ps.setString(2, getShop_name());
+					ps.setString(3, getStreet());
+					ps.setString(4, getZip());
+					ps.setString(5, getCurrency());
+					ps.setDouble(6, getPrice());
+					ps.setBoolean(7, getAvailaility());
+					ps.setString(8, getCondition());
+					ps.executeUpdate();
+					ps.close();
+					
+				});
+			} catch (IllegalArgumentException e) {
+				ErrorLogger.write("Item_Shop(Leipzig)", ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
+			} catch (XmlDataException e) {
+				ErrorLogger.write("Item_Shop(Leipzig)", ErrType.XML, e, xt.getNodeContentDFS(node));
+			} catch (SQLException e) {
+				ErrorLogger.write("Item_Shop(Leipzig)", ErrType.SQL, e, xt.getNodeContentDFS(node));
+			} catch (Exception e) {
+				ErrorLogger.write("Item_Shop(Leipzig)", ErrType.PROGRAM, e, xt.getNodeContentDFS(node));
+			}			
+		});
+	}
+	
 	public static void main(String[] args) {
 	
 		Item_Shop is = new Item_Shop();
 //		is.dresden();
+		is.leipzig();
 		
 	}
 }
