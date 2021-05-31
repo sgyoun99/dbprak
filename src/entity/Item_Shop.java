@@ -13,6 +13,7 @@ import JDBCTools.JDBCTool;
 import XmlTools.XmlDataException;
 import XmlTools.XmlTool;
 import main.Config;
+import main.ErrorLogger;
 import main.Pgroup;
 
 public class Item_Shop {
@@ -188,20 +189,17 @@ public class Item_Shop {
 				System.out.println();
 				xt.printNodeContentsDFS(this.currentNode);
 				e.printStackTrace();
-//				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
 			} catch (XmlDataException e) {
 				this.errorCount++;
 				System.out.println();
 				xt.printNodeContentsDFS(this.currentNode);
 				e.printStackTrace();
-//				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
 			} catch (SQLException e) {
 				this.errorCount++;
 				// to-do : Logging
 				System.out.println();
-//				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
-				xt.printNodeContentsDFS(this.currentNode);
 				e.printStackTrace();
+				xt.printNodeContentsDFS(this.currentNode);
 			} catch (Exception e) {
 				this.errorCount++;
 				System.out.println();

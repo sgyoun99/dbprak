@@ -207,6 +207,15 @@ public class XmlTool {
 		return false;
 	}
 	
+	public String getAllAttributeContents(Node node) {
+		String res = "";
+		for (int i = 0; i < node.getAttributes().getLength(); i++) {
+			String attrName = node.getAttributes().item(i).getNodeName();
+			res += String.format(" %s=", attrName);
+			res += String.format("\"%s\"",((Element)node).getAttribute(attrName));
+		}
+		return res;
+	}
 	public String getAttributeTextContent(Node node, String attributeName) throws XmlDataException{
 		if(hasAttribute(node, attributeName)) {
 			Element el = (Element)node;
@@ -216,6 +225,13 @@ public class XmlTool {
 		}
 	}
 	
+	public String getNodeContentDFS(Node startNode) {
+		StringBuilder sb = new StringBuilder();
+		this.visitChildElementNodesDFS(startNode, (node, level) -> {
+			sb.append(this.printOpeningNodeWithOption(node, level));
+		});
+		return sb.toString();
+	}
 
 	public List<Node> getAllElementNodesDFS() {
 		List<Node> res = new ArrayList<Node>();
@@ -414,22 +430,14 @@ public class XmlTool {
 		System.out.println(el.getAttribute("zip"));	
 	}
 	
-	public String getAllAttributeContents(Node node) {
-		String res = "";
-		for (int i = 0; i < node.getAttributes().getLength(); i++) {
-			String attrName = node.getAttributes().item(i).getNodeName();
-			res += String.format(" %s=", attrName);
-			res += String.format("\"%s\"",((Element)node).getAttribute(attrName));
-		}
-		return res;
-	}
-	
-	
+	/* not yet
 	public Map<String,String> getNodeContentMap(Node node){
 		Map<String,String> res = new HashMap<String, String>();
 		this.visitChildElementNodesDFS(node, null);
 		return res;
 	}
+	 */
+	
 	public static void main(String[] args) {
 		
 		XmlTool xt = new XmlTool();

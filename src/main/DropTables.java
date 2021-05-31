@@ -23,39 +23,41 @@ public class DropTables {
 			
 			Statement st = conn.createStatement();
 
-			dropteable("Review", "DROP TABLE review;", st);
-			dropteable("Purchase", "DROP TABLE purchase;", st);
-			dropteable("Customer", "DROP TABLE customer;", st);
+			droptable("Errors", "DROP TABLE errors;", st);
 			
-			dropteable("Music_CD_Label", "DROP TABLE music_cd_label;", st);
-			dropteable("Music_CD_Artist", "DROP TABLE music_cd_artist;", st);
-			dropteable("Titel", "DROP TABLE titel;", st);
-			dropteable("Music_CD", "DROP TABLE music_cd;", st);
-			dropteable("Label", "DROP TABLE label;", st);
-			dropteable("Artist", "DROP TABLE artist;", st);
+			droptable("Review", "DROP TABLE review;", st);
+			droptable("Purchase", "DROP TABLE purchase;", st);
+			droptable("Customer", "DROP TABLE customer;", st);
+			
+			droptable("Music_CD_Label", "DROP TABLE music_cd_label;", st);
+			droptable("Music_CD_Artist", "DROP TABLE music_cd_artist;", st);
+			droptable("Titel", "DROP TABLE titel;", st);
+			droptable("Music_CD", "DROP TABLE music_cd;", st);
+			droptable("Label", "DROP TABLE label;", st);
+			droptable("Artist", "DROP TABLE artist;", st);
 
-			dropteable("DVD_Director", "DROP TABLE dvd_director;", st);
-			dropteable("DVD_Creator", "DROP TABLE dvd_creator;", st);
-			dropteable("DVD_Actor", "DROP TABLE dvd_actor;", st);
-			dropteable("Director", "DROP TABLE director;", st);
-			dropteable("Creator", "DROP TABLE creator;", st);
-			dropteable("Actor", "DROP TABLE actor;", st);
-			dropteable("DVD", "DROP TABLE dvd;", st);
+			droptable("DVD_Director", "DROP TABLE dvd_director;", st);
+			droptable("DVD_Creator", "DROP TABLE dvd_creator;", st);
+			droptable("DVD_Actor", "DROP TABLE dvd_actor;", st);
+			droptable("Director", "DROP TABLE director;", st);
+			droptable("Creator", "DROP TABLE creator;", st);
+			droptable("Actor", "DROP TABLE actor;", st);
+			droptable("DVD", "DROP TABLE dvd;", st);
 
-			dropteable("Book_Publisher", "DROP TABLE book_publisher;", st);
-            dropteable("Book_Author", "DROP TABLE book_author;", st);
-            dropteable("Book", "DROP TABLE book;", st);
-            dropteable("Publisher", "DROP TABLE publisher;", st);
-			dropteable("Author", "DROP TABLE author;", st);
+			droptable("Book_Publisher", "DROP TABLE book_publisher;", st);
+            droptable("Book_Author", "DROP TABLE book_author;", st);
+            droptable("Book", "DROP TABLE book;", st);
+            droptable("Publisher", "DROP TABLE publisher;", st);
+			droptable("Author", "DROP TABLE author;", st);
 			
-            dropteable("Item_Category", "DROP TABLE item_category;", st);
-            dropteable("Sub_Category", "DROP TABLE sub_category;", st);
-			dropteable("Category", "DROP TABLE category;", st);
+            droptable("Item_Category", "DROP TABLE item_category;", st);
+            droptable("Sub_Category", "DROP TABLE sub_category;", st);
+			droptable("Category", "DROP TABLE category;", st);
 			
-			dropteable("Similiar_Items", "DROP TABLE similiar_items;", st);
-            dropteable("Item_Shop", "DROP TABLE item_shop;", st);
-            dropteable("Shop", "DROP TABLE shop;", st);
-			dropteable("Item", "DROP TABLE item;", st);
+			droptable("Similiar_Items", "DROP TABLE similiar_items;", st);
+            droptable("Item_Shop", "DROP TABLE item_shop;", st);
+            droptable("Shop", "DROP TABLE shop;", st);
+			droptable("Item", "DROP TABLE item;", st);
 
             dropEnum("pgroup", st);
 			
@@ -83,7 +85,7 @@ public class DropTables {
 			}
     }
 
-	public static void dropteable(String tableName, String sqlStr, Statement st){
+	public static void droptable(String tableName, String sqlStr, Statement st){
 		try{
 				st.executeUpdate(sqlStr);
 				System.out.println("Table "+tableName+" is droped.");

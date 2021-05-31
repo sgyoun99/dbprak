@@ -33,12 +33,8 @@ public class JDBCTool {
 			st.close();
 			con.commit ();
 			} catch (SQLException e) {
-				System.out.println(e);
-				try { 
-					con.rollback (); 
-				} catch (SQLException e2) {
-					System.out.println(e2);
-				} 
+				con.rollback (); 
+				throw new SQLException(e);
 			} finally {
 				try { 
 					con.setAutoCommit (true); 

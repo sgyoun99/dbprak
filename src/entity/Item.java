@@ -18,6 +18,7 @@ import XmlTools.XmlUploadException;
 import main.Config;
 import main.CreateTables;
 import main.DropTables;
+import main.ErrorLogger;
 import main.Pgroup;
 
 public class Item {
@@ -156,10 +157,12 @@ public class Item {
 				System.out.println();
 				xt.printNodeContentsDFS(this.currentNode);
 				e.printStackTrace();
+				ErrorLogger.write("Item", "IllegalArgument Exception", e.getMessage(), xt.getNodeContentDFS(node));
 				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
 			} catch (XmlDataException e) {
 				this.errorCount++;
 				System.out.println();
+				ErrorLogger.write("Item", "XMLData Exception", e.getMessage(), xt.getNodeContentDFS(node));
 				xt.printNodeContentsDFS(this.currentNode);
 				e.printStackTrace();
 				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
@@ -168,11 +171,13 @@ public class Item {
 				// to-do : Logging
 				System.out.println();
 				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
+				ErrorLogger.write("Item", "SQL Exception", e.getMessage(), xt.getNodeContentDFS(node));
 				xt.printNodeContentsDFS(this.currentNode);
 				e.printStackTrace();
 			} catch (Exception e) {
 				this.errorCount++;
 				System.out.println();
+				ErrorLogger.write("Item", "Exception", e.getMessage(), xt.getNodeContentDFS(node));
 				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
 				xt.printNodeContentsDFS(this.currentNode);
 				e.printStackTrace();
@@ -231,10 +236,12 @@ public class Item {
 				System.out.println();
 				xt.printNodeContentsDFS(this.currentNode);
 				e.printStackTrace();
+				ErrorLogger.write("Item", "IllegalArgument Exception", e.getMessage(), xt.getNodeContentDFS(node));
 				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
 			} catch (XmlDataException e) {
 				this.errorCount++;
 				System.out.println();
+				ErrorLogger.write("Item", "XMLData Exception", e.getMessage(), xt.getNodeContentDFS(node));
 				xt.printNodeContentsDFS(this.currentNode);
 				e.printStackTrace();
 				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
@@ -243,11 +250,13 @@ public class Item {
 				// to-do : Logging
 				System.out.println();
 				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
+				ErrorLogger.write("Item", "SQL Exception", e.getMessage(), xt.getNodeContentDFS(node));
 				xt.printNodeContentsDFS(this.currentNode);
 				e.printStackTrace();
 			} catch (Exception e) {
 				this.errorCount++;
 				System.out.println();
+				ErrorLogger.write("Item", "Exception", e.getMessage(), xt.getNodeContentDFS(node));
 				System.out.println("Error in the item: asin=" + this.getItem_id() + " | title=" + this.getTitle());
 				xt.printNodeContentsDFS(this.currentNode);
 				e.printStackTrace();

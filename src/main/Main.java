@@ -31,11 +31,12 @@ public class Main {
 		
 		//Item
 		Item item = new Item();
-		item.leipzig();
 		item.dresden();
+		item.leipzig();
 		
-		Item_Shop item_shop = new Item_Shop();
-		item_shop.dresden();
+//		Item_Shop item_shop = new Item_Shop();
+//		item_shop.dresden();
 		
+		System.out.println("= = = Main.main() complete = = =");
 	}
 }
