@@ -3,18 +3,13 @@ package entity;
 import java.util.function.*;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import JDBCTools.JDBCTool;
 import XmlTools.XmlDataException;
 import XmlTools.XmlTool;
-import XmlTools.XmlToolWorkable;
-import XmlTools.XmlUploadException;
 import main.Config;
 import main.CreateTables;
 import main.DropTables;
@@ -30,7 +25,6 @@ public class Item {
 	private Integer salesranking;
 	private String image;
 	private Pgroup productgroup;
-//	private String productgroup;
 
 
 	public String getItem_id() {
@@ -74,7 +68,6 @@ public class Item {
 	}
 
 	public Pgroup getProductgroup() {
-//	public String getProductgroup() {
 		return productgroup;
 	}
 
@@ -99,6 +92,7 @@ public class Item {
 	}
 	
 	public void dresden() {
+		String location = "Item(dresden)";
 		System.out.println(">> Item Dresden ...");
 		XmlTool xt = new XmlTool(Config.DRESDEN_ENCODED);
 		List<Node> items = xt.filterElementNodesDFS(xt.getDocumentNode(), 
@@ -151,18 +145,21 @@ public class Item {
 					
 				});
 			} catch (IllegalArgumentException e) {
-				ErrorLogger.write("Item(dresden)", ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
 			} catch (XmlDataException e) {
-				ErrorLogger.write("Item(dresden)", ErrType.XML, e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(node));
 			} catch (SQLException e) {
-				ErrorLogger.write("Item(dresden)", ErrType.SQL, e, xt.getNodeContentDFS(node));
+				if(!e.getMessage().contains("duplicate key value")) {
+					ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(node));
+				}
 			} catch (Exception e) {
-				ErrorLogger.write("Item(dresden)", ErrType.PROGRAM, e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(node));
 			}
 		});
 	}
 	
 	public void leipzig() {
+		String location = "Item(leipzig)";
 		System.out.println(">> Item Leipzig ...");
 		XmlTool xt = new XmlTool(Config.LEIPZIG);
 		List<Node> items = xt.filterElementNodesDFS(xt.getDocumentNode(), 
@@ -209,25 +206,27 @@ public class Item {
 					
 				});
 			} catch (IllegalArgumentException e) {
-				ErrorLogger.write("Item(leipzig)", ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
 			} catch (XmlDataException e) {
-				ErrorLogger.write("Item(leipzig)", ErrType.XML, e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(node));
 			} catch (SQLException e) {
-				ErrorLogger.write("Item(leipzig)", ErrType.SQL, e, xt.getNodeContentDFS(node));
+				if(!e.getMessage().contains("duplicate key value")) {
+					ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(node));
+				}
 			} catch (Exception e) {
-				ErrorLogger.write("Item(leipzig)", ErrType.PROGRAM, e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(node));
 			}
 		});
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		
 		DropTables.dropTables();
 		CreateTables.createTables();
 		
 		Item item = new Item();
+		item.leipzig();
 		item.dresden();
-//		item.leipzig();
 		
 	}
 	/*

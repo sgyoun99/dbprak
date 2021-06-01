@@ -9,6 +9,8 @@ import JDBCTools.JDBCTool;
 import XmlTools.XmlDataException;
 import XmlTools.XmlTool;
 import main.Config;
+import main.CreateTables;
+import main.DropTables;
 import main.ErrType;
 import main.ErrorLogger;
 
@@ -37,6 +39,7 @@ public class Similar_Items {
 	
 	
 	public void dresden() {
+		String location = "Similar_Items(Dresden)";
 		System.out.println(">> Similar_Items Dresden ...");
 		XmlTool xt = new XmlTool(Config.DRESDEN_ENCODED);
 		xt.filterElementNodesDFS(xt.getDocumentNode(), node -> {
@@ -78,19 +81,22 @@ public class Similar_Items {
 				}
 				
 			} catch (IllegalArgumentException e) {
-				ErrorLogger.write("Similar_Items(dresden)", ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
 			} catch (XmlDataException e) {
-				ErrorLogger.write("Similar_Items(dresden)", ErrType.XML, e, xt.getNodeContentDFS(node.getParentNode()));
+				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(node.getParentNode()));
 			} catch (SQLException e) {
-				ErrorLogger.write("Similar_Items(dresden))", ErrType.SQL, e, xt.getNodeContentDFS(node));
+				if(!e.getMessage().contains("duplicate key value")) {
+					ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(node));
+				}
 			} catch (Exception e) {
-				ErrorLogger.write("Similar_Items(dresden))", ErrType.PROGRAM, e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(node));
 			}	
 
 		}));
 	}
 
 	public void leipzig() {
+		String location = "Similar_Items(Leipzig)";
 		System.out.println(">> Similar_Items Leipzig ...");
 		XmlTool xt = new XmlTool(Config.LEIPZIG);
 		xt.filterElementNodesDFS(xt.getDocumentNode(), node -> {
@@ -103,18 +109,13 @@ public class Similar_Items {
 				setItem_id("");
 				setSim_item_id("");
 				if(node.getNodeName().equals("asin")) {
-					Node parentItemNode = similars.getParentNode().getParentNode().getParentNode();
+					Node parentItemNode = similars.getParentNode();
 					String item_id = "";
 					item_id = xt.getAttributeValue(parentItemNode, "asin");
 					setItem_id(item_id);
 
 					String sim_item_id = "";
-					String asinNodeValue = xt.getTextContent(node);
-					String asinAttrValue = xt.getAllAttributeContents(node);
-					if(asinAttrValue.length() != 0) {
-						System.out.println(xt.getNodeContentDFS(parentItemNode));
-					}
-					sim_item_id = xt.getAttributeValue(node, "asin");
+					sim_item_id = xt.getTextContent(node);
 					setSim_item_id(sim_item_id);
 				}
 
@@ -137,20 +138,30 @@ public class Similar_Items {
 				}
 				
 			} catch (IllegalArgumentException e) {
-				ErrorLogger.write("Similar_Items(dresden)", ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
 			} catch (XmlDataException e) {
-				ErrorLogger.write("Similar_Items(dresden)", ErrType.XML, e, xt.getNodeContentDFS(node.getParentNode()));
+				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(node.getParentNode()));
 			} catch (SQLException e) {
-				ErrorLogger.write("Similar_Items(dresden))", ErrType.SQL, e, xt.getNodeContentDFS(node));
+				if(!e.getMessage().contains("duplicate key value")) {
+					ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(node));
+				}
 			} catch (Exception e) {
-				ErrorLogger.write("Similar_Items(dresden))", ErrType.PROGRAM, e, xt.getNodeContentDFS(node));
+				//temp
+				e.printStackTrace();
+				ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(node));
 			}	
 
 		}));
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
+		DropTables.dropTable("Errors");
+		CreateTables.createTable("Errors");
+		DropTables.dropTable("Similar_Items");
+		CreateTables.createTable("Similar_Items");
+
 		Similar_Items si = new Similar_Items();
 		si.dresden();
+		si.leipzig();
 	}
 }

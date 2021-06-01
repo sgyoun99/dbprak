@@ -1,19 +1,14 @@
 package entity;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import JDBCTools.JDBCTool;
-import JDBCTools.SQLExecutable;
 import XmlTools.XmlTool;
-import XmlTools.XmlToolWorkable;
+import main.ErrType;
+import main.ErrorLogger;
 
 public class Shop {
 	
@@ -40,29 +35,28 @@ public class Shop {
 	public void readShop() {
 
 		XmlTool xt = new XmlTool();
-		xt.loadXML(this.xmlPath);
-
-		xt.visitAllElementNodesDFS(new XmlToolWorkable() {
+		Node shopNode = null;
+		try {
 			
-			@Override
-			public void work(Node node, int level) {
-				Element el = (Element)node;
-				if(el.getNodeName().equals("shop")) {
-						shop_name = el.getAttribute("name");
-						street = el.getAttribute("street");
-						zip = el.getAttribute("zip");
-				}
+			xt.loadXML(this.xmlPath);
+			shopNode = xt.getDocumentNode().getElementsByTagName("shop").item(0);
+			Element el = (Element)shopNode;
+
+			shop_name = el.getAttribute("name");
+			street = el.getAttribute("street");
+			zip = el.getAttribute("zip");
+		} catch (Exception e) {
+//			System.out.println(e);
+			e.printStackTrace();
+			if(shopNode != null) {
+				ErrorLogger.write("Shop.read", ErrType.XML, e, xt.getAllAttributeContents(shopNode)+": at "+ xmlPath);
 			}
-		});
-//		System.out.println("read shop complete.");
+		}
 	}
 
 	public void insertShop() {
 		try {
-			JDBCTool.executeUpdate(new SQLExecutable() {
-				
-				@Override
-				public void work(Connection con, Statement st) throws SQLException {
+			JDBCTool.executeUpdate((con, st) -> {
 
 					PreparedStatement ps = con.prepareStatement("INSERT INTO shop (shop_name, street, zip) VALUES (?, ?, ?)");
 					ps.setString(1, shop_name);
@@ -71,9 +65,9 @@ public class Shop {
 					ps.executeUpdate();
 					ps.close();
 				}
-			});
+			);
 		} catch (Exception e) {
-			e.printStackTrace();
+			ErrorLogger.write("Shop.insert", ErrType.SQL, e, "Shop Insert filed: "+xmlPath);
 		}
 		System.out.println("insert shop complete.");
 	}
@@ -81,10 +75,7 @@ public class Shop {
 	public void selectShop() {
 		System.out.println("=== Select shop result === ");
 		try {
-			JDBCTool.executeUpdate(new SQLExecutable() {
-				
-				@Override
-				public void work(Connection con, Statement st) throws SQLException {
+			JDBCTool.executeUpdate((con, st) -> {
 					ResultSet rs = st.executeQuery("SELECT * FROM SHOP");
 					while(rs.next()) {
 						System.out.print(rs.getString(1) + "\t");
@@ -93,13 +84,11 @@ public class Shop {
 					}
 					
 				}
-			});
+			);
 		} catch (Exception e) {
-			e.printStackTrace();
+			//do nothing
 		}
+		System.out.println();
 	}
-
-
-
 
 }

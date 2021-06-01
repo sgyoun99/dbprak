@@ -117,16 +117,17 @@ public class Item_Shop {
 	
 
 	public boolean test() throws XmlDataException {
-		if(!Item.pred_item_id.test(getItem_id())) {throw new XmlDataException("item_id Error (length not 10): "+getItem_id()); }
+		if(!Item.pred_item_id.test(getItem_id())) {throw new XmlDataException("item_id Error (length not 10): ("+getItem_id()+")"); }
 		if(!pred_price.test(getPrice())) {throw new XmlDataException("price Error");}
-		if(!pred_currency.test(getCurrency())) {throw new XmlDataException("currency Error");}
+		if(!pred_currency.test(getCurrency())) {throw new XmlDataException("currency Error: "+ getCurrency());}
 		if(!pred_avaliablity.test(getPrice(), getAvailaility())) {throw new XmlDataException("availability Error");}
-		if(!pred_condition.test(getCondition())) {throw new XmlDataException("condition Error");}
+		if(!pred_condition.test(getCondition())) {throw new XmlDataException("condition Error: "+getCondition());}
 		return true;
 	}
 	
 	//finished
 	public void dresden() {
+		String location = "Item_Shop(Dresden)";
 		System.out.println(">> Item_Shop Dresden ...");
 		XmlTool xt = new XmlTool(Config.DRESDEN_ENCODED);
 		Shop shop = new Shop(Config.DRESDEN_ENCODED);
@@ -186,18 +187,19 @@ public class Item_Shop {
 					
 				});
 			} catch (IllegalArgumentException e) {
-				ErrorLogger.write("Item_Shop(Dresden)", ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
 			} catch (XmlDataException e) {
-				ErrorLogger.write("Item_Shop(Dresden)", ErrType.XML, e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(node));
 			} catch (SQLException e) {
-				ErrorLogger.write("Item_Shop(Dresden)", ErrType.SQL, e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(node));
 			} catch (Exception e) {
-				ErrorLogger.write("Item_Shop(Dresden)", ErrType.PROGRAM, e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(node));
 			}			
 		});
 	}
 	
 	public void leipzig() {
+		String location = "Item_Shop(Leipzig)";
 		System.out.println(">> Item_Shop Leipzig ...");
 		XmlTool xt = new XmlTool(Config.LEIPZIG);
 		Shop shop = new Shop(Config.LEIPZIG);
@@ -257,13 +259,13 @@ public class Item_Shop {
 					
 				});
 			} catch (IllegalArgumentException e) {
-				ErrorLogger.write("Item_Shop(Leipzig)", ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
 			} catch (XmlDataException e) {
-				ErrorLogger.write("Item_Shop(Leipzig)", ErrType.XML, e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(node));
 			} catch (SQLException e) {
-				ErrorLogger.write("Item_Shop(Leipzig)", ErrType.SQL, e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(node));
 			} catch (Exception e) {
-				ErrorLogger.write("Item_Shop(Leipzig)", ErrType.PROGRAM, e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(node));
 			}			
 		});
 	}
