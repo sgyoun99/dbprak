@@ -1,0 +1,10 @@
+1. set classpath
+2. make "bin" directory => "yourproject/bin"
+
+3. compile
+    yourproject/src$ javac -d ../bin ../src/*/*.java
+    or
+    yourproject/bin$ javac -d ../bin ../src/*/*.java
+
+4. run 
+    yourproject/bin$ java main.Main
