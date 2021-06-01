@@ -506,9 +506,12 @@ public class XmlTool {
 	
 	public static void main(String[] args) {
 		
+		System.out.println(Config.SRC_LOCATION);
 		XmlTool xt = new XmlTool();
 //		xt.loadXML(Config.LEIPZIG);
 //		xt.analyseAttributesInItem("item");
+		
+		xt.encodeFileToUTF_8(Config.DRESDEN_ORIGINAL);
 
 		xt.loadXML(Config.DRESDEN_ENCODED);
 		xt.analyseAttributesInItem("similars");
