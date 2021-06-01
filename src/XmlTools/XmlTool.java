@@ -180,6 +180,7 @@ public class XmlTool {
 			}
 		}
 		return true;
+//		return false;
 	}
 	
 	//only for the leaf node
@@ -377,9 +378,11 @@ public class XmlTool {
 		});
 		return res;
 	}
+	/*
 	public List<Node> filterElementNodesDFS(Node startNode, IntPredicate levelPredicate) {
 		return this.filterElementNodesDFS(startNode, levelPredicate, node -> true);
 	}
+	 */
 	public List<Node> filterElementNodesDFS(Node startNode, Predicate<Node> predicate) {
 		return this.filterElementNodesDFS(startNode, level -> true, predicate);
 	}
@@ -504,11 +507,11 @@ public class XmlTool {
 	public static void main(String[] args) {
 		
 		XmlTool xt = new XmlTool();
-		xt.loadXML(Config.LEIPZIG);
-		xt.analyseAttributesInItem("item");
+//		xt.loadXML(Config.LEIPZIG);
+//		xt.analyseAttributesInItem("item");
 
-//		xt.loadXML(Config.DRESDEN_ENCODED);
-//		xt.analyseAttributesInItem("price");
+		xt.loadXML(Config.DRESDEN_ENCODED);
+		xt.analyseAttributesInItem("similars");
 		
 		
 		

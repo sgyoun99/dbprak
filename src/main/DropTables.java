@@ -54,7 +54,7 @@ public class DropTables {
             droptable("Sub_Category", "DROP TABLE sub_category;", st);
 			droptable("Category", "DROP TABLE category;", st);
 			
-			droptable("Similiar_Items", "DROP TABLE similiar_items;", st);
+			droptable("Similar_Items", "DROP TABLE similar_items;", st);
             droptable("Item_Shop", "DROP TABLE item_shop;", st);
             droptable("Shop", "DROP TABLE shop;", st);
 			droptable("Item", "DROP TABLE item;", st);

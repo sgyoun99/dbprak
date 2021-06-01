@@ -54,7 +54,7 @@ public class Shop {
 				}
 			}
 		});
-		System.out.println("read shop complete.");
+//		System.out.println("read shop complete.");
 	}
 
 	public void insertShop() {

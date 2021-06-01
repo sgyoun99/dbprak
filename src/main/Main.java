@@ -36,6 +36,7 @@ public class Main {
 		
 		Item_Shop item_shop = new Item_Shop();
 		item_shop.dresden();
+		item_shop.leipzig();
 		
 		System.out.println("= = = Main.main() complete = = =");
 	}

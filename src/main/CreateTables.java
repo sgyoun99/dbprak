@@ -27,7 +27,7 @@ public class CreateTables {
 			createTable("Item", "CREATE TABLE item(item_id CHAR(10) PRIMARY KEY, title TEXT, rating numeric(2,1), salesranking INTEGER, image TEXT, productgroup pgroup NOT NULL);", st);
             createTable("Shop", "CREATE TABLE shop(shop_name TEXT NOT NULL, street TEXT NOT NULL, zip CHAR(5) NOT NULL, PRIMARY KEY(shop_name, street, zip));", st);
             createTable("Item_Shop", "CREATE TABLE item_shop(item_id CHAR(10) REFERENCES item(item_id) NOT NULL, shop_name TEXT NOT NULL, street TEXT NOT NULL, zip CHAR(5) NOT NULL, currency CHAR(3), price numeric(8,2), availability BOOLEAN, condition CHAR(11), FOREIGN KEY(shop_name, street, zip) REFERENCES shop(shop_name, street, zip), PRIMARY KEY(item_id, shop_name, street, zip));", st);
-			createTable("Similiar_Items", "CREATE TABLE similiar_items(item_id CHAR(10) REFERENCES item(item_id), similiar_item_id CHAR(10) REFERENCES item(item_id), PRIMARY KEY(item_id, similiar_item_id));", st);
+			createTable("Similar_Items", "CREATE TABLE similar_items(item_id CHAR(10) REFERENCES item(item_id), similar_item_id CHAR(10) REFERENCES item(item_id), PRIMARY KEY(item_id, similar_item_id));", st);
 			
 			createTable("Category", "CREATE TABLE category(category_id SERIAL PRIMARY KEY NOT NULL, name TEXT);", st);
             createTable("Sub_Category", "CREATE TABLE sub_category(main_category_id INTEGER REFERENCES category(category_id), sub_category_id INTEGER REFERENCES category(category_id), PRIMARY KEY(main_category_id, sub_category_id));", st);

@@ -100,9 +100,9 @@ public class Item_Shop {
 	
 	
 	
-	public Predicate<Double> pred_price = price -> price >= 0 && price<9999999 ;
-	public Predicate<String> pred_currency = curr -> Arrays.asList("EUR","").contains(curr);
-	public BiPredicate<Double,Boolean> pred_avaliablity = (price, avail) -> {
+	public static Predicate<Double> pred_price = price -> price >= 0 && price<9999999 ;
+	public static Predicate<String> pred_currency = curr -> Arrays.asList("EUR","").contains(curr);
+	public static BiPredicate<Double,Boolean> pred_avaliablity = (price, avail) -> {
 		if(price > 0 && avail) {
 			return true;
 		} else if(price == 0 && !avail) {
@@ -117,6 +117,7 @@ public class Item_Shop {
 	
 
 	public boolean test() throws XmlDataException {
+		if(!Item.pred_item_id.test(getItem_id())) {throw new XmlDataException("item_id Error (length not 10): "+getItem_id()); }
 		if(!pred_price.test(getPrice())) {throw new XmlDataException("price Error");}
 		if(!pred_currency.test(getCurrency())) {throw new XmlDataException("currency Error");}
 		if(!pred_avaliablity.test(getPrice(), getAvailaility())) {throw new XmlDataException("availability Error");}
@@ -126,7 +127,7 @@ public class Item_Shop {
 	
 	//finished
 	public void dresden() {
-		System.out.println(">> start Item_Shop Dresden");
+		System.out.println(">> Item_Shop Dresden ...");
 		XmlTool xt = new XmlTool(Config.DRESDEN_ENCODED);
 		Shop shop = new Shop(Config.DRESDEN_ENCODED);
 		shop.readShop();
@@ -164,8 +165,9 @@ public class Item_Shop {
 					}
 				});
 		
-			//insert
+			//test
 				this.test();
+			//insert
 				JDBCTool.executeUpdate((con, st) ->	{
 					String sql = "INSERT INTO ITEM_SHOP "
 							+ "(item_id, shop_name, street, zip, currency, price, availability, condition) "
@@ -196,7 +198,7 @@ public class Item_Shop {
 	}
 	
 	public void leipzig() {
-		System.out.println(">> start Item_Shop Leipzig");
+		System.out.println(">> Item_Shop Leipzig ...");
 		XmlTool xt = new XmlTool(Config.LEIPZIG);
 		Shop shop = new Shop(Config.LEIPZIG);
 		shop.readShop();
@@ -234,8 +236,9 @@ public class Item_Shop {
 					}
 				});
 		
-			//insert
+			//test
 				this.test();
+			//insert
 				JDBCTool.executeUpdate((con, st) ->	{
 					String sql = "INSERT INTO ITEM_SHOP "
 							+ "(item_id, shop_name, street, zip, currency, price, availability, condition) "

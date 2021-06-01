@@ -82,24 +82,24 @@ public class Item {
 		this.productgroup = productgroup;
 	}
 
-	public Predicate<String> predicate_item_id = id -> id.length() == 10;
-	public Predicate<String> predicate_title = title -> title.length() != 0;
-	public Predicate<Double> predicate_rating = rating -> rating >= 0 && rating <= 5;
-	public Predicate<Integer> predicate_salesranking = ranking -> ranking >= 0;
-	public Predicate<String> predicate_image = img -> true; // null allowed
+	public static Predicate<String> pred_item_id = id -> id.length() == 10;
+	public static Predicate<String> pred_title = title -> title.length() != 0;
+	public static Predicate<Double> pred_rating = rating -> rating >= 0 && rating <= 5;
+	public static Predicate<Integer> pred_salesranking = ranking -> ranking >= 0;
+	public static Predicate<String> pred_image = img -> true; // null allowed
 	
 
 	public boolean test() throws XmlDataException {
-		if(!predicate_item_id.test(this.getItem_id())) {throw new XmlDataException("item_id Error (length not 10)"); }
-		if(!predicate_title.test(this.getTitle())) {throw new XmlDataException("title Error (title empty)"); }
-	//	if(!predicate_rating.test(this.getRating())) {throw new XmlDataException("rating Error (out of range"); } // how??
-		if(!predicate_salesranking.test(this.getSalesranking())) {throw new XmlDataException("salesranking Error"); }
-		if(!predicate_image.test(this.getImage())) {throw new XmlDataException("img Error"); }
+		if(!pred_item_id.test(getItem_id())) {throw new XmlDataException("item_id Error (length not 10): "+getItem_id()); }
+		if(!pred_title.test(getTitle())) {throw new XmlDataException("title Error (title empty)"); }
+	//	if(!predicate_rating.test(getRating())) {throw new XmlDataException("rating Error (out of range"); } // how??
+		if(!pred_salesranking.test(getSalesranking())) {throw new XmlDataException("salesranking Error"); }
+		if(!pred_image.test(getImage())) {throw new XmlDataException("img Error"); }
 		return true;
 	}
 	
 	public void dresden() {
-		System.out.println("Item Dresden");
+		System.out.println(">> Item Dresden ...");
 		XmlTool xt = new XmlTool(Config.DRESDEN_ENCODED);
 		List<Node> items = xt.filterElementNodesDFS(xt.getDocumentNode(), 
 			level -> level == 2, 
@@ -151,19 +151,19 @@ public class Item {
 					
 				});
 			} catch (IllegalArgumentException e) {
-				ErrorLogger.write("Item(leipzig)", ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
+				ErrorLogger.write("Item(dresden)", ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
 			} catch (XmlDataException e) {
-				ErrorLogger.write("Item(leipzig)", ErrType.XML, e, xt.getNodeContentDFS(node));
+				ErrorLogger.write("Item(dresden)", ErrType.XML, e, xt.getNodeContentDFS(node));
 			} catch (SQLException e) {
-				ErrorLogger.write("Item(leipzig)", ErrType.SQL, e, xt.getNodeContentDFS(node));
+				ErrorLogger.write("Item(dresden)", ErrType.SQL, e, xt.getNodeContentDFS(node));
 			} catch (Exception e) {
-				ErrorLogger.write("Item(leipzig)", ErrType.PROGRAM, e, xt.getNodeContentDFS(node));
+				ErrorLogger.write("Item(dresden)", ErrType.PROGRAM, e, xt.getNodeContentDFS(node));
 			}
 		});
 	}
 	
 	public void leipzig() {
-		System.out.println("Item Leipzig");
+		System.out.println(">> Item Leipzig ...");
 		XmlTool xt = new XmlTool(Config.LEIPZIG);
 		List<Node> items = xt.filterElementNodesDFS(xt.getDocumentNode(), 
 				level -> level == 2, 
@@ -227,7 +227,7 @@ public class Item {
 		
 		Item item = new Item();
 		item.dresden();
-		item.leipzig();
+//		item.leipzig();
 		
 	}
 	/*
