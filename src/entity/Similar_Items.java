@@ -49,30 +49,33 @@ public class Similar_Items {
 			//xml data
 				setItem_id("");
 				setSim_item_id("");
-				Node itemNode = similars.getParentNode();
-				String item_id = "";
-				item_id = xt.getAttributeValue(itemNode, "asin");
-				setItem_id(item_id);
 				if(node.getNodeName().equals("item")) {
+					Node parentItemNode = similars.getParentNode();
+					String item_id = "";
+					item_id = xt.getAttributeValue(parentItemNode, "asin");
+					setItem_id(item_id);
+
 					String sim_item_id = "";
 					sim_item_id = xt.getAttributeValue(node, "asin");
 					setSim_item_id(sim_item_id);
 				}
 
 			//test
-				this.test();
-			//insert
-				JDBCTool.executeUpdate((con, st) ->	{
-					String sql = "INSERT INTO SIMILAR_ITEMS "
-							+ "(item_id, similar_item_id) "
-							+ "values (?,?)";
-					PreparedStatement ps = con.prepareStatement(sql);
-					ps.setString(1, getItem_id());
-					ps.setString(2, getSim_item_id());
-					ps.executeUpdate();
-					ps.close();
+				if(!getItem_id().equals("") && !getSim_item_id().equals("") && test()) {
 					
-				});
+			//insert
+					JDBCTool.executeUpdate((con, st) ->	{
+						String sql = "INSERT INTO SIMILAR_ITEMS "
+								+ "(item_id, similar_item_id) "
+								+ "values (?,?)";
+						PreparedStatement ps = con.prepareStatement(sql);
+						ps.setString(1, getItem_id());
+						ps.setString(2, getSim_item_id());
+						ps.executeUpdate();
+						ps.close();
+						
+					});
+				}
 				
 			} catch (IllegalArgumentException e) {
 				ErrorLogger.write("Similar_Items(dresden)", ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
