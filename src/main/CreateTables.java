@@ -29,7 +29,7 @@ public class CreateTables {
         createTableMap.put("Book_Author", "CREATE TABLE book_author(item_id char(10) REFERENCES book(item_id), author TEXT REFERENCES author(author), PRIMARY KEY(item_id, author));");
 		createTableMap.put("Book_Publisher", "CREATE TABLE book_publisher(item_id char(10) REFERENCES book(item_id), publisher TEXT REFERENCES publisher(publisher), PRIMARY KEY(item_id, publisher));");
 		
-		createTableMap.put("DVD", "CREATE TABLE dvd(item_id char(10) REFERENCES item(item_id) PRIMARY KEY, format TEXT, runningtime SMALLINT, regiocode SMALLINT);");
+		createTableMap.put("DVD", "CREATE TABLE dvd(item_id char(10) REFERENCES item(item_id) PRIMARY KEY, format TEXT, runningtime SMALLINT, regioncode CHAR(5));");
 		createTableMap.put("Actor", "CREATE TABLE actor(actor TEXT PRIMARY KEY);");
 		createTableMap.put("Creator", "CREATE TABLE creator(creator TEXT PRIMARY KEY);");
 		createTableMap.put("Director", "CREATE TABLE director(director TEXT PRIMARY KEY);");
@@ -44,7 +44,7 @@ public class CreateTables {
 		createTableMap.put("Music_CD_Artist", "CREATE TABLE music_cd_artist(item_id char(10) REFERENCES music_cd(item_id), artist TEXT REFERENCES artist(artist), PRIMARY KEY(item_id, artist));");
 		createTableMap.put("Music_CD_Label", "CREATE TABLE music_cd_label(item_id char(10) REFERENCES music_cd(item_id), label TEXT REFERENCES label(label), PRIMARY KEY(item_id, label));");
 		
-		createTableMap.put("Customer", "CREATE TABLE customer(customer_id TEXT PRIMARY KEY, street TEXT, nr SMALLINT, zip SMALLINT, city TEXT, account_number BIGINT UNIQUE NOT NULL);");
+		createTableMap.put("Customer", "CREATE TABLE customer(customer_id TEXT PRIMARY KEY, street CHAR(5), nr SMALLINT, zip SMALLINT, city TEXT, account_number TEXT UNIQUE NOT NULL);");
 		createTableMap.put("Purchase", "CREATE TABLE purchase(customer_id TEXT REFERENCES customer(customer_id), item_id CHAR(10) REFERENCES item(item_id), shop_name TEXT NOT NULL, street TEXT NOT NULL, zip CHAR(5) NOT NULL, order_date DATE NOT NULL, FOREIGN KEY(shop_name, street, zip) REFERENCES shop(shop_name, street, zip), PRIMARY KEY(item_id, shop_name, street, zip, order_date));");
 		createTableMap.put("Review", "CREATE TABLE review(item_id CHAR(10) REFERENCES item(item_id), customer_id TEXT REFERENCES customer(customer_id), review_date DATE, summary TEXT, contect TEXT, rating SMALLINT, PRIMARY KEY(item_id, customer_id));");
 

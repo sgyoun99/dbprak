@@ -2,10 +2,7 @@ package main;
 
 
 import XmlTools.XmlTool;
-import entity.Item;
-import entity.Item_Shop;
-import entity.Shop;
-import entity.Similar_Items;
+import entity.*;
 
 public class Main {
 	public static void main(String[] args) {
@@ -45,6 +42,9 @@ public class Main {
 			Similar_Items simItems = new Similar_Items();
 			simItems.dresden();
 			simItems.leipzig();
+			
+			Dvd dvd = new Dvd();
+			dvd.leipzig();
 
 		} catch (Exception e) {
 			e.printStackTrace();

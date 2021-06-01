@@ -21,4 +21,13 @@ public enum Pgroup {
 		return this.value;
 	}
 	 */
+	
+	public static boolean isValueOfPgroup(String pgroup) {
+	    for (Pgroup e : values()) {
+	        if (e.toString().equals(pgroup)) {
+	            return true;
+	        }
+	    }
+	    return false;
+	}
 }

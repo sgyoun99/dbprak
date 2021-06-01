@@ -425,7 +425,7 @@ public class XmlTool {
 	 */
 	
 	//find all attribute within the Element Node with the given name
-	public void analyseAttributesInItem(String nodeName) {
+	public void analyseAttributesInNode(String nodeName) {
 		Map<Integer, Map<String, Integer>> level_AttrName_Occurence = new HashMap<Integer, Map<String,Integer>>();
 
 		this.visitAllElementNodesDFS((node, level) -> {
@@ -449,7 +449,7 @@ public class XmlTool {
 		);
 		
 		
-		System.out.println("<" + nodeName + ">");
+		System.out.println("<" + nodeName + ">'s attributes:");
 		for(Map.Entry<Integer,Map<String,Integer>> att : level_AttrName_Occurence.entrySet()) {
 			System.out.println("Level "+att.getKey());
 			att.getValue().forEach((attrName, count) -> 
@@ -458,13 +458,6 @@ public class XmlTool {
 		}	
 	}
 	
-	/*
-	public void analyseElementNode(String nodeName) {
-		this.visitAllElementNodesDFS((node, level, xmlToo) -> {
-			
-		});
-	}
-	 */
 	
 	
 	public void testDresdenEncodeToUTF8() {
@@ -504,25 +497,54 @@ public class XmlTool {
 	}
 	 */
 	
+	public void analyseDirectChildNodes(String xmlPath, String parentNodeName) {
+		XmlTool xt = new XmlTool();
+		xt.loadXML(xmlPath);
+		Map<String,Integer> nodeCount = new HashMap<String, Integer>();
+		Map<String,Integer> textContentCount = new HashMap<String, Integer>();
+		xt.filterElementNodesDFS(xt.getDocumentNode(), (Node n) -> {
+			return n.getNodeName().equals(parentNodeName);
+		}).forEach( node -> {
+			xt.getDirectChildElementNodes(node).forEach(nd -> {
+
+				nodeCount.compute(nd.getNodeName(), (k,v) -> v==null? 1 : v + 1);
+
+				if(xt.hasTextContent(nd)) {
+					textContentCount.compute(nd.getNodeName(), (k,v) -> v==null? 1 : v + 1);
+				}
+				
+			});
+		});
+		
+		System.out.println(">> Node count");
+		nodeCount.forEach((k,v)->{
+			System.out.println("<"+k + ">: " +v+" times");
+			xt.analyseAttributesInNode(k);
+			System.out.println();
+		});
+		System.out.println();
+		System.out.println(">> Node contents count");
+		textContentCount.forEach((k,v)->System.out.println("<"+k + ">:" +v+" times"));
+		
+		
+	}
+	
 	public static void main(String[] args) {
 		
 		XmlTool xt = new XmlTool();
 		xt.loadXML(Config.LEIPZIG);
-		xt.analyseAttributesInItem("asin");
+//		xt.analyseAttributesInNode("dvdspec");
 		
 //		xt.encodeFileToUTF_8(Config.DRESDEN_ORIGINAL);
 
 		xt.loadXML(Config.DRESDEN_ENCODED);
-//		xt.analyseAttributesInItem("similars");
+//		xt.analyseAttributesInNode("format");
 		
 		
 		
-		/*
-		xt.filterElementNodesDFS(xt.getDocumentNode(), l -> l == 2, n -> {
-			return n.getNodeName().equals("item");
-		}).forEach( node -> System.out.println(xt.getLevel(node)));
+		xt.analyseDirectChildNodes(Config.LEIPZIG, "dvdspec");
 		
-		 */
+		
 
 
 		

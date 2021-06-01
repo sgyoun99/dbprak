@@ -74,12 +74,21 @@ public class Item {
 	public void setProductgroup(Pgroup productgroup) {
 		this.productgroup = productgroup;
 	}
+	
+	public void setProductgroup(String pgroup) {
+		if(pgroup.equals("Music")) {
+			this.productgroup = Pgroup.valueOf("Music_CD");
+		} else {
+			this.productgroup = Pgroup.valueOf(pgroup);
+		}
+	}
 
 	public static Predicate<String> pred_item_id = id -> id.length() == 10;
 	public static Predicate<String> pred_title = title -> title.length() != 0;
 	public static Predicate<Double> pred_rating = rating -> rating >= 0 && rating <= 5;
 	public static Predicate<Integer> pred_salesranking = ranking -> ranking >= 0;
 	public static Predicate<String> pred_image = img -> true; // null allowed
+	public static Predicate<String> pred_pgroup = pgroup -> Pgroup.isValueOfPgroup(pgroup);
 	
 
 	public boolean test() throws XmlDataException {
@@ -88,6 +97,7 @@ public class Item {
 	//	if(!predicate_rating.test(getRating())) {throw new XmlDataException("rating Error (out of range"); } // how??
 		if(!pred_salesranking.test(getSalesranking())) {throw new XmlDataException("salesranking Error"); }
 		if(!pred_image.test(getImage())) {throw new XmlDataException("img Error"); }
+//		if(!pred_pgroup.test(getProductgroup().toString())) {throw new XmlDataException("pgroup Error"); } // not necessary
 		return true;
 	}
 	
@@ -111,7 +121,7 @@ public class Item {
 						try {
 							setImage(xt.getAttributeValue(nd, "img"));
 						} catch (XmlDataException e) {
-							e.printStackTrace();
+//							e.printStackTrace();
 						}
 					}
 				});
@@ -122,11 +132,7 @@ public class Item {
 					setSalesranking(Integer.valueOf(salesRank));
 				}
 				String pgroup = xt.getAttributeValue(node, "pgroup");
-				if(pgroup.equals("Music")) {
-					pgroup = "Music_CD";
-				}
-				Pgroup pgr = Pgroup.valueOf(pgroup);
-				setProductgroup(pgr);
+				setProductgroup(pgroup);
 		
 			//insert
 				this.test();
