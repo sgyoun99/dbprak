@@ -403,7 +403,7 @@ public class Dvd {
 	
 
 	public void director() {
-		String location = "director(\" + this.location + \")";
+		String location = "director(" + this.location + ")";
 		System.out.println(">> director " + this.location + " ...");
 		XmlTool xt = new XmlTool(this.xmlPath);
 		List<Node> items = xt.filterElementNodesDFS(xt.getDocumentNode(), 
@@ -509,6 +509,7 @@ public class Dvd {
 		dvd.dvd();
 		dvd.actor();
 		dvd.creator();
+		dvd.director();
 	}
 	
 	

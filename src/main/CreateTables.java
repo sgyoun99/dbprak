@@ -25,7 +25,7 @@ public class CreateTables {
         
 		createTableMap.put("Author", "CREATE TABLE author(author TEXT PRIMARY KEY);");
         createTableMap.put("Publisher", "CREATE TABLE publisher(publisher TEXT PRIMARY KEY);");
-        createTableMap.put("Book", "CREATE TABLE book(item_id char(10) REFERENCES item(item_id) PRIMARY KEY, author TEXT REFERENCES author(author), publisher TEXT REFERENCES publisher(publisher), pages SMALLINT, publication_date DATE, isbn BIGINT);");
+        createTableMap.put("Book", "CREATE TABLE book(item_id char(10) REFERENCES item(item_id) PRIMARY KEY, pages SMALLINT, publication_date DATE, isbn TEXT);");
         createTableMap.put("Book_Author", "CREATE TABLE book_author(item_id char(10) REFERENCES book(item_id), author TEXT REFERENCES author(author), PRIMARY KEY(item_id, author));");
 		createTableMap.put("Book_Publisher", "CREATE TABLE book_publisher(item_id char(10) REFERENCES book(item_id), publisher TEXT REFERENCES publisher(publisher), PRIMARY KEY(item_id, publisher));");
 		

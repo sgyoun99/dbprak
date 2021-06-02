@@ -523,7 +523,7 @@ public class XmlTool {
 			System.out.println();
 		});
 		System.out.println();
-		System.out.println(">> Node contents count");
+		System.out.println(">> Node Text contents count");
 		textContentCount.forEach((k,v)->System.out.println("<"+k + ">:" +v+" times"));
 		
 		
@@ -542,9 +542,14 @@ public class XmlTool {
 		
 		
 		
-		xt.analyseDirectChildNodes(Config.DRESDEN_ENCODED, "directors");
+		xt.analyseDirectChildNodes(Config.DRESDEN_ENCODED, "bookspec");
+//		xt.analyseDirectChildNodes(Config.DRESDEN_ENCODED, "authors");
+
+		xt.analyseDirectChildNodes(Config.LEIPZIG, "bookspec");
+//		xt.analyseDirectChildNodes(Config.LEIPZIG, "authors");
 		
-		
+
+		System.out.println(Short.valueOf("200"));
 
 
 		
