@@ -422,12 +422,12 @@ public class Book {
 		
 		Book book = new Book(Config.LEIPZIG, "Leipzig");
 		book.book();
-//		book.author();
-//		book.publisher();
+		book.author();
+		book.publisher();
 		book = new Book(Config.DRESDEN_ENCODED, "Dresden");
 		book.book();
-//		book.author();
-//		book.publisher();
+		book.author();
+		book.publisher();
 		System.out.println("=== done ===");
 	}
 	

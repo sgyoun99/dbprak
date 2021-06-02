@@ -13,6 +13,8 @@ import JDBCTools.JDBCTool;
 import XmlTools.XmlDataException;
 import XmlTools.XmlTool;
 import main.Config;
+import main.CreateTables;
+import main.DropTables;
 import main.ErrType;
 import main.ErrorLogger;
 
@@ -116,12 +118,12 @@ public class Item_Shop {
 	
 	
 
-	public boolean test() throws XmlDataException {
-		if(!Item.pred_item_id.test(getItem_id())) {throw new XmlDataException("item_id Error (length not 10): ("+getItem_id()+")"); }
-		if(!pred_price.test(getPrice())) {throw new XmlDataException("price Error");}
-		if(!pred_currency.test(getCurrency())) {throw new XmlDataException("currency Error: "+ getCurrency());}
-		if(!pred_avaliablity.test(getPrice(), getAvailaility())) {throw new XmlDataException("availability Error");}
-		if(!pred_condition.test(getCondition())) {throw new XmlDataException("condition Error: "+getCondition());}
+	public boolean test(Item_Shop item_shop) throws XmlDataException {
+		if(!Item.pred_item_id.test(item_shop.getItem_id())) {throw new XmlDataException("item_id Error (length not 10): ("+item_shop.getItem_id()+")"); }
+		if(!pred_price.test(item_shop.getPrice())) {throw new XmlDataException("price Error");}
+		if(!pred_currency.test(item_shop.getCurrency())) {throw new XmlDataException("currency Error: "+ item_shop.getCurrency());}
+		if(!pred_avaliablity.test(item_shop.getPrice(), item_shop.getAvailaility())) {throw new XmlDataException("availability Error");}
+		if(!pred_condition.test(item_shop.getCondition())) {throw new XmlDataException("condition Error: "+item_shop.getCondition());}
 		return true;
 	}
 	
@@ -137,14 +139,15 @@ public class Item_Shop {
 				level -> level == 2, 
 				node ->  node.getNodeName().equals("item")
 		);
-		itemList.forEach(node -> {
+		itemList.forEach(itemNode -> {
 			try {
 			//xml data
-				setItem_id(xt.getAttributeValue(node, "asin"));
-				setShop_name(shop.getShop_name());
-				setStreet(shop.getStreet());
-				setZip(shop.getZip());
-				xt.visitChildElementNodesDFS(node, (nd, lv) -> {
+				Item_Shop item_shop = new Item_Shop();
+				item_shop.setItem_id(xt.getAttributeValue(itemNode, "asin"));
+				item_shop.setShop_name(shop.getShop_name());
+				item_shop.setStreet(shop.getStreet());
+				item_shop.setZip(shop.getZip());
+				xt.visitChildElementNodesDFS(itemNode, (nd, lv) -> {
 					if(nd.getNodeName().equals("price")) {
 						String mult = "";
 						String state = "";
@@ -158,42 +161,42 @@ public class Item_Shop {
 //							xt.printNodeContentsDFS(node.getParentNode());
 //							e.printStackTrace();
 						} finally {
-							setCurrency(currency);
-							setPrice(xt.getTextContent(nd),mult);
-							setAvailaility(getPrice());
-							setCondition(state);
+							item_shop.setCurrency(currency);
+							item_shop.setPrice(xt.getTextContent(nd),mult);
+							item_shop.setAvailaility(item_shop.getPrice());
+							item_shop.setCondition(state);
 						}
 					}
 				});
 		
 			//test
-				this.test();
+				this.test(item_shop);
 			//insert
 				JDBCTool.executeUpdate((con, st) ->	{
 					String sql = "INSERT INTO ITEM_SHOP "
 							+ "(item_id, shop_name, street, zip, currency, price, availability, condition) "
 							+ "values (?,?,?,?,?,?,?,?)";
 					PreparedStatement ps = con.prepareStatement(sql);
-					ps.setString(1, getItem_id());
-					ps.setString(2, getShop_name());
-					ps.setString(3, getStreet());
-					ps.setString(4, getZip());
-					ps.setString(5, getCurrency());
-					ps.setDouble(6, getPrice());
-					ps.setBoolean(7, getAvailaility());
-					ps.setString(8, getCondition());
+					ps.setString(1, item_shop.getItem_id());
+					ps.setString(2, item_shop.getShop_name());
+					ps.setString(3, item_shop.getStreet());
+					ps.setString(4, item_shop.getZip());
+					ps.setString(5, item_shop.getCurrency());
+					ps.setDouble(6, item_shop.getPrice());
+					ps.setBoolean(7, item_shop.getAvailaility());
+					ps.setString(8, item_shop.getCondition());
 					ps.executeUpdate();
 					ps.close();
 					
 				});
 			} catch (IllegalArgumentException e) {
-				ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(itemNode));
 			} catch (XmlDataException e) {
-				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(itemNode));
 			} catch (SQLException e) {
-				ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(itemNode));
 			} catch (Exception e) {
-				ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(itemNode));
 			}			
 		});
 	}
@@ -212,10 +215,11 @@ public class Item_Shop {
 		itemList.forEach(node -> {
 			try {
 			//xml data
-				setItem_id(xt.getAttributeValue(node, "asin"));
-				setShop_name(shop.getShop_name());
-				setStreet(shop.getStreet());
-				setZip(shop.getZip());
+				Item_Shop item_shop = new Item_Shop();
+				item_shop.setItem_id(xt.getAttributeValue(node, "asin"));
+				item_shop.setShop_name(shop.getShop_name());
+				item_shop.setStreet(shop.getStreet());
+				item_shop.setZip(shop.getZip());
 				xt.visitChildElementNodesDFS(node, (nd, lv) -> {
 					if(nd.getNodeName().equals("price")) {
 						String mult = "";
@@ -226,34 +230,32 @@ public class Item_Shop {
 							currency = xt.getAttributeValue(nd, "currency");
 							state = xt.getAttributeValue(nd, "state");
 						} catch (XmlDataException e) {
-							//get information
-//							xt.printNodeContentsDFS(node.getParentNode());
-//							e.printStackTrace();
+							//do nothing. It will be tested in "this.test(item_shop)";
 						} finally {
-							setCurrency(currency);
-							setPrice(xt.getTextContent(nd),mult);
-							setAvailaility(getPrice());
-							setCondition(state);
+							item_shop.setCurrency(currency);
+							item_shop.setPrice(xt.getTextContent(nd),mult);
+							item_shop.setAvailaility(item_shop.getPrice());
+							item_shop.setCondition(state);
 						}
 					}
 				});
 		
 			//test
-				this.test();
+				this.test(item_shop);
 			//insert
 				JDBCTool.executeUpdate((con, st) ->	{
 					String sql = "INSERT INTO ITEM_SHOP "
 							+ "(item_id, shop_name, street, zip, currency, price, availability, condition) "
 							+ "values (?,?,?,?,?,?,?,?)";
 					PreparedStatement ps = con.prepareStatement(sql);
-					ps.setString(1, getItem_id());
-					ps.setString(2, getShop_name());
-					ps.setString(3, getStreet());
-					ps.setString(4, getZip());
-					ps.setString(5, getCurrency());
-					ps.setDouble(6, getPrice());
-					ps.setBoolean(7, getAvailaility());
-					ps.setString(8, getCondition());
+					ps.setString(1, item_shop.getItem_id());
+					ps.setString(2, item_shop.getShop_name());
+					ps.setString(3, item_shop.getStreet());
+					ps.setString(4, item_shop.getZip());
+					ps.setString(5, item_shop.getCurrency());
+					ps.setDouble(6, item_shop.getPrice());
+					ps.setBoolean(7, item_shop.getAvailaility());
+					ps.setString(8, item_shop.getCondition());
 					ps.executeUpdate();
 					ps.close();
 					
@@ -270,10 +272,15 @@ public class Item_Shop {
 		});
 	}
 	
-	public static void main(String[] args) {
 	
+	
+	public static void main(String[] args) throws Exception {
+		DropTables.dropTable(CreateTables.Item_Shop);
+		CreateTables.createTable(CreateTables.Item_Shop);
+		
+
 		Item_Shop is = new Item_Shop();
-//		is.dresden();
+		is.dresden();
 		is.leipzig();
 		
 	}

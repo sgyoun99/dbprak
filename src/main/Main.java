@@ -56,12 +56,12 @@ public class Main {
 			
 			Book book = new Book(Config.LEIPZIG, "Leipzig");
 			book.book();
-//			book.author();
-//			book.publisher();
+			book.author();
+			book.publisher();
 			book = new Book(Config.DRESDEN_ENCODED, "Dresden");
 			book.book();
-//			book.author();
-//			book.publisher();
+			book.author();
+			book.publisher();
 
 		} catch (Exception e) {
 			e.printStackTrace();

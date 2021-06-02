@@ -91,14 +91,13 @@ public class Item {
 	public static Predicate<String> pred_pgroup = pgroup -> Pgroup.isValueOfPgroup(pgroup);
 	
 
-	public boolean test(Item item) throws XmlDataException {
+	public void test(Item item) throws XmlDataException {
 		if(!pred_item_id.test(item.getItem_id())) {throw new XmlDataException("item_id Error (length not 10): "+item.getItem_id()); }
 		if(!pred_title.test(item.getTitle())) {throw new XmlDataException("title Error (title empty)"); }
-	//	if(!predicate_rating.test(item.getRating())) {throw new XmlDataException("rating Error (out of range"); } // how??
+//		if(!predicate_rating.test(item.getRating())) {throw new XmlDataException("rating Error (out of range"); } // how??
 		if(!pred_salesranking.test(item.getSalesranking())) {throw new XmlDataException("salesranking Error"); }
 		if(!pred_image.test(item.getImage())) {throw new XmlDataException("img Error"); }
-//		if(!pred_pgroup.test(getProductgroup().toString())) {throw new XmlDataException("pgroup Error"); } // not necessary
-		return true;
+//		if(!pred_pgroup.test(item.getProductgroup().toString())) {throw new XmlDataException("pgroup Error"); } // not necessary
 	}
 	
 	public void dresden() {
@@ -109,12 +108,12 @@ public class Item {
 			level -> level == 2, 
 			node -> node.getNodeName().equals("item")
 		);
-		items.forEach(node -> {
+		items.forEach(itemNode -> {
 			Item item = new Item();
 			try {
 			//xml data
-				item.setItem_id(xt.getAttributeValue(node, "asin"));
-				xt.getDirectChildElementNodes(node).forEach(nd -> {
+				item.setItem_id(xt.getAttributeValue(itemNode, "asin"));
+				xt.getDirectChildElementNodes(itemNode).forEach(nd -> {
 					if(nd.getNodeName().equals("title") && xt.isLeafElementNode(nd)) {
 						item.setTitle(nd.getTextContent());
 					}
@@ -122,23 +121,25 @@ public class Item {
 						try {
 							item.setImage(xt.getAttributeValue(nd, "img"));
 						} catch (XmlDataException e) {
-//							e.printStackTrace();
+							//do nothing. null allowed
 						}
 					}
 				});
-				String salesRank = xt.getAttributeValue(node, "salesrank");
+				String salesRank = xt.getAttributeValue(itemNode, "salesrank");
 				if(salesRank.length() == 0) {
 					item.setSalesranking(0);
 				} else {
 					item.setSalesranking(Integer.valueOf(salesRank));
 				}
-				String pgroup = xt.getAttributeValue(node, "pgroup");
+				String pgroup = xt.getAttributeValue(itemNode, "pgroup");
 				item.setProductgroup(pgroup);
 		
 			//insert
 				this.test(item);
 				JDBCTool.executeUpdate((con, st) ->	{
-					String sql = "INSERT INTO ITEM (item_id, title, rating, salesranking, image, productgroup) values (?,?,?,?,?,?::Pgroup)";
+					String sql = "INSERT INTO ITEM ("
+							+ " item_id, title, rating, salesranking, image, productgroup)"
+							+ " VALUES (?,?,?,?,?,?::Pgroup)";
 					PreparedStatement ps = con.prepareStatement(sql);
 					ps.setString(1, item.getItem_id());
 					ps.setString(2, item.getTitle());
@@ -152,15 +153,17 @@ public class Item {
 					
 				});
 			} catch (IllegalArgumentException e) {
-				ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(itemNode));
 			} catch (XmlDataException e) {
-				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(itemNode));
 			} catch (SQLException e) {
-				if(!e.getMessage().contains("duplicate key value")) {
-					ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(node));
+				if(e.getMessage().contains("duplicate key value")) {
+					this.handleDuplicatedPKDresden(item);
+				} else {
+					ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(itemNode));
 				}
 			} catch (Exception e) {
-				ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(itemNode));
 			}
 		});
 	}
@@ -173,38 +176,36 @@ public class Item {
 				level -> level == 2, 
 				node -> node.getNodeName().equals("item")
 		);
-		items.forEach(node -> {
+		items.forEach(itemNode -> {
 			Item item = new Item();
 			try {
 			//xml data
-				item.setItem_id(xt.getAttributeValue(node, "asin"));
-				xt.getDirectChildElementNodes(node).forEach(nd -> {
+				item.setItem_id(xt.getAttributeValue(itemNode, "asin"));
+				xt.getDirectChildElementNodes(itemNode).forEach(nd -> {
 					if(nd.getNodeName().equals("title") && xt.isLeafElementNode(nd)) {
 						item.setTitle(nd.getTextContent());
 					}
 				});
-				String salesRank = xt.getAttributeValue(node, "salesrank");
+				String salesRank = xt.getAttributeValue(itemNode, "salesrank");
 				if(salesRank.length() == 0) {
 					item.setSalesranking(0);
 				} else {
 					item.setSalesranking(Integer.valueOf(salesRank));
 				}
-				item.setImage(xt.getAttributeValue(node, "picture"));
-				String pgroup = xt.getAttributeValue(node, "pgroup");
-				if(pgroup.equals("Music")) {
-					pgroup = "Music_CD";
-				}
-				Pgroup pgr = Pgroup.valueOf(pgroup);
-				item.setProductgroup(pgr);
+				item.setImage(xt.getAttributeValue(itemNode, "picture"));
+				String pgroup = xt.getAttributeValue(itemNode, "pgroup");
+				item.setProductgroup(pgroup);
 		
 			//insert
 				this.test(item);
 				JDBCTool.executeUpdate((con, st) ->	{
-					String sql = "INSERT INTO ITEM (item_id, title, rating, salesranking, image, productgroup) values (?,?,?,?,?,?::Pgroup)";
+					String sql = "INSERT INTO ITEM ("
+							+ " item_id, title, rating, salesranking, image, productgroup)"
+							+ " VALUES (?,?,?,?,?,?::Pgroup)";
 					PreparedStatement ps = con.prepareStatement(sql);
 					ps.setString(1, item.getItem_id());
 					ps.setString(2, item.getTitle());
-//						ps.setDouble(3, item.getRating());
+					//ps.setDouble(3, item.getRating());
 					ps.setDouble(3, 0); // temporary
 					ps.setInt(4, item.getSalesranking());
 					ps.setString(5, item.getImage());
@@ -214,17 +215,27 @@ public class Item {
 					
 				});
 			} catch (IllegalArgumentException e) {
-				ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(itemNode));
 			} catch (XmlDataException e) {
-				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(itemNode));
 			} catch (SQLException e) {
-				if(!e.getMessage().contains("duplicate key value")) {
-					ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(node));
+				if(e.getMessage().contains("duplicate key value")) {
+					this.handleDuplicatedPKLeipzig(item);
+				} else {
+					ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(itemNode));
 				}
 			} catch (Exception e) {
-				ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(itemNode));
 			}
 		});
+	}
+	
+	public void handleDuplicatedPKDresden(Item item) {
+		//to-do
+	}
+
+	public void handleDuplicatedPKLeipzig(Item item) {
+		//to-do
 	}
 
 	public static void main(String[] args) throws Exception {

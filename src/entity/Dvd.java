@@ -73,7 +73,7 @@ public class Dvd {
 	}
 
 	public Dvd() {
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	public String getItem_id() {
@@ -130,9 +130,9 @@ public class Dvd {
 	}
 	
 	
-	public static Predicate<String> pred_format = format -> true; //allow
-	public static Predicate<Short> pred_runningtime = runningtime -> runningtime == null || (runningtime >= 0 && runningtime < Short.MAX_VALUE);
-	public static Predicate<String> pred_regioncode = regioncode -> true; //allow
+	public static Predicate<String> pred_format = format -> true; //allow null
+	public static Predicate<Short> pred_runningtime = runningtime -> runningtime == null || (runningtime >= 0 && runningtime < Short.MAX_VALUE); //allow null
+	public static Predicate<String> pred_regioncode = regioncode -> true; //allow null
 	
 	public void testDvd(Dvd dvd) throws Exception {
 		if(!Item.pred_item_id.test(dvd.getItem_id())) {throw new XmlDataException("item_id Error (length not 10): \""+dvd.getItem_id()+"\""); }

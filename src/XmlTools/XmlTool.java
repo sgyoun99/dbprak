@@ -553,7 +553,7 @@ public class XmlTool {
 //		xt.loadXML(Config.LEIPZIG);
 //		xt.analyseAttributesInNode("dvdspec");
 		
-//		xt.encodeFileToUTF_8(Config.DRESDEN_ORIGINAL);
+		xt.encodeFileToUTF_8(Config.DRESDEN_ORIGINAL);
 
 //		xt.loadXML(Config.DRESDEN_ENCODED);
 //		xt.analyseAttributesInNode("format");
