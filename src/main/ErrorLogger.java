@@ -10,6 +10,7 @@ public class ErrorLogger {
 		//temp
 		System.out.print(">> ErrorLogger::" + errType + "::");
 		System.out.println(errorContent);
+		e.printStackTrace();
 
 		try {
 			JDBCTool.executeUpdate((conn, st) -> {

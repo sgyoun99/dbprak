@@ -515,7 +515,7 @@ public class XmlTool {
 				
 			});
 		});
-		
+		System.out.println("= = = analyse <"+parentNodeName+"> = = =");
 		System.out.println(">> Node count");
 		nodeCount.forEach((k,v)->{
 			System.out.println("<"+k + ">: " +v+" times");
@@ -542,7 +542,7 @@ public class XmlTool {
 		
 		
 		
-		xt.analyseDirectChildNodes(Config.LEIPZIG, "dvdspec");
+		xt.analyseDirectChildNodes(Config.LEIPZIG, "directors");
 		
 		
 

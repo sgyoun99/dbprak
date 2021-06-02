@@ -31,9 +31,31 @@ public class JDBCTool {
 			worker.work(con, st);
 			
 			st.close();
-			con.commit ();
+			con.commit();
 			} catch (SQLException e) {
 				con.rollback (); 
+				throw new SQLException(e);
+			} finally {
+				try { 
+					con.setAutoCommit (true); 
+					con.close();
+				} catch (SQLException e3) {
+					System.out.println(e3);
+				} 
+			}
+	}
+	
+	public static void executeUpdateAutoCommit(SQLExecutable worker) throws Exception {
+		Connection con = getConnection();
+		try {
+			Statement st = con.createStatement();
+			con.setAutoCommit (true); 
+			
+			//Implemented class will do this job.
+			worker.work(con, st);
+			
+			st.close();
+			} catch (SQLException e) {
 				throw new SQLException(e);
 			} finally {
 				try { 

@@ -44,7 +44,10 @@ public class Main {
 			simItems.leipzig();
 			
 			Dvd dvd = new Dvd();
-			dvd.leipzig();
+			dvd.dvdLeipzig();
+			dvd.actorLeipzig();
+			dvd.creatorLeipzig();
+			dvd.directorLeipzig();
 
 		} catch (Exception e) {
 			e.printStackTrace();

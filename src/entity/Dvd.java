@@ -63,7 +63,7 @@ public class Dvd {
 	String item_id;
 	String format;
 	Integer runningtime;
-	Integer regioncode;
+	Short regioncode;
 	
 	public String getItem_id() {
 		return item_id;
@@ -78,15 +78,23 @@ public class Dvd {
 	}
 
 	public void setFormat(String format) {
-		this.format = format;
+		if(format == null) {
+			this.format = "";
+		} else {
+			this.format = format;
+		}
 	}
 
 	public Integer getRunningtime() {
-		return runningtime;
+		if(runningtime == null) {
+			return 0;
+		} else {
+			return runningtime;
+		}
 	}
 
 	public void setRunningtime(String runningtime) {
-		if(runningtime.length() == 0) {
+		if(runningtime.length() == 0 || runningtime == null) {
 			this.runningtime = 0;
 		} else {
 			this.runningtime = Integer.valueOf(runningtime);
@@ -96,40 +104,54 @@ public class Dvd {
 		this.runningtime = runningtime;
 	}
 
-	public Integer getregioncode() {
-		return regioncode;
-	}
-
-	public void setregioncode(String regioncode) {
-		if(regioncode.length() == 0) {
-			this.regioncode = 0;
+	public Short getRegioncode() {
+		if(regioncode == null) {
+			return 0;
 		} else {
-			this.regioncode = Integer.valueOf(regioncode);
+			return regioncode;
 		}
 	}
-	public void setregioncode(Integer regioncode) {
+
+	public void setRegioncode(String regioncode) {
+		if(regioncode.length() == 0 || regioncode == null) {
+			this.regioncode = 0;
+		} else {
+			this.regioncode = Short.valueOf(regioncode);
+		}
+	}
+	public void setRegioncode(Short regioncode) {
 		this.regioncode = regioncode;
 	}
 	
-	public static Predicate<String> pred_format = format -> format.length() != 0;
-	public static Predicate<Integer> pred_runningtime = runningtime -> runningtime >= 0 && runningtime < 32767;
-	public static Predicate<Integer> pred_regioncode = regioncode -> regioncode >= 0 && regioncode < 32767; // ?
 	
-	public boolean test() throws Exception {
+	public static Predicate<String> pred_format = format -> true; //allow
+	public static Predicate<Integer> pred_runningtime = runningtime -> runningtime == null || (runningtime >= 0 && runningtime < Integer.MAX_VALUE);
+	public static Predicate<Short> pred_regioncode = regioncode -> regioncode == null || (regioncode >= 0 && regioncode < Short.MAX_VALUE); // ?
+	
+	public void testDVD() throws Exception {
 		if(!Item.pred_item_id.test(getItem_id())) {throw new XmlDataException("item_id Error (length not 10): \""+getItem_id()+"\""); }
 		if(!pred_format.test(getFormat())) {throw new XmlDataException("format Error: \""+getFormat()+"\""); }
 		if(!pred_runningtime.test(getRunningtime())) {throw new XmlDataException("runningtime Error: " +getRunningtime() ); }
-		if(!pred_regioncode.test(getregioncode())) {throw new XmlDataException("regioncode Error "+ getregioncode()); }
+		if(!pred_regioncode.test(getRegioncode())) {throw new XmlDataException("regioncode Error "+ getRegioncode()); }
 		
-		return true;
 	}
 	
-	public void dvdActor(Node node) {
-		
+	public static Predicate<String> pred_actor = actor -> actor != null;
+	public static Predicate<String> pred_creator = creator -> creator != null;
+	public static Predicate<String> pred_director = director -> director != null;
+	public void testActor(Actor actor) throws Exception {
+		if(!pred_actor.test(actor.getActor())) {throw new XmlDataException("actor Error. actor is null.");}
 	}
+	public void testCreator(Creator creator) throws Exception {
+		if(!pred_creator.test(creator.getCreator())) {throw new XmlDataException("creator Error. creator is null.");}
+	}
+	public void testDirector(Director director) throws Exception {
+		if(!pred_director.test(director.getDirector())) {throw new XmlDataException("director Error. director is null.");}
+	}
+	
 
-	public void leipzig() {
-		String location = "Dvd(leipzig)";
+	public void dvdLeipzig() {
+		String location = "DVD(leipzig)";
 		System.out.println(">> DVD Leipzig ...");
 		XmlTool xt = new XmlTool(Config.LEIPZIG);
 		List<Node> items = xt.filterElementNodesDFS(xt.getDocumentNode(), 
@@ -146,72 +168,330 @@ public class Dvd {
 			}
 			return false;
 		}).collect(Collectors.toList()).forEach(dvdItemNode -> {
-			try {
 			//xml data
+			try {
 				setItem_id(xt.getAttributeValue(dvdItemNode, "asin"));
-				xt.visitChildElementNodesDFS(dvdItemNode, (node, level) -> {
-					if(node.getNodeName().equals("dvdspec") && !xt.isLeafElementNode(node)) {
-						xt.visitChildElementNodesDFS(node, (nd, l) -> {
-							if(nd.getNodeName().equals("format") && xt.hasTextContent(nd)) {
-								if(xt.hasTextContent(nd)){
-									setFormat(xt.getTextContent(nd));
-								} else {
-										try {
-										setFormat(xt.getAttributeValue(nd, "value"));
-									} catch (XmlDataException e) {
-										//confirm here
-										e.printStackTrace();
-									}
-								}
-							}
-							if(nd.getNodeName().equals("runningtime")) {
-								setRunningtime(xt.getTextContent(nd));
-							}
-							if(nd.getNodeName().equals("regioncode")) {
-								setregioncode(xt.getTextContent(nd));
-							}
-	
-						});
-					}
-				});
-		
-			//insert
-				this.test();
-				JDBCTool.executeUpdate((con, st) ->	{
-					String sql = "INSERT INTO public.dvd("
-							+ "	item_id, format, runningtime, regioncode)"
-							+ "	VALUES (?, ?, ?, ?);";
-					PreparedStatement ps = con.prepareStatement(sql);
-					ps.setString(1, getItem_id());
-					ps.setString(2, getFormat());
-					ps.setInt(3, getRunningtime());
-					ps.setInt(4, getregioncode());
-					ps.executeUpdate();
-					ps.close();
-					
-				});
-			} catch (IllegalArgumentException e) {
-				ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(dvdItemNode));
 			} catch (XmlDataException e) {
 				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(dvdItemNode));
-			} catch (SQLException e) {
-				if(!e.getMessage().contains("duplicate key value")) {
-					ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(dvdItemNode));
+			}
+			xt.visitChildElementNodesDFS(dvdItemNode, (node, level) -> {
+			try {
+				if(node.getNodeName().equals("dvdspec") && !xt.isLeafElementNode(node)) {
+					xt.visitChildElementNodesDFS(node, (nd, l) -> {
+						if(nd.getNodeName().equals("format") && xt.hasTextContent(nd)) {
+							if(xt.hasTextContent(nd)){
+								setFormat(xt.getTextContent(nd));
+							} else {
+									try {
+									setFormat(xt.getAttributeValue(nd, "value"));
+								} catch (XmlDataException e) {
+									//confirm here
+									e.printStackTrace();
+								}
+							}
+						}
+						if(nd.getNodeName().equals("runningtime")) {
+							setRunningtime(xt.getTextContent(nd));
+						}
+						if(nd.getNodeName().equals("regioncode")) {
+							setRegioncode(xt.getTextContent(nd));
+						}
+						try {
+							this.testDVD();
+							JDBCTool.executeUpdateAutoCommit((con, st) -> {
+								String sql;
+								PreparedStatement ps;
+								sql = "INSERT INTO public.dvd("
+										+ "	item_id, format, runningtime, regioncode)"
+										+ "	VALUES (?, ?, ?, ?);";
+								ps = con.prepareStatement(sql);
+								ps.setString(1, getItem_id());
+								ps.setString(2, getFormat());
+								ps.setInt(3, getRunningtime());
+								ps.setShort(4, getRegioncode());
+								ps.executeUpdate();
+								ps.close();	
+								
+							});
+						} catch (XmlDataException e) {
+							ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(dvdItemNode));
+						} catch (SQLException e) {
+							if(!e.getMessage().contains("duplicate key value")) {
+								ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(dvdItemNode));
+							}	
+						} catch (Exception e) {
+							ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(dvdItemNode));
+						}
+					});
 				}
+				
+			} catch (IllegalArgumentException e) {
+				ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(dvdItemNode));
 			} catch (Exception e) {
 				ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(dvdItemNode));
 			}
+			});
+			
 		});
 	}	
+	
+	
+	
+	public void actorLeipzig() {
+		String location = "acctor(leipzig)";
+		XmlTool xt = new XmlTool(Config.LEIPZIG);
+		List<Node> items = xt.filterElementNodesDFS(xt.getDocumentNode(), 
+				level -> level == 2, 
+				node -> node.getNodeName().equals("item")
+		);
+		items.stream().filter(n -> {
+			try {
+				return xt.hasAttribute(n, "pgroup") 
+						&& xt.getAttributeValue(n, "pgroup").equals("DVD");
+			} catch (XmlDataException e) {
+				//do nothing
+			}
+			return false;
+		}).collect(Collectors.toList()).forEach(dvdItemNode -> {
+			try {
+				setItem_id(xt.getAttributeValue(dvdItemNode, "asin"));
+			} catch (XmlDataException e) {
+				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(dvdItemNode));
+			}
+			xt.visitChildElementNodesDFS(dvdItemNode, (node, level) -> {
+				try {
+					if(node.getNodeName().equals("actors") && !xt.isLeafElementNode(node)) {
+						xt.visitChildElementNodesDFS(node, (nd, l) -> {
+							Actor actor = new Actor();
+							if(nd.getNodeName().equals("actor")) {
+								try {
+									actor.setActor(xt.getAttributeValue(nd, "name"));
+								} catch (XmlDataException e) {
+								}
+								try {
+									this.testActor(actor);
+									JDBCTool.executeUpdateAutoCommit((con, st) -> {
+										String sql;
+										PreparedStatement ps;
+										sql = "INSERT INTO public.actor("
+												+ "	actor)"
+												+ "	VALUES (?);";
+										ps = con.prepareStatement(sql);
+										ps.setString(1, actor.getActor());
+										ps.executeUpdate();
+										ps.close();
+										
+										sql = "INSERT INTO public.dvd_actor("
+												+ "	item_id, actor)"
+												+ "	VALUES (?, ?);";
+										ps = con.prepareStatement(sql);
+										ps.setString(1, getItem_id());
+										ps.setString(2, actor.getActor());
+										ps.executeUpdate();
+										ps.close();
+									});
+								} catch (XmlDataException e) {
+									ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(node));
+								} catch (SQLException e) {
+									if(!e.getMessage().contains("duplicate key value")) {
+										ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(dvdItemNode));
+									}
+								} catch (Exception e) {
+									ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(dvdItemNode));
+								}
+							}
+						});
+					}
+					
+				} catch (IllegalArgumentException e) {
+					ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(dvdItemNode));
+				} catch (Exception e) {
+					ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(dvdItemNode));
+				}
+			});
+			
+		});
+	}	
+	
+
+	public void creatorLeipzig() {
+		String location = "creator(leipzig)";
+		XmlTool xt = new XmlTool(Config.LEIPZIG);
+		List<Node> items = xt.filterElementNodesDFS(xt.getDocumentNode(), 
+				level -> level == 2, 
+				node -> node.getNodeName().equals("item")
+		);
+		items.stream().filter(n -> {
+			try {
+				return xt.hasAttribute(n, "pgroup") 
+						&& xt.getAttributeValue(n, "pgroup").equals("DVD");
+			} catch (XmlDataException e) {
+				//do nothing
+			}
+			return false;
+		}).collect(Collectors.toList()).forEach(dvdItemNode -> {
+			try {
+				setItem_id(xt.getAttributeValue(dvdItemNode, "asin"));
+			} catch (XmlDataException e) {
+				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(dvdItemNode));
+			}
+			xt.visitChildElementNodesDFS(dvdItemNode, (node, level) -> {
+				try {
+					if(node.getNodeName().equals("creators") && !xt.isLeafElementNode(node)) {
+						xt.visitChildElementNodesDFS(node, (nd, l) -> {
+							Creator creator = new Creator();
+							if(nd.getNodeName().equals("creator")) {
+								try {
+									creator.setCreator(xt.getAttributeValue(nd, "name"));
+								} catch (XmlDataException e) {
+								}
+								try {
+									this.testCreator(creator);
+									JDBCTool.executeUpdateAutoCommit((con, st) -> {
+										String sql;
+										PreparedStatement ps;
+										sql = "INSERT INTO public.creator("
+												+ "	creator)"
+												+ "	VALUES (?);";
+										ps = con.prepareStatement(sql);
+										ps.setString(1, creator.getCreator());
+										ps.executeUpdate();
+										ps.close();
+										
+										sql = "INSERT INTO public.dvd_creator("
+												+ "	item_id, creator)"
+												+ "	VALUES (?, ?);";
+										ps = con.prepareStatement(sql);
+										ps.setString(1, getItem_id());
+										ps.setString(2, creator.getCreator());
+										ps.executeUpdate();
+										ps.close();
+									});
+								} catch (XmlDataException e) {
+									ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(node));
+								} catch (SQLException e) {
+									if(!e.getMessage().contains("duplicate key value")) {
+										ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(dvdItemNode));
+									}
+								} catch (Exception e) {
+									ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(dvdItemNode));
+								}
+							}
+						});
+					}
+					
+				} catch (IllegalArgumentException e) {
+					ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(dvdItemNode));
+				} catch (Exception e) {
+					ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(dvdItemNode));
+				}
+			});
+			
+		});
+	}	
+	
+
+	public void directorLeipzig() {
+		String location = "director(leipzig)";
+		XmlTool xt = new XmlTool(Config.LEIPZIG);
+		List<Node> items = xt.filterElementNodesDFS(xt.getDocumentNode(), 
+				level -> level == 2, 
+				node -> node.getNodeName().equals("item")
+		);
+		items.stream().filter(n -> {
+			try {
+				return xt.hasAttribute(n, "pgroup") 
+						&& xt.getAttributeValue(n, "pgroup").equals("DVD");
+			} catch (XmlDataException e) {
+				//do nothing
+			}
+			return false;
+		}).collect(Collectors.toList()).forEach(dvdItemNode -> {
+			try {
+				setItem_id(xt.getAttributeValue(dvdItemNode, "asin"));
+			} catch (XmlDataException e) {
+				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(dvdItemNode));
+			}
+			xt.visitChildElementNodesDFS(dvdItemNode, (node, level) -> {
+				try {
+					if(node.getNodeName().equals("directors") && !xt.isLeafElementNode(node)) {
+						xt.visitChildElementNodesDFS(node, (nd, l) -> {
+							Director director = new Director();
+							if(nd.getNodeName().equals("director")) {
+								try {
+									director.setDirector(xt.getAttributeValue(nd, "name"));
+								} catch (XmlDataException e) {
+								}
+								try {
+									this.testDirector(director);
+									JDBCTool.executeUpdateAutoCommit((con, st) -> {
+										String sql;
+										PreparedStatement ps;
+										sql = "INSERT INTO public.director("
+												+ "	director)"
+												+ "	VALUES (?);";
+										ps = con.prepareStatement(sql);
+										ps.setString(1, director.getDirector());
+										ps.executeUpdate();
+										ps.close();
+										
+										sql = "INSERT INTO public.dvd_director("
+												+ "	item_id, director)"
+												+ "	VALUES (?, ?);";
+										ps = con.prepareStatement(sql);
+										ps.setString(1, getItem_id());
+										ps.setString(2, director.getDirector());
+										ps.executeUpdate();
+										ps.close();
+									});
+								} catch (XmlDataException e) {
+									ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(node));
+								} catch (SQLException e) {
+									if(!e.getMessage().contains("duplicate key value")) {
+										ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(dvdItemNode));
+									}
+								} catch (Exception e) {
+									ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(dvdItemNode));
+								}
+							}
+						});
+					}
+					
+				} catch (IllegalArgumentException e) {
+					ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(dvdItemNode));
+				} catch (Exception e) {
+					ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(dvdItemNode));
+				}
+			});
+			
+		});
+	}	
+	
 	
 	public static void main(String[] args) throws Exception {
 		DropTables.dropTable("Errors");
 		CreateTables.createTable("Errors");
-//		DropTables.dropTable("DVD");
-//		CreateTables.createTable("DVD");
+
+		DropTables.dropTable("DVD_Director");
+		DropTables.dropTable("DVD_Creator");
+		DropTables.dropTable("DVD_Actor");
+		DropTables.dropTable("Director");
+		DropTables.dropTable("Creator");
+		DropTables.dropTable("Actor");
+		DropTables.dropTable("DVD");
+		CreateTables.createTable("DVD");
+		CreateTables.createTable("Actor");
+		CreateTables.createTable("Creator");
+		CreateTables.createTable("Director");
+		CreateTables.createTable("DVD_Actor");
+		CreateTables.createTable("DVD_Creator");
+		CreateTables.createTable("DVD_Director");
 		
 		Dvd dvd = new Dvd();
-		dvd.leipzig();
+		dvd.dvdLeipzig();
+		dvd.actorLeipzig();
+		dvd.creatorLeipzig();
+		dvd.directorLeipzig();
 	}
 	
 	
