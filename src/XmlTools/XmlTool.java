@@ -196,7 +196,9 @@ public class XmlTool {
 		if(isLeafElementNode(node)) {
 			return node.getTextContent().trim();
 		} else {
-			return "";
+//			return "";
+			//hmm null is but risky...
+			return null;
 		}
 	}
 	
@@ -261,6 +263,22 @@ public class XmlTool {
 		List<Node> res = new ArrayList<Node>();
 		this.visitChildElementNodesDFS(this.documentNode, (node, level) -> res.add(node));
 		return res;
+	}
+	
+	//will returns null, when not exists
+	public List<Node> getNodesbyNameDFS(Node startNode, String nodeName) {
+		List<Node> res = new ArrayList<Node>();
+		this.visitChildElementNodesDFS(startNode, (node, l) -> {
+			if(node.getNodeName().equals(nodeName)) {
+				res.add(node);
+			}
+		});
+		return res;
+	}
+	
+	//will returns null, when not exists
+	public Node getNodebyNameDFS(Node startNode, String nodeName) {
+		return getNodesbyNameDFS(startNode, nodeName).get(0) ;
 	}
 	
 	public void visitAllElementNodesDFS(XmlToolWorkable worker) {

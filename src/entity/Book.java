@@ -65,6 +65,11 @@ public class Book {
 
 
 
+	public Book() {
+	}
+
+
+
 	public String getItem_id() {
 		return item_id;
 	}
@@ -104,15 +109,11 @@ public class Book {
 			return yyyy;
 	}
 
-	@SuppressWarnings("deprecation")
-	public void setPublication_date(String publication_date) {
+	public void setPublication_date(String publication_date) throws IllegalArgumentException{
 		if(publication_date != null) {
-			String yyyy = publication_date.substring(0,4);
-			String mm = publication_date.substring(5,7);
-			String dd = publication_date.substring(8,10);
-			this.publication_date = new Date(Integer.valueOf(yyyy), Integer.valueOf(mm), Integer.valueOf(dd));
+			this.publication_date = Date.valueOf(publication_date);
 		} else {
-			this.publication_date = new Date(0, 1, 1);
+			this.publication_date = Date.valueOf("9999-12-31");;
 		}
 		
 	}
@@ -140,15 +141,15 @@ public class Book {
 	}
 	
 	
-	public static Predicate<Date> pred_publicationdate = date -> true; //allow
+	public static Predicate<Date> pred_publicationdate = date -> true; //allow. let DB check.
 	public static Predicate<String> pred_isbn = date -> true; //allow
 	public static Predicate<Short> pred_pages = pages -> pages == null || (pages >= 0 && pages < Short.MAX_VALUE); // ?
 	
-	public void testDVD() throws Exception {
-		if(!Item.pred_item_id.test(getItem_id())) {throw new XmlDataException("item_id Error (length not 10): \""+getItem_id()+"\""); }
-		if(!pred_pages.test(getPages())) {throw new XmlDataException("regioncode Error "+ getPages()); }
-		if(!pred_isbn.test(getIsbn())) {throw new XmlDataException("isbn Error "+ getIsbn()); }
-		if(!pred_publicationdate.test(getPublication_date())) {throw new XmlDataException("publication date Error "+ getPublication_date()); }
+	public void testBook(Book book) throws Exception {
+		if(!Item.pred_item_id.test(book.getItem_id())) {throw new XmlDataException("item_id Error (length not 10): \""+getItem_id()+"\""); }
+		if(!pred_pages.test(book.getPages())) {throw new XmlDataException("regioncode Error "+ getPages()); }
+		if(!pred_isbn.test(book.getIsbn())) {throw new XmlDataException("isbn Error "+ getIsbn()); }
+		if(!pred_publicationdate.test(book.getPublication_date())) {throw new XmlDataException("publication date Error "+ getPublication_date()); }
 		
 	}
 	
@@ -182,63 +183,65 @@ public class Book {
 			return false;
 		}).collect(Collectors.toList()).forEach(bookItemNode -> {
 			//xml data
+			Book book = new Book();
 			try {
-				setItem_id(xt.getAttributeValue(bookItemNode, "asin"));
+				book.setItem_id(xt.getAttributeValue(bookItemNode, "asin"));
 			} catch (XmlDataException e) {
 				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(bookItemNode));
 			}
-			xt.visitChildElementNodesDFS(bookItemNode, (node, level) -> {
+			Node bookspec = xt.getNodebyNameDFS(bookItemNode, "bookspec");
 			try {
-				if(node.getNodeName().equals("bookspec") && !xt.isLeafElementNode(node)) {
-					xt.visitChildElementNodesDFS(node, (nd, l) -> {
-						if(nd.getNodeName().equals("isbn") && xt.hasTextContent(nd)) {
-							if(xt.hasTextContent(nd)){
-								setIsbn(xt.getTextContent(nd));
-							} else {
-									try {
-									setIsbn(xt.getAttributeValue(nd, "val"));
-								} catch (XmlDataException e) {
-									e.printStackTrace();
-								}
-							}
-						}
-						if(nd.getNodeName().equals("pages")) {
-							setPages(xt.getTextContent(nd));
-						}
-						if(nd.getNodeName().equals("publication")) {
-							try {
-								setPublication_date(xt.getAttributeValue(nd,"date"));
+				if(bookspec.getNodeName().equals("bookspec") && !xt.isLeafElementNode(bookspec)) {
+					Node isbn = xt.getNodebyNameDFS(bookspec, "isbn");
+					if(isbn != null) {
+						if(xt.hasTextContent(isbn)){
+							book.setIsbn(xt.getTextContent(isbn));
+						} else {
+								try {
+								book.setIsbn(xt.getAttributeValue(isbn, "val"));
 							} catch (XmlDataException e) {
 								e.printStackTrace();
 							}
 						}
-						try {
-							this.testDVD();
-							JDBCTool.executeUpdateAutoCommit((con, st) -> {
-								String sql;
-								PreparedStatement ps;
-								sql = "INSERT INTO public.book("
-										+ "	item_id, pages, publication_date, isbn)"
-										+ "	VALUES (?, ?, ?, ?);";
-								ps = con.prepareStatement(sql);
-								ps.setString(1, getItem_id());
-								ps.setShort(2, getPages());
-								ps.setDate(3, getPublication_date());
-								ps.setString(4, getIsbn());
-								ps.executeUpdate();
-								ps.close();	
-								
-							});
-						} catch (XmlDataException e) {
-							ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(bookItemNode));
-						} catch (SQLException e) {
-							if(!e.getMessage().contains("duplicate key value")) {
-								ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(bookItemNode));
-							}	
-						} catch (Exception e) {
-							ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(bookItemNode));
-						}
-					});
+					}
+					Node pages = xt.getNodebyNameDFS(bookspec, "pages");
+					book.setPages(xt.getTextContent(pages));
+					Node publication = xt.getNodebyNameDFS(bookspec, "publication");
+					try {
+						book.setPublication_date(xt.getAttributeValue(publication,"date"));
+					} catch ( IllegalArgumentException e) {
+						ErrorLogger.write(location+".date", ErrType.XML, e, xt.getNodeContentDFS(bookItemNode));	
+					} catch ( StringIndexOutOfBoundsException e) {
+						ErrorLogger.write(location+".date", ErrType.XML, e, xt.getNodeContentDFS(bookItemNode));	
+					} catch ( XmlDataException e) {
+						ErrorLogger.write(location+".date", ErrType.XML, e, xt.getNodeContentDFS(bookItemNode));	
+					}
+					try {
+						this.testBook(book);
+						JDBCTool.executeUpdateAutoCommit((con, st) -> {
+							String sql;
+							PreparedStatement ps;
+							sql = "INSERT INTO public.book("
+									+ "	item_id, pages, publication_date, isbn)"
+									+ "	VALUES (?, ?, ?, ?);";
+							ps = con.prepareStatement(sql);
+							ps.setString(1, book.getItem_id());
+							ps.setShort(2, book.getPages());
+							ps.setDate(3, book.getPublication_date());
+							ps.setString(4, book.getIsbn());
+							ps.executeUpdate();
+							ps.close();	
+							
+						});
+					} catch (XmlDataException e) {
+						ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(bookItemNode));
+					} catch (SQLException e) {
+						if(!e.getMessage().contains("duplicate key value")) {
+							ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(bookItemNode));
+						}	
+					} catch (Exception e) {
+						ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(bookItemNode));
+					}
 				}
 				
 			} catch (IllegalArgumentException e) {
@@ -246,7 +249,6 @@ public class Book {
 			} catch (Exception e) {
 				ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(bookItemNode));
 			}
-			});
 			
 		});
 	}	
@@ -264,7 +266,7 @@ public class Book {
 		items.stream().filter(n -> {
 			try {
 				return xt.hasAttribute(n, "pgroup") 
-						&& xt.getAttributeValue(n, "pgroup").equals("DVD");
+						&& xt.getAttributeValue(n, "pgroup").equals("Book");
 			} catch (XmlDataException e) {
 				//do nothing
 			}
@@ -343,7 +345,7 @@ public class Book {
 		items.stream().filter(n -> {
 			try {
 				return xt.hasAttribute(n, "pgroup") 
-						&& xt.getAttributeValue(n, "pgroup").equals("DVD");
+						&& xt.getAttributeValue(n, "pgroup").equals("Book");
 			} catch (XmlDataException e) {
 				//do nothing
 			}
@@ -434,6 +436,7 @@ public class Book {
 		book.book();
 //		book.author();
 //		book.publisher();
+		System.out.println("=== done ===");
 	}
 	
 	
