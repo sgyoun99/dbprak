@@ -43,11 +43,15 @@ public class Main {
 			simItems.dresden();
 			simItems.leipzig();
 			
-			Dvd dvd = new Dvd();
-			dvd.dvdLeipzig();
-			dvd.actorLeipzig();
-			dvd.creatorLeipzig();
-			dvd.directorLeipzig();
+			Dvd dvd = new Dvd(Config.LEIPZIG, "Leipzig");
+			dvd.dvd();
+			dvd.actor();
+			dvd.creator();
+			dvd.director();
+			dvd = new Dvd(Config.DRESDEN_ENCODED, "Dresden");
+			dvd.dvd();
+			dvd.actor();
+			dvd.creator();
 
 		} catch (Exception e) {
 			e.printStackTrace();

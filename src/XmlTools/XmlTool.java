@@ -532,17 +532,17 @@ public class XmlTool {
 	public static void main(String[] args) {
 		
 		XmlTool xt = new XmlTool();
-		xt.loadXML(Config.LEIPZIG);
+//		xt.loadXML(Config.LEIPZIG);
 //		xt.analyseAttributesInNode("dvdspec");
 		
 //		xt.encodeFileToUTF_8(Config.DRESDEN_ORIGINAL);
 
-		xt.loadXML(Config.DRESDEN_ENCODED);
+//		xt.loadXML(Config.DRESDEN_ENCODED);
 //		xt.analyseAttributesInNode("format");
 		
 		
 		
-		xt.analyseDirectChildNodes(Config.LEIPZIG, "directors");
+		xt.analyseDirectChildNodes(Config.DRESDEN_ENCODED, "directors");
 		
 		
 

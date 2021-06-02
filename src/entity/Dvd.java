@@ -2,7 +2,6 @@ package entity;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -17,7 +16,6 @@ import main.CreateTables;
 import main.DropTables;
 import main.ErrType;
 import main.ErrorLogger;
-import main.Pgroup;
 
 class Actor{
 	private String actor;
@@ -60,11 +58,20 @@ class Director{
 
 public class Dvd {
 
-	String item_id;
-	String format;
-	Integer runningtime;
-	Short regioncode;
+	private String item_id;
+	private String format;
+	private Integer runningtime;
+	private Short regioncode;
 	
+	private String xmlPath;
+	private String location;
+	
+	public Dvd(String xmlPath, String location) {
+		super();
+		this.xmlPath = xmlPath;
+		this.location = location;
+	}
+
 	public String getItem_id() {
 		return item_id;
 	}
@@ -150,10 +157,10 @@ public class Dvd {
 	}
 	
 
-	public void dvdLeipzig() {
-		String location = "DVD(leipzig)";
-		System.out.println(">> DVD Leipzig ...");
-		XmlTool xt = new XmlTool(Config.LEIPZIG);
+	public void dvd() {
+		String location = "DVD(" + this.location + ")";
+		System.out.println(">> DVD " + this.location + " ...");
+		XmlTool xt = new XmlTool(this.xmlPath);
 		List<Node> items = xt.filterElementNodesDFS(xt.getDocumentNode(), 
 				level -> level == 2, 
 				node -> node.getNodeName().equals("item")
@@ -237,9 +244,10 @@ public class Dvd {
 	
 	
 	
-	public void actorLeipzig() {
-		String location = "acctor(leipzig)";
-		XmlTool xt = new XmlTool(Config.LEIPZIG);
+	public void actor() {
+		String location = "acctor(" + this.location + ")";
+		System.out.println(">> actor " + this.location + " ...");
+		XmlTool xt = new XmlTool(this.xmlPath);
 		List<Node> items = xt.filterElementNodesDFS(xt.getDocumentNode(), 
 				level -> level == 2, 
 				node -> node.getNodeName().equals("item")
@@ -267,6 +275,7 @@ public class Dvd {
 								try {
 									actor.setActor(xt.getAttributeValue(nd, "name"));
 								} catch (XmlDataException e) {
+									actor.setActor(xt.getTextContent(nd));
 								}
 								try {
 									this.testActor(actor);
@@ -314,9 +323,10 @@ public class Dvd {
 	}	
 	
 
-	public void creatorLeipzig() {
-		String location = "creator(leipzig)";
-		XmlTool xt = new XmlTool(Config.LEIPZIG);
+	public void creator() {
+		String location = "creator(" + this.location + ")";
+		System.out.println(">> creator " + this.location + " ...");
+		XmlTool xt = new XmlTool(this.xmlPath);
 		List<Node> items = xt.filterElementNodesDFS(xt.getDocumentNode(), 
 				level -> level == 2, 
 				node -> node.getNodeName().equals("item")
@@ -344,6 +354,7 @@ public class Dvd {
 								try {
 									creator.setCreator(xt.getAttributeValue(nd, "name"));
 								} catch (XmlDataException e) {
+									creator.setCreator(xt.getTextContent(nd));
 								}
 								try {
 									this.testCreator(creator);
@@ -391,9 +402,10 @@ public class Dvd {
 	}	
 	
 
-	public void directorLeipzig() {
-		String location = "director(leipzig)";
-		XmlTool xt = new XmlTool(Config.LEIPZIG);
+	public void director() {
+		String location = "director(\" + this.location + \")";
+		System.out.println(">> director " + this.location + " ...");
+		XmlTool xt = new XmlTool(this.xmlPath);
 		List<Node> items = xt.filterElementNodesDFS(xt.getDocumentNode(), 
 				level -> level == 2, 
 				node -> node.getNodeName().equals("item")
@@ -421,6 +433,7 @@ public class Dvd {
 								try {
 									director.setDirector(xt.getAttributeValue(nd, "name"));
 								} catch (XmlDataException e) {
+									director.setDirector(xt.getTextContent(nd));
 								}
 								try {
 									this.testDirector(director);
@@ -487,11 +500,15 @@ public class Dvd {
 		CreateTables.createTable("DVD_Creator");
 		CreateTables.createTable("DVD_Director");
 		
-		Dvd dvd = new Dvd();
-		dvd.dvdLeipzig();
-		dvd.actorLeipzig();
-		dvd.creatorLeipzig();
-		dvd.directorLeipzig();
+		Dvd dvd = new Dvd(Config.LEIPZIG, "Leipzig");
+		dvd.dvd();
+		dvd.actor();
+		dvd.creator();
+		dvd.director();
+		dvd = new Dvd(Config.DRESDEN_ENCODED, "Dresden");
+		dvd.dvd();
+		dvd.actor();
+		dvd.creator();
 	}
 	
 	
