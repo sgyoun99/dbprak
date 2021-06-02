@@ -107,10 +107,7 @@ public class Book {
 	public void setPublication_date(String publication_date) throws IllegalArgumentException{
 		if(publication_date != null) {
 			this.publication_date = Date.valueOf(publication_date);
-		} else {
-			this.publication_date = Date.valueOf("9999-12-31");;
 		}
-		
 	}
 
 	public String getIsbn() {

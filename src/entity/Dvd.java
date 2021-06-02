@@ -167,40 +167,39 @@ public class Dvd {
 		items.stream().filter(n -> {
 			try {
 				return xt.hasAttribute(n, "pgroup") 
-//						&& Item.pred_pgroup.test(xt.getAttributeValue(n, "pgroup"))
 						&& xt.getAttributeValue(n, "pgroup").equals("DVD");
 			} catch (XmlDataException e) {
 				//do nothing
 			}
 			return false;
 		}).collect(Collectors.toList()).forEach(dvdItemNode -> {
-			//xml data
-			Dvd dvd = new Dvd();
 			try {
+				//xml data
+				Dvd dvd = new Dvd();
 				dvd.setItem_id(xt.getAttributeValue(dvdItemNode, "asin"));
-			} catch (XmlDataException e) {
-				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(dvdItemNode));
-			}
-			Node dvdspec = xt.getNodebyNameDFS(dvdItemNode, "dvdspec");
+				Node dvdspec = xt.getNodebyNameDFS(dvdItemNode, "dvdspec");
 
-			Node format = xt.getNodebyNameDFS(dvdspec, "format");
-			if(format != null) {
-				if(xt.hasTextContent(format)){
-					dvd.setFormat(xt.getTextContent(format));
-				} else {
-						try {
-						dvd.setFormat(xt.getAttributeValue(format, "value"));
-					} catch (XmlDataException e) {
-						e.printStackTrace();
+				Node format = xt.getNodebyNameDFS(dvdspec, "format");
+				if(format != null) {
+					if(xt.hasTextContent(format)){
+						dvd.setFormat(xt.getTextContent(format));
+					} else {
+							try {
+							dvd.setFormat(xt.getAttributeValue(format, "value"));
+						} catch (XmlDataException e) {
+							e.printStackTrace();
+						}
 					}
 				}
-			}
-			Node runningtime = xt.getNodebyNameDFS(dvdspec, "runningtime");
-			dvd.setRunningtime(xt.getTextContent(runningtime));
-			Node regioncode = xt.getNodebyNameDFS(dvdspec, "regioncode");
-			dvd.setRegioncode(xt.getTextContent(regioncode));
-			try {
+				Node runningtime = xt.getNodebyNameDFS(dvdspec, "runningtime");
+				dvd.setRunningtime(xt.getTextContent(runningtime));
+				Node regioncode = xt.getNodebyNameDFS(dvdspec, "regioncode");
+				dvd.setRegioncode(xt.getTextContent(regioncode));
+				
+				//test
 				this.testDvd(dvd);
+
+				//insert
 				JDBCTool.executeUpdateAutoCommit((con, st) -> {
 					String sql;
 					PreparedStatement ps;

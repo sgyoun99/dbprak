@@ -52,6 +52,7 @@ public class Main {
 			dvd.dvd();
 			dvd.actor();
 			dvd.creator();
+			dvd.director();
 			
 			Book book = new Book(Config.LEIPZIG, "Leipzig");
 			book.book();

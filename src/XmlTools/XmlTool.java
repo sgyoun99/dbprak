@@ -560,10 +560,10 @@ public class XmlTool {
 		
 		
 		
-		xt.analyseDirectChildNodes(Config.DRESDEN_ENCODED, "dvdspec");
+		xt.analyseDirectChildNodes(Config.DRESDEN_ENCODED, "artists"); // <artist>...</artist>
 //		xt.analyseDirectChildNodes(Config.DRESDEN_ENCODED, "authors");
 
-		xt.analyseDirectChildNodes(Config.LEIPZIG, "dvdspec");
+//		xt.analyseDirectChildNodes(Config.LEIPZIG, "artists"); // <artist name="..."/>
 //		xt.analyseDirectChildNodes(Config.LEIPZIG, "authors");
 		
 
