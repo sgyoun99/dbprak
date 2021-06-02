@@ -83,20 +83,20 @@ public class Item {
 		}
 	}
 
-	public static Predicate<String> pred_item_id = id -> id.length() == 10;
-	public static Predicate<String> pred_title = title -> title.length() != 0;
+	public static Predicate<String> pred_item_id = item_id -> item_id.length() == 10;
+	public static Predicate<String> pred_title = title -> title != null && title.length() != 0;
 	public static Predicate<Double> pred_rating = rating -> rating >= 0 && rating <= 5;
 	public static Predicate<Integer> pred_salesranking = ranking -> ranking >= 0;
 	public static Predicate<String> pred_image = img -> true; // null allowed
 	public static Predicate<String> pred_pgroup = pgroup -> Pgroup.isValueOfPgroup(pgroup);
 	
 
-	public boolean test() throws XmlDataException {
-		if(!pred_item_id.test(getItem_id())) {throw new XmlDataException("item_id Error (length not 10): "+getItem_id()); }
-		if(!pred_title.test(getTitle())) {throw new XmlDataException("title Error (title empty)"); }
-	//	if(!predicate_rating.test(getRating())) {throw new XmlDataException("rating Error (out of range"); } // how??
-		if(!pred_salesranking.test(getSalesranking())) {throw new XmlDataException("salesranking Error"); }
-		if(!pred_image.test(getImage())) {throw new XmlDataException("img Error"); }
+	public boolean test(Item item) throws XmlDataException {
+		if(!pred_item_id.test(item.getItem_id())) {throw new XmlDataException("item_id Error (length not 10): "+item.getItem_id()); }
+		if(!pred_title.test(item.getTitle())) {throw new XmlDataException("title Error (title empty)"); }
+	//	if(!predicate_rating.test(item.getRating())) {throw new XmlDataException("rating Error (out of range"); } // how??
+		if(!pred_salesranking.test(item.getSalesranking())) {throw new XmlDataException("salesranking Error"); }
+		if(!pred_image.test(item.getImage())) {throw new XmlDataException("img Error"); }
 //		if(!pred_pgroup.test(getProductgroup().toString())) {throw new XmlDataException("pgroup Error"); } // not necessary
 		return true;
 	}
@@ -110,16 +110,17 @@ public class Item {
 			node -> node.getNodeName().equals("item")
 		);
 		items.forEach(node -> {
+			Item item = new Item();
 			try {
 			//xml data
-				setItem_id(xt.getAttributeValue(node, "asin"));
+				item.setItem_id(xt.getAttributeValue(node, "asin"));
 				xt.getDirectChildElementNodes(node).forEach(nd -> {
 					if(nd.getNodeName().equals("title") && xt.isLeafElementNode(nd)) {
-						setTitle(nd.getTextContent());
+						item.setTitle(nd.getTextContent());
 					}
 					if(nd.getNodeName().equals("details")) {
 						try {
-							setImage(xt.getAttributeValue(nd, "img"));
+							item.setImage(xt.getAttributeValue(nd, "img"));
 						} catch (XmlDataException e) {
 //							e.printStackTrace();
 						}
@@ -127,25 +128,25 @@ public class Item {
 				});
 				String salesRank = xt.getAttributeValue(node, "salesrank");
 				if(salesRank.length() == 0) {
-					setSalesranking(0);
+					item.setSalesranking(0);
 				} else {
-					setSalesranking(Integer.valueOf(salesRank));
+					item.setSalesranking(Integer.valueOf(salesRank));
 				}
 				String pgroup = xt.getAttributeValue(node, "pgroup");
-				setProductgroup(pgroup);
+				item.setProductgroup(pgroup);
 		
 			//insert
-				this.test();
+				this.test(item);
 				JDBCTool.executeUpdate((con, st) ->	{
 					String sql = "INSERT INTO ITEM (item_id, title, rating, salesranking, image, productgroup) values (?,?,?,?,?,?::Pgroup)";
 					PreparedStatement ps = con.prepareStatement(sql);
-					ps.setString(1, this.getItem_id());
-					ps.setString(2, this.getTitle());
-//					ps.setDouble(3, this.getRating());
+					ps.setString(1, item.getItem_id());
+					ps.setString(2, item.getTitle());
+//					ps.setDouble(3, item.getRating());
 					ps.setDouble(3, 0); // temporary
-					ps.setInt(4, this.getSalesranking());
-					ps.setString(5, this.getImage());
-					ps.setString(6, this.getProductgroup().toString());
+					ps.setInt(4, item.getSalesranking());
+					ps.setString(5, item.getImage());
+					ps.setString(6, item.getProductgroup().toString());
 					ps.executeUpdate();
 					ps.close();
 					
@@ -173,40 +174,41 @@ public class Item {
 				node -> node.getNodeName().equals("item")
 		);
 		items.forEach(node -> {
+			Item item = new Item();
 			try {
 			//xml data
-				setItem_id(xt.getAttributeValue(node, "asin"));
+				item.setItem_id(xt.getAttributeValue(node, "asin"));
 				xt.getDirectChildElementNodes(node).forEach(nd -> {
 					if(nd.getNodeName().equals("title") && xt.isLeafElementNode(nd)) {
-						setTitle(nd.getTextContent());
+						item.setTitle(nd.getTextContent());
 					}
 				});
 				String salesRank = xt.getAttributeValue(node, "salesrank");
 				if(salesRank.length() == 0) {
-					setSalesranking(0);
+					item.setSalesranking(0);
 				} else {
-					setSalesranking(Integer.valueOf(salesRank));
+					item.setSalesranking(Integer.valueOf(salesRank));
 				}
-				setImage(xt.getAttributeValue(node, "picture"));
+				item.setImage(xt.getAttributeValue(node, "picture"));
 				String pgroup = xt.getAttributeValue(node, "pgroup");
 				if(pgroup.equals("Music")) {
 					pgroup = "Music_CD";
 				}
 				Pgroup pgr = Pgroup.valueOf(pgroup);
-				setProductgroup(pgr);
+				item.setProductgroup(pgr);
 		
 			//insert
-				this.test();
+				this.test(item);
 				JDBCTool.executeUpdate((con, st) ->	{
 					String sql = "INSERT INTO ITEM (item_id, title, rating, salesranking, image, productgroup) values (?,?,?,?,?,?::Pgroup)";
 					PreparedStatement ps = con.prepareStatement(sql);
-					ps.setString(1, this.getItem_id());
-					ps.setString(2, this.getTitle());
-//						ps.setDouble(3, this.getRating());
+					ps.setString(1, item.getItem_id());
+					ps.setString(2, item.getTitle());
+//						ps.setDouble(3, item.getRating());
 					ps.setDouble(3, 0); // temporary
-					ps.setInt(4, this.getSalesranking());
-					ps.setString(5, this.getImage());
-					ps.setString(6, this.getProductgroup().toString());
+					ps.setInt(4, item.getSalesranking());
+					ps.setString(5, item.getImage());
+					ps.setString(6, item.getProductgroup().toString());
 					ps.executeUpdate();
 					ps.close();
 					

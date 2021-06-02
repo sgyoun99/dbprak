@@ -104,11 +104,6 @@ public class Book {
 		return publication_date;
 	}
 
-	private String getYYYY(String yyyy_mm_dd) {
-			String yyyy = yyyy_mm_dd.substring(0,4);
-			return yyyy;
-	}
-
 	public void setPublication_date(String publication_date) throws IllegalArgumentException{
 		if(publication_date != null) {
 			this.publication_date = Date.valueOf(publication_date);
@@ -146,10 +141,10 @@ public class Book {
 	public static Predicate<Short> pred_pages = pages -> pages == null || (pages >= 0 && pages < Short.MAX_VALUE); // ?
 	
 	public void testBook(Book book) throws Exception {
-		if(!Item.pred_item_id.test(book.getItem_id())) {throw new XmlDataException("item_id Error (length not 10): \""+getItem_id()+"\""); }
-		if(!pred_pages.test(book.getPages())) {throw new XmlDataException("regioncode Error "+ getPages()); }
-		if(!pred_isbn.test(book.getIsbn())) {throw new XmlDataException("isbn Error "+ getIsbn()); }
-		if(!pred_publicationdate.test(book.getPublication_date())) {throw new XmlDataException("publication date Error "+ getPublication_date()); }
+		if(!Item.pred_item_id.test(book.getItem_id())) {throw new XmlDataException("item_id Error (length not 10): \""+book.getItem_id()+"\""); }
+		if(!pred_pages.test(book.getPages())) {throw new XmlDataException("regioncode Error "+ book.getPages()); }
+		if(!pred_isbn.test(book.getIsbn())) {throw new XmlDataException("isbn Error "+ book.getIsbn()); }
+		if(!pred_publicationdate.test(book.getPublication_date())) {throw new XmlDataException("publication date Error "+ book.getPublication_date()); }
 		
 	}
 	

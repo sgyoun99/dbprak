@@ -197,7 +197,7 @@ public class XmlTool {
 			return node.getTextContent().trim();
 		} else {
 //			return "";
-			//hmm null is but risky...
+//			hmm null is but risky...
 			return null;
 		}
 	}
@@ -560,14 +560,13 @@ public class XmlTool {
 		
 		
 		
-		xt.analyseDirectChildNodes(Config.DRESDEN_ENCODED, "bookspec");
+		xt.analyseDirectChildNodes(Config.DRESDEN_ENCODED, "dvdspec");
 //		xt.analyseDirectChildNodes(Config.DRESDEN_ENCODED, "authors");
 
-		xt.analyseDirectChildNodes(Config.LEIPZIG, "bookspec");
+		xt.analyseDirectChildNodes(Config.LEIPZIG, "dvdspec");
 //		xt.analyseDirectChildNodes(Config.LEIPZIG, "authors");
 		
 
-		System.out.println(Short.valueOf("200"));
 
 
 		
