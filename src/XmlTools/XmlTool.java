@@ -266,7 +266,7 @@ public class XmlTool {
 	}
 	
 	//will returns null, when not exists
-	public Node getNodebyNameDFS(Node startNode, String nodeName) {
+	public Node getNodeByNameDFS(Node startNode, String nodeName) {
 		return getNodesByNameDFS(startNode, nodeName).get(0) ;
 	}
 	

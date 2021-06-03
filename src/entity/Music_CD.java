@@ -128,7 +128,7 @@ public class Music_CD {
 				titleNodes.forEach(titleNode -> titleNameList.add(xt.getTextContentOfLeafNode(titleNode)));
 				
 				music_cd.setItem_id(xt.getAttributeValue(musicItemNode, "asin"));
-				Node releasedate = xt.getNodebyNameDFS(musicItemNode, "releasedate");
+				Node releasedate = xt.getNodeByNameDFS(musicItemNode, "releasedate");
 				music_cd.setRelease_date(xt.getTextContentOfLeafNode(releasedate));
 				music_cd.setArtist(artistNameList.get(0));//to set artist attribute NOT NULL
 				
@@ -210,7 +210,7 @@ public class Music_CD {
 				titleNodes.forEach(titleNode -> titleNameList.add(xt.getTextContentOfLeafNode(titleNode)));
 				
 				music_cd.setItem_id(xt.getAttributeValue(musicItemNode, "asin"));
-				Node releasedate = xt.getNodebyNameDFS(musicItemNode, "releasedate");
+				Node releasedate = xt.getNodeByNameDFS(musicItemNode, "releasedate");
 				music_cd.setRelease_date(xt.getTextContentOfLeafNode(releasedate));
 				music_cd.setArtist(artistNameList.get(0));//to set artist attribute NOT NULL
 				

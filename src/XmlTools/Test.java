@@ -1,5 +1,8 @@
 package XmlTools;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.w3c.dom.Node;
 
 import exception.XmlDataException;
@@ -8,20 +11,17 @@ import main.ErrorLogger;
 
 public class Test {
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		XmlTool xt = new XmlTool();
+		
+		xt.analyseDirectChildNodes(Config.DRESDEN_ENCODED,"publishers");
+		xt.analyseDirectChildNodes(Config.LEIPZIG,"publishers");
+		
 		xt.loadXML(Config.DRESDEN_ENCODED);
-		
-		try {
-			Node currentNode = xt.getNodebyNameDFS(xt.getDocumentNode(), "title");
-			System.out.println(currentNode.getTextContent());
-			String str = xt.getNodeContentForceNotNull(currentNode);
-			System.out.println(str);
-		} catch (XmlDataException e) {
-			ErrorLogger.write(e, null);
-		}
-		
-		
+		Map<String, Integer> map = new HashMap<>();
+		xt.visitChildElementNodesDFS(xt.getDocumentNode(), (node, level) -> {
+			
+		});
 	}
 
 }

@@ -3,7 +3,6 @@ package entity;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -11,8 +10,10 @@ import org.w3c.dom.Node;
 
 import JDBCTools.JDBCTool;
 import XmlTools.XmlTool;
+import exception.SQLKeyDuplicatedException;
 import exception.XmlDataException;
 import exception.XmlInvalidValueException;
+import exception.XmlNoAttributeException;
 import exception.XmlValidationFailException;
 import main.Config;
 import main.CreateTables;
@@ -136,7 +137,7 @@ public class Book {
 	
 	
 	public static Predicate<Date> pred_publicationdate = date -> true; //allow. let DB check.
-	public static Predicate<String> pred_isbn = date -> true; //allow
+	public static Predicate<String> pred_isbn = date -> date == null || date != null && (date.length()==10 || date.length() ==13); //null allowed
 	public static Predicate<Short> pred_pages = pages -> pages == null || (pages >= 0 && pages < Short.MAX_VALUE); // ?
 	
 	public void testBook(Book book) throws XmlValidationFailException {
@@ -169,7 +170,6 @@ public class Book {
 	
 	public static Predicate<String> pred_author = author -> true; //allow
 	public static Predicate<String> pred_publisher = publisher -> publisher != null;
-	public static Predicate<String> pred_director = director -> director != null;
 	public void testAuthor(Author autor) throws XmlValidationFailException {
 		try {
 			if(!pred_author.test(getAuthor())) {
@@ -198,86 +198,83 @@ public class Book {
 		String location = "Book(" + this.location + ")";
 		System.out.println(">> Book " + this.location + " ...");
 		XmlTool xt = new XmlTool(this.xmlPath);
-		List<Node> items = xt.filterElementNodesDFS(xt.getDocumentNode(), 
-				level -> level == 2, 
-				node -> node.getNodeName().equals("item")
-		);
-		items.stream().filter(n -> {
+		xt.getNodesByNameDFS(xt.getDocumentNode(), "item").stream().filter(itemNode -> {
 			try {
-				return xt.hasAttribute(n, "pgroup") 
-//						&& Item.pred_pgroup.test(xt.getAttributeValue(n, "pgroup"))
-						&& xt.getAttributeValue(n, "pgroup").equals("Book");
-			} catch (XmlDataException e) {
-				//do nothing
+				if(xt.getAttributeValue(itemNode, "pgroup").equals("Book")) {
+					return true;
+				} else {
+					return false;
+				}
+			} catch (XmlNoAttributeException e) {
+				//do noting
 			}
 			return false;
-		}).collect(Collectors.toList()).forEach(bookItemNode -> {
+		}).collect(Collectors.toList()).forEach(itemNode -> {
 			//xml data
 			Book book = new Book();
 			try {
-				book.setItem_id(xt.getAttributeValue(bookItemNode, "asin"));
+				book.setItem_id(xt.getAttributeValue(itemNode, "asin"));
 			} catch (XmlDataException e) {
-				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(bookItemNode));
+				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(itemNode));
 			}
-			Node bookspec = xt.getNodebyNameDFS(bookItemNode, "bookspec");
+			Node bookspec = xt.getNodeByNameDFS(itemNode, "bookspec");
 			try {
-				if(bookspec.getNodeName().equals("bookspec") && !xt.isLeafElementNode(bookspec)) {
-					Node isbn = xt.getNodebyNameDFS(bookspec, "isbn");
-					if(isbn != null) {
-						if(xt.hasTextContent(isbn)){
-							book.setIsbn(xt.getTextContentOfLeafNode(isbn));
-						} else {
-								try {
-								book.setIsbn(xt.getAttributeValue(isbn, "val"));
-							} catch (XmlDataException e) {
-								e.printStackTrace();
-							}
+				Node isbn = xt.getNodeByNameDFS(bookspec, "isbn");
+				if(isbn != null) {
+					if(xt.hasTextContent(isbn)){
+						book.setIsbn(xt.getTextContentOfLeafNode(isbn));
+					} else {
+							try {
+							book.setIsbn(xt.getAttributeValue(isbn, "val"));
+						} catch (XmlDataException e) {
+							e.printStackTrace();
 						}
 					}
-					Node pages = xt.getNodebyNameDFS(bookspec, "pages");
-					book.setPages(xt.getTextContentOfLeafNode(pages));
-					Node publication = xt.getNodebyNameDFS(bookspec, "publication");
-					try {
-						book.setPublication_date(xt.getAttributeValue(publication,"date"));
-					} catch ( IllegalArgumentException e) {
-						ErrorLogger.write(location+".date", ErrType.XML, e, xt.getNodeContentDFS(bookItemNode));	
-					} catch ( StringIndexOutOfBoundsException e) {
-						ErrorLogger.write(location+".date", ErrType.XML, e, xt.getNodeContentDFS(bookItemNode));	
-					} catch ( XmlDataException e) {
-						ErrorLogger.write(location+".date", ErrType.XML, e, xt.getNodeContentDFS(bookItemNode));	
-					}
-					try {
-						this.testBook(book);
-						JDBCTool.executeUpdateAutoCommitOn((con, st) -> {
-							String sql;
-							PreparedStatement ps;
-							sql = "INSERT INTO public.book("
-									+ "	item_id, pages, publication_date, isbn)"
-									+ "	VALUES (?, ?, ?, ?);";
-							ps = con.prepareStatement(sql);
-							ps.setString(1, book.getItem_id());
-							ps.setShort(2, book.getPages());
-							ps.setDate(3, book.getPublication_date());
-							ps.setString(4, book.getIsbn());
-							ps.executeUpdate();
-							ps.close();	
-							
-						});
-					} catch (XmlDataException e) {
-						ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(bookItemNode));
-					} catch (SQLException e) {
-						if(!e.getMessage().contains("duplicate key value")) {
-							ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(bookItemNode));
-						}	
-					} catch (Exception e) {
-						ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(bookItemNode));
-					}
 				}
+				Node pages = xt.getNodeByNameDFS(bookspec, "pages");
+				book.setPages(xt.getTextContentOfLeafNode(pages));
+				Node publication = xt.getNodeByNameDFS(bookspec, "publication");
+				book.setPublication_date(xt.getAttributeValue(publication,"date"));
+				
+				this.testBook(book);
+				JDBCTool.executeUpdateAutoCommitOn((con, st) -> {
+					String sql;
+					PreparedStatement ps;
+					sql = "INSERT INTO public.book("
+							+ "	item_id, pages, publication_date, isbn)"
+							+ "	VALUES (?, ?, ?, ?);";
+					ps = con.prepareStatement(sql);
+					ps.setString(1, book.getItem_id());
+					ps.setShort(2, book.getPages());
+					ps.setDate(3, book.getPublication_date());
+					ps.setString(4, book.getIsbn());
+					ps.executeUpdate();
+					ps.close();	
+				});
+							
 				
 			} catch (IllegalArgumentException e) {
-				ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(bookItemNode));
+				ErrorLogger.write(location, book.getItem_id(), ErrType.PROGRAM, "" ,e, xt.getNodeContentDFS(itemNode));
+			} catch (XmlValidationFailException e) {
+				e.setLocation(location);
+				e.setItem_id(book.getItem_id());
+				e.setNode(itemNode);
+				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
+			} catch (XmlDataException e) {
+				e.setLocation(location);
+				e.setItem_id(book.getItem_id());
+				e.setNode(itemNode);
+				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
+			} catch (SQLException e) {
+				if(e.getMessage().contains(JDBCTool.KEY_DUPLICATED)) {
+//					this.handleDuplicatedPKDresden();
+					SQLKeyDuplicatedException keyDupExc = new SQLKeyDuplicatedException(e.getMessage());
+					ErrorLogger.write(location,book.getItem_id(),  ErrType.SQL_DUPLICATE, "", keyDupExc, xt.getNodeContentDFS(itemNode));
+				} else {
+					ErrorLogger.write(location,book.getItem_id(),  ErrType.SQL, "", e, xt.getNodeContentDFS(itemNode));
+				}
 			} catch (Exception e) {
-				ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(bookItemNode));
+				ErrorLogger.write(location, book.getItem_id(), ErrType.PROGRAM, "", e, xt.getNodeContentDFS(itemNode));
 			}
 			
 		});
@@ -286,160 +283,150 @@ public class Book {
 	
 	
 	public void author() {
-		String location = "acctor(" + this.location + ")";
-		System.out.println(">> actor " + this.location + " ...");
+		String location = "author(" + this.location + ")";
+		String attrName = "autor";
+		System.out.println(">> autor " + this.location + " ...");
 		XmlTool xt = new XmlTool(this.xmlPath);
-		List<Node> items = xt.filterElementNodesDFS(xt.getDocumentNode(), 
-				level -> level == 2, 
-				node -> node.getNodeName().equals("item")
-		);
-		items.stream().filter(n -> {
+		xt.getNodesByNameDFS(xt.getDocumentNode(), "item").stream().filter(itemNode -> {
 			try {
-				return xt.hasAttribute(n, "pgroup") 
-						&& xt.getAttributeValue(n, "pgroup").equals("Book");
-			} catch (XmlDataException e) {
-				//do nothing
+				if(xt.getAttributeValue(itemNode, "pgroup").equals("Book")) {
+					return true;
+				} else {
+					return false;
+				}
+			} catch (XmlNoAttributeException e) {
+				//do noting
 			}
 			return false;
-		}).collect(Collectors.toList()).forEach(bookItemNode -> {
+		}).collect(Collectors.toList()).forEach(itemNode -> {
 			try {
-				setItem_id(xt.getAttributeValue(bookItemNode, "asin"));
-			} catch (XmlDataException e) {
-				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(bookItemNode));
-			}
-			xt.visitChildElementNodesDFS(bookItemNode, (node, level) -> {
+				Book book = new Book();
 				try {
-					if(node.getNodeName().equals("authors") && !xt.isLeafElementNode(node)) {
-						xt.visitChildElementNodesDFS(node, (nd, l) -> {
-							Author author = new Author();
-							if(nd.getNodeName().equals("author")) {
-								try {
-									author.setAuthor(xt.getAttributeValue(nd, "name"));
-								} catch (XmlDataException e) {
-									author.setAuthor(xt.getTextContentOfLeafNode(nd));
-								}
-								try {
-									this.testAuthor(author);
-									JDBCTool.executeUpdateAutoCommitOn((con, st) -> {
-										String sql;
-										PreparedStatement ps;
-										sql = "INSERT INTO public.author("
-												+ "	author)"
-												+ "	VALUES (?);";
-										ps = con.prepareStatement(sql);
-										ps.setString(1, author.getAuthor());
-										ps.executeUpdate();
-										ps.close();
-										
-										sql = "INSERT INTO public.book_author("
-												+ "	item_id, author)"
-												+ "	VALUES (?, ?);";
-										ps = con.prepareStatement(sql);
-										ps.setString(1, getItem_id());
-										ps.setString(2, author.getAuthor());
-										ps.executeUpdate();
-										ps.close();
-									});
-								} catch (XmlDataException e) {
-									ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(node));
-								} catch (SQLException e) {
-									if(!e.getMessage().contains("duplicate key value")) {
-										ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(bookItemNode));
-									}
-								} catch (Exception e) {
-									ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(bookItemNode));
-								}
-							}
-						});
-					}
-					
-				} catch (IllegalArgumentException e) {
-					ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(bookItemNode));
-				} catch (Exception e) {
-					ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(bookItemNode));
+					book.setItem_id(xt.getAttributeValue(itemNode, "asin"));
+				} catch (XmlDataException e) {
+					ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(itemNode));
 				}
-			});
-			
-		});
+				xt.getNodesByNameDFS(itemNode, "author").forEach(node -> {
+				Author author = new Author();
+					try {
+						author.setAuthor(xt.getNodeContentForceNotNull(node));
+						this.testAuthor(author);
+						JDBCTool.executeUpdateAutoCommitOn((con, st) -> {
+							String sql;
+							PreparedStatement ps;
+							sql = "INSERT INTO public.author("
+									+ "	author)"
+									+ "	VALUES (?);";
+							ps = con.prepareStatement(sql);
+							ps.setString(1, author.getAuthor());
+							ps.executeUpdate();
+							ps.close();
+							
+							sql = "INSERT INTO public.book_author("
+									+ "	item_id, author)"
+									+ "	VALUES (?, ?);";
+							ps = con.prepareStatement(sql);
+							ps.setString(1, book.getItem_id());
+							ps.setString(2, author.getAuthor());
+							ps.executeUpdate();
+							ps.close();
+						});
+					} catch (IllegalArgumentException e) {
+						ErrorLogger.write(location, null, ErrType.PROGRAM, "" ,e, xt.getNodeContentDFS(itemNode));
+					} catch (XmlDataException e) {
+						e.setLocation(location);
+						e.setItem_id(book.getItem_id());
+						e.setAttrName(attrName);
+						e.setNode(itemNode);
+						ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
+					} catch (SQLException e) {
+						if(e.getMessage().contains(JDBCTool.KEY_DUPLICATED)) {
+							SQLKeyDuplicatedException keyDupExc = new SQLKeyDuplicatedException(e.getMessage());
+							ErrorLogger.write(location, book.getItem_id(),  ErrType.SQL_DUPLICATE, attrName, keyDupExc, xt.getNodeContentDFS(itemNode));
+						} else {
+							ErrorLogger.write(location, book.getItem_id(),  ErrType.SQL, attrName, e, xt.getNodeContentDFS(itemNode));
+						}
+					}
+				});
+				}  catch (Exception e) {
+					ErrorLogger.write(location, item_id, ErrType.PROGRAM, attrName, e, xt.getNodeContentDFS(itemNode));
+				}	
+			}	
+		);
 	}	
 	
 
 	public void publisher() {
-		String location = "creator(" + this.location + ")";
-		System.out.println(">> creator " + this.location + " ...");
+		String location = "publisher(" + this.location + ")";
+		String attrName = "publisher";
+		System.out.println(">> autor " + this.location + " ...");
 		XmlTool xt = new XmlTool(this.xmlPath);
-		List<Node> items = xt.filterElementNodesDFS(xt.getDocumentNode(), 
-				level -> level == 2, 
-				node -> node.getNodeName().equals("item")
-		);
-		items.stream().filter(n -> {
+		xt.getNodesByNameDFS(xt.getDocumentNode(), "item").stream().filter(itemNode -> {
 			try {
-				return xt.hasAttribute(n, "pgroup") 
-						&& xt.getAttributeValue(n, "pgroup").equals("Book");
-			} catch (XmlDataException e) {
-				//do nothing
+				if(xt.getAttributeValue(itemNode, "pgroup").equals("Book")) {
+					return true;
+				} else {
+					return false;
+				}
+			} catch (XmlNoAttributeException e) {
+				//do noting
 			}
 			return false;
-		}).collect(Collectors.toList()).forEach(bookItemNode -> {
+		}).collect(Collectors.toList()).forEach(itemNode -> {
 			try {
-				setItem_id(xt.getAttributeValue(bookItemNode, "asin"));
-			} catch (XmlDataException e) {
-				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(bookItemNode));
-			}
-			xt.visitChildElementNodesDFS(bookItemNode, (node, level) -> {
+				Book book = new Book();
 				try {
-					if(node.getNodeName().equals("creators") && !xt.isLeafElementNode(node)) {
-						xt.visitChildElementNodesDFS(node, (nd, l) -> {
-							Publisher creator = new Publisher();
-							if(nd.getNodeName().equals("creator")) {
-								try {
-									creator.setPublisher(xt.getAttributeValue(nd, "name"));
-								} catch (XmlDataException e) {
-									creator.setPublisher(xt.getTextContentOfLeafNode(nd));
-								}
-								try {
-									this.testPublisher(creator);
-									JDBCTool.executeUpdateAutoCommitOn((con, st) -> {
-										String sql;
-										PreparedStatement ps;
-										sql = "INSERT INTO public.publisher("
-												+ "	publisher)"
-												+ "	VALUES (?);";
-										ps = con.prepareStatement(sql);
-										ps.setString(1, creator.getPublisher());
-										ps.executeUpdate();
-										ps.close();
-										
-										sql = "INSERT INTO public.book_publisher("
-												+ "	item_id, publisher)"
-												+ "	VALUES (?, ?);";
-										ps = con.prepareStatement(sql);
-										ps.setString(1, getItem_id());
-										ps.setString(2, creator.getPublisher());
-										ps.executeUpdate();
-										ps.close();
-									});
-								} catch (XmlDataException e) {
-									ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(node));
-								} catch (SQLException e) {
-									if(!e.getMessage().contains("duplicate key value")) {
-										ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(bookItemNode));
-									}
-								} catch (Exception e) {
-									ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(bookItemNode));
-								}
-							}
-						});
-					}
-					
-				} catch (IllegalArgumentException e) {
-					ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(bookItemNode));
-				} catch (Exception e) {
-					ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(bookItemNode));
+					book.setItem_id(xt.getAttributeValue(itemNode, "asin"));
+				} catch (XmlDataException e) {
+					ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(itemNode));
 				}
-			});
-			
-		});
+				xt.getNodesByNameDFS(itemNode, "publisher").forEach(node -> {
+				Publisher publisher = new Publisher();
+					try {
+						publisher.setPublisher(xt.getNodeContentForceNotNull(node));
+						this.testPublisher(publisher);
+						JDBCTool.executeUpdateAutoCommitOn((con, st) -> {
+							String sql;
+							PreparedStatement ps;
+							sql = "INSERT INTO public.publisher("
+									+ "	publisher)"
+									+ "	VALUES (?);";
+							ps = con.prepareStatement(sql);
+							ps.setString(1, publisher.getPublisher());
+							ps.executeUpdate();
+							ps.close();
+							
+							sql = "INSERT INTO public.book_publisher("
+									+ "	item_id, publisher)"
+									+ "	VALUES (?, ?);";
+							ps = con.prepareStatement(sql);
+							ps.setString(1, book.getItem_id());
+							ps.setString(2, publisher.getPublisher());
+							ps.executeUpdate();
+							ps.close();
+						});
+					} catch (IllegalArgumentException e) {
+						ErrorLogger.write(location, null, ErrType.PROGRAM, "" ,e, xt.getNodeContentDFS(itemNode));
+					} catch (XmlDataException e) {
+						e.setLocation(location);
+						e.setItem_id(book.getItem_id());
+						e.setAttrName(attrName);
+						e.setNode(itemNode);
+						ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
+					} catch (SQLException e) {
+						if(e.getMessage().contains(JDBCTool.KEY_DUPLICATED)) {
+							SQLKeyDuplicatedException keyDupExc = new SQLKeyDuplicatedException(e.getMessage());
+							ErrorLogger.write(location, book.getItem_id(),  ErrType.SQL_DUPLICATE, attrName, keyDupExc, xt.getNodeContentDFS(itemNode));
+						} else {
+							ErrorLogger.write(location, book.getItem_id(),  ErrType.SQL, attrName, e, xt.getNodeContentDFS(itemNode));
+						}
+					}
+				});
+				}  catch (Exception e) {
+					ErrorLogger.write(location, item_id, ErrType.PROGRAM, attrName, e, xt.getNodeContentDFS(itemNode));
+				}	
+			}	
+		);
 	}	
 	
 

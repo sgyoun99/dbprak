@@ -212,9 +212,9 @@ public class Dvd {
 			try {
 				//xml data
 				dvd.setItem_id(xt.getAttributeValue(itemNode, "asin"));
-				Node dvdspec = xt.getNodebyNameDFS(itemNode, "dvdspec");
+				Node dvdspec = xt.getNodeByNameDFS(itemNode, "dvdspec");
 
-				Node format = xt.getNodebyNameDFS(dvdspec, "format");
+				Node format = xt.getNodeByNameDFS(dvdspec, "format");
 				// TODO confirm above method
 				String formatValue = xt.getNodeContentForceNullable(format);
 				dvd.setFormat(formatValue);
@@ -231,9 +231,9 @@ public class Dvd {
 					}
 				}
 				 */
-				Node runningtime = xt.getNodebyNameDFS(dvdspec, "runningtime");
+				Node runningtime = xt.getNodeByNameDFS(dvdspec, "runningtime");
 				dvd.setRunningtime(xt.getTextContentOfLeafNode(runningtime));
-				Node regioncode = xt.getNodebyNameDFS(dvdspec, "regioncode");
+				Node regioncode = xt.getNodeByNameDFS(dvdspec, "regioncode");
 				dvd.setRegioncode(xt.getTextContentOfLeafNode(regioncode));
 				
 				//test
