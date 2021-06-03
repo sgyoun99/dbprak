@@ -63,9 +63,12 @@ public class Main {
 			book.author();
 			book.publisher();
 
+	/*
+	 */
 			Music_CD music_cd = new Music_CD();
 			music_cd.musicCdLeipzig();
 			music_cd.musicCdDresden();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("= = = Main.main() failed = = =");

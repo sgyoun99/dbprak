@@ -11,10 +11,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Stack;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
@@ -24,11 +22,13 @@ import javax.xml.parsers.DocumentBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
+import exception.XmlDataException;
+import exception.XmlGetNodeContentNullException;
+import exception.XmlNoAttributeException;
 import main.Config;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 
 
 public class XmlTool {
@@ -58,31 +58,17 @@ public class XmlTool {
 
 	public Document getDocumentNode() {
 		if(this.documentNode == null) {
-			System.out.println("Load XML first.");
+			System.err.println("Load XML first!!");
 		}
 		return this.documentNode;
 	}
 	
-	public void printOptionOn() {
+	public void setPrintOn() {
 		this.printOption = true;
 	}
 	
-	public void printOptionOff() {
+	public void setPrintOff() {
 		this.printOption = false;
-	}
-	
-	public void printlnWithOption(String message) {
-		if(this.printOption)
-			System.out.println(message);
-	}
-	public void printlnWithOption() {
-		if(this.printOption)
-			System.out.println();
-	}
-	
-	public void printWithOption(String message) {
-		if(this.printOption)
-			System.out.print(message);
 	}
 	
 	public void printNodeContentsDFS(Node startNode) {
@@ -97,7 +83,7 @@ public class XmlTool {
 			sb.append(">\n");
 			sb.append(" ".repeat(2));
 			sb.append(" ".repeat((level)*2));
-			sb.append(this.getTextContent(node));
+			sb.append(this.getTextContentOfLeafNode(node));
 			sb.append("\n");
 	
 		return sb.toString();
@@ -180,19 +166,18 @@ public class XmlTool {
 			}
 		}
 		return true;
-//		return false;
 	}
 	
 	//only for the leaf node
 	public boolean hasTextContent(Node node) {
 		if(isLeafElementNode(node)) {
-			return getTextContent(node).length() > 0 ? true : false;
+			return getTextContentOfLeafNode(node).length() > 0 ? true : false;
 		} else {
 			return false;
 		}
 	}
 	
-	public String getTextContent(Node node) {
+	public String getTextContentOfLeafNode(Node node) {
 		if(isLeafElementNode(node)) {
 			return node.getTextContent().trim();
 		} else {
@@ -243,19 +228,12 @@ public class XmlTool {
 	}
 	
 	//test if attribute name exists and return text content
-	public String getAttributeValue(Node node, String attributeName) throws XmlDataException{
+	public String getAttributeValue(Node node, String attributeName) throws XmlNoAttributeException{
 		if(hasAttribute(node, attributeName)) {
 			Element el = (Element)node;
 			return el.getAttribute(attributeName);
 		} else {
-			StringBuilder sb = new StringBuilder();
-			sb.append("<");
-			sb.append(node.getNodeName());
-			sb.append("> does not have Attribute: ");
-			sb.append(attributeName);
-			sb.append("\n");
-//			sb.append(this.getNodeContentDFS(node));
-			throw new XmlDataException(sb.toString());
+			throw new XmlNoAttributeException(node, attributeName);
 		}
 	}
 	
@@ -340,23 +318,54 @@ public class XmlTool {
 	}
 	
 	//take either textContent or attribute value when there is only one attribute in the node
-	public String getNodeContentForce(Node node) {
-		String content = null;
+	//textContent of node has higher priority
+	//the null return is not allowed
+	public String getNodeContentForceNotNull(Node node) throws XmlDataException{
+		String res = null;
+		String textContent = null;
+		String attrValue = null;
 		if(node.getAttributes().getLength() == 1) {
 			String attrName = node.getAttributes().item(0).getNodeName();	
 			try {
-				content = this.getAttributeValue(node, attrName);
-			} catch (XmlDataException e) {
+				attrValue = this.getAttributeValue(node, attrName).trim();
+			} catch (XmlNoAttributeException e) {
+				e.setNode(node);
+				e.setAttrName(attrName);
+				throw e;
+			}
+		} else {
+			textContent = this.getTextContentOfLeafNode(node).trim();
+		}
+		
+			
+		if( textContent == null && attrValue == null) {
+			throw new XmlGetNodeContentNullException(node);
+		} else if (attrValue != null){
+			res = attrValue;
+		} else if (textContent != null){
+			res = textContent;
+		}
+
+		return res;
+	}
+	
+	//take either textContent or attribute value when there is only one attribute in the node
+	public String getNodeContentForceNullable(Node node) {
+		String res = null;
+		if(node.getAttributes().getLength() == 1) {
+			String attrName = node.getAttributes().item(0).getNodeName();	
+			try {
+				res = this.getAttributeValue(node, attrName);
+			} catch (XmlNoAttributeException e) {
 				//do nothing
 			}
 		} else {
-			content = this.getTextContent(node);
+			res = this.getTextContentOfLeafNode(node);
 		}
-
-		return content;
+		
+		return res;
 	}
 	
-
 	public String getNodeContentDFS(Node startNode) {
 		StringBuilder sb = new StringBuilder();
 		Node currentNode = startNode;

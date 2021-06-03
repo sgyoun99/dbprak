@@ -8,8 +8,12 @@ import java.util.List;
 import org.w3c.dom.Node;
 
 import JDBCTools.JDBCTool;
-import XmlTools.XmlDataException;
 import XmlTools.XmlTool;
+import exception.SQLKeyDuplicatedException;
+import exception.XmlDataException;
+import exception.XmlNoAttributeException;
+import exception.XmlValidationFailException;
+import exception.XmlInvalidValueException;
 import main.Config;
 import main.CreateTables;
 import main.DropTables;
@@ -91,13 +95,39 @@ public class Item {
 	public static Predicate<String> pred_pgroup = pgroup -> Pgroup.isValueOfPgroup(pgroup);
 	
 
-	public void test(Item item) throws XmlDataException {
-		if(!pred_item_id.test(item.getItem_id())) {throw new XmlDataException("item_id Error (length not 10): "+item.getItem_id()); }
-		if(!pred_title.test(item.getTitle())) {throw new XmlDataException("title Error (title empty)"); }
-//		if(!predicate_rating.test(item.getRating())) {throw new XmlDataException("rating Error (out of range"); } // how??
-		if(!pred_salesranking.test(item.getSalesranking())) {throw new XmlDataException("salesranking Error"); }
-		if(!pred_image.test(item.getImage())) {throw new XmlDataException("img Error"); }
-//		if(!pred_pgroup.test(item.getProductgroup().toString())) {throw new XmlDataException("pgroup Error"); } // not necessary
+	public void test(Item item) throws XmlValidationFailException {
+		try {
+			if(!pred_item_id.test(item.getItem_id())) {
+				XmlInvalidValueException e = new XmlInvalidValueException("item_id Error (length not 10): "+item.getItem_id());
+				e.setAttrName("item_id");
+				throw e;
+			}
+			if(!pred_title.test(item.getTitle())) {
+				XmlInvalidValueException e =new XmlInvalidValueException("title Error (title empty)"); 
+				e.setAttrName("title");
+				throw e;
+			}
+			/*
+			if(!pred_rating.test(item.getRating())) {
+				XmlInvalidValueException e = new XmlInvalidValueException("rating Error (out of range");  // how??
+				e.setAttrName("rating");
+				throw e;
+			}
+			 */
+			if(!pred_salesranking.test(item.getSalesranking())) {
+				XmlInvalidValueException e = new XmlInvalidValueException("salesranking Error"); 
+				e.setAttrName("salesranking");
+				throw e;
+			}
+			if(!pred_image.test(item.getImage())) {
+				XmlInvalidValueException e = new XmlInvalidValueException("img Error");
+				e.setAttrName("image");
+				throw e;
+			}
+	//		if(!pred_pgroup.test(item.getProductgroup().toString())) {throw new XmlInvalidValueException("pgroup Error"); } // not necessary
+		} catch (XmlInvalidValueException e) {
+			throw new XmlValidationFailException(e);
+		}
 	}
 	
 	public void dresden() {
@@ -112,7 +142,8 @@ public class Item {
 			Item item = new Item();
 			try {
 			//xml data
-				item.setItem_id(xt.getAttributeValue(itemNode, "asin"));
+				String item_id = xt.getAttributeValue(itemNode, "asin");
+				item.setItem_id(item_id);
 				xt.getDirectChildElementNodes(itemNode).forEach(nd -> {
 					if(nd.getNodeName().equals("title") && xt.isLeafElementNode(nd)) {
 						item.setTitle(nd.getTextContent());
@@ -120,7 +151,7 @@ public class Item {
 					if(nd.getNodeName().equals("details")) {
 						try {
 							item.setImage(xt.getAttributeValue(nd, "img"));
-						} catch (XmlDataException e) {
+						} catch (XmlNoAttributeException e) {
 							//do nothing. null allowed
 						}
 					}
@@ -153,17 +184,27 @@ public class Item {
 					
 				});
 			} catch (IllegalArgumentException e) {
-				ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(itemNode));
+				ErrorLogger.write(location, item.getItem_id(), ErrType.PROGRAM, "" ,e, xt.getNodeContentDFS(itemNode));
+			} catch (XmlValidationFailException e) {
+				e.setLocation(location);
+				e.setItem_id(item.getItem_id());
+				e.setNode(itemNode);
+				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
 			} catch (XmlDataException e) {
-				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(itemNode));
+				e.setLocation(location);
+				e.setItem_id(item.getItem_id());
+				e.setNode(itemNode);
+				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
 			} catch (SQLException e) {
-				if(e.getMessage().contains("duplicate key value")) {
+				if(e.getMessage().contains(JDBCTool.KEY_DUPLICATED)) {
 					this.handleDuplicatedPKDresden(item);
+					SQLKeyDuplicatedException keyDupExc = new SQLKeyDuplicatedException(e.getMessage());
+					ErrorLogger.write(location,item.getItem_id(),  ErrType.SQL_DUPLICATE, "", keyDupExc, xt.getNodeContentDFS(itemNode));
 				} else {
-					ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(itemNode));
+					ErrorLogger.write(location,item.getItem_id(),  ErrType.SQL, "", e, xt.getNodeContentDFS(itemNode));
 				}
 			} catch (Exception e) {
-				ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(itemNode));
+				ErrorLogger.write(location, item.getItem_id(), ErrType.PROGRAM, "", e, xt.getNodeContentDFS(itemNode));
 			}
 		});
 	}
@@ -215,17 +256,27 @@ public class Item {
 					
 				});
 			} catch (IllegalArgumentException e) {
-				ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(itemNode));
+				ErrorLogger.write(location, item.getItem_id(), ErrType.PROGRAM, "" ,e, xt.getNodeContentDFS(itemNode));
+			} catch (XmlValidationFailException e) {
+				e.setLocation(location);
+				e.setItem_id(item.getItem_id());
+				e.setNode(itemNode);
+				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
 			} catch (XmlDataException e) {
-				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(itemNode));
+				e.setLocation(location);
+				e.setItem_id(item.getItem_id());
+				e.setNode(itemNode);
+				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
 			} catch (SQLException e) {
-				if(e.getMessage().contains("duplicate key value")) {
-					this.handleDuplicatedPKLeipzig(item);
+				if(e.getMessage().contains(JDBCTool.KEY_DUPLICATED)) {
+					this.handleDuplicatedPKDresden(item);
+					SQLKeyDuplicatedException keyDupExc = new SQLKeyDuplicatedException(e.getMessage());
+					ErrorLogger.write(location,item.getItem_id(),  ErrType.SQL_DUPLICATE, "", keyDupExc, xt.getNodeContentDFS(itemNode));
 				} else {
-					ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(itemNode));
+					ErrorLogger.write(location,item.getItem_id(),  ErrType.SQL, "", e, xt.getNodeContentDFS(itemNode));
 				}
 			} catch (Exception e) {
-				ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(itemNode));
+				ErrorLogger.write(location, item.getItem_id(), ErrType.PROGRAM, "", e, xt.getNodeContentDFS(itemNode));
 			}
 		});
 	}
@@ -244,8 +295,8 @@ public class Item {
 		CreateTables.createTables();
 		
 		Item item = new Item();
-		item.leipzig();
 		item.dresden();
+		item.leipzig();
 		
 	}
 	/*
