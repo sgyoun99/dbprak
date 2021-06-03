@@ -3,6 +3,7 @@ package main;
 
 import XmlTools.XmlTool;
 import entity.*;
+import csv.*;
 
 public class Main {
 	public static void main(String[] args) {
@@ -66,6 +67,11 @@ public class Main {
 			Music_CD music_cd = new Music_CD();
 			music_cd.musicCdLeipzig();
 			music_cd.musicCdDresden();
+			
+			Review newReview = new Review();
+			newReview.writeReviewInDB();
+			newReview.addRatings();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("= = = Main.main() failed = = =");
