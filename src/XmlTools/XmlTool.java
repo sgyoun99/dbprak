@@ -90,13 +90,16 @@ public class XmlTool {
 	}
 	public String getPrintOpeningNode(Node node, int level) {
 		StringBuilder sb = new StringBuilder();
-			sb.append(" ".repeat((level)*2));
+			for(int i=0; i<level*2; i++){sb.append(" ");}
+			//sb.append(" ".repeat((level)*2));
 			sb.append("<");
 			sb.append(node.getNodeName());
 			sb.append(getAllAttributeContents(node));
 			sb.append(">\n");
-			sb.append(" ".repeat(2));
-			sb.append(" ".repeat((level)*2));
+			for(int i=0; i<2; i++){sb.append(" ");}
+			//sb.append(" ".repeat(2));
+			for(int i=0; i<level*2; i++){sb.append(" ");}
+			//sb.append(" ".repeat((level)*2));
 			sb.append(this.getTextContent(node));
 			sb.append("\n");
 	
@@ -104,7 +107,8 @@ public class XmlTool {
 	}
 	public String getPrintClosingNode(Node node, int level) {
 		StringBuilder sb = new StringBuilder();
-			sb.append(" ".repeat((level)*2));
+			for(int i=0; i<level*2; i++){sb.append(" ");}
+			//sb.append(" ".repeat((level)*2));
 			sb.append("</");
 			sb.append(node.getNodeName());
 			sb.append(">\n");
