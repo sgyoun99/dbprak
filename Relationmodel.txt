@@ -2,7 +2,7 @@
     # Entity
         Shop(shop_name:PK, street:PK, ZIP:PK)
         Productgroup(pgroup:PK)
-        Item(item_id:PK, title, rate(?), salesranking, image[0...1], pgroup:FK on Productgroup)
+        Item(item_id:PK, title, rate(?), salesranking, image[0...1], pgroup:enum Pgroup)
     # n:m
         Item-Shop(
             item_id:PK:FK on Item, 

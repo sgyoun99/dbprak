@@ -200,7 +200,7 @@ public class Dvd {
 				this.testDvd(dvd);
 
 				//insert
-				JDBCTool.executeUpdateAutoCommit((con, st) -> {
+				JDBCTool.executeUpdateAutoCommitOn((con, st) -> {
 					String sql;
 					PreparedStatement ps;
 					sql = "INSERT INTO public.dvd("
@@ -267,7 +267,7 @@ public class Dvd {
 								}
 								try {
 									this.testActor(actor);
-									JDBCTool.executeUpdateAutoCommit((con, st) -> {
+									JDBCTool.executeUpdateAutoCommitOn((con, st) -> {
 										String sql;
 										PreparedStatement ps;
 										sql = "INSERT INTO public.actor("
@@ -346,7 +346,7 @@ public class Dvd {
 								}
 								try {
 									this.testCreator(creator);
-									JDBCTool.executeUpdateAutoCommit((con, st) -> {
+									JDBCTool.executeUpdateAutoCommitOn((con, st) -> {
 										String sql;
 										PreparedStatement ps;
 										sql = "INSERT INTO public.creator("
@@ -425,7 +425,7 @@ public class Dvd {
 								}
 								try {
 									this.testDirector(director);
-									JDBCTool.executeUpdateAutoCommit((con, st) -> {
+									JDBCTool.executeUpdateAutoCommitOn((con, st) -> {
 										String sql;
 										PreparedStatement ps;
 										sql = "INSERT INTO public.director("

@@ -210,7 +210,7 @@ public class Book {
 					}
 					try {
 						this.testBook(book);
-						JDBCTool.executeUpdateAutoCommit((con, st) -> {
+						JDBCTool.executeUpdateAutoCommitOn((con, st) -> {
 							String sql;
 							PreparedStatement ps;
 							sql = "INSERT INTO public.book("
@@ -282,7 +282,7 @@ public class Book {
 								}
 								try {
 									this.testAuthor(author);
-									JDBCTool.executeUpdateAutoCommit((con, st) -> {
+									JDBCTool.executeUpdateAutoCommitOn((con, st) -> {
 										String sql;
 										PreparedStatement ps;
 										sql = "INSERT INTO public.author("
@@ -361,19 +361,19 @@ public class Book {
 								}
 								try {
 									this.testPublisher(creator);
-									JDBCTool.executeUpdateAutoCommit((con, st) -> {
+									JDBCTool.executeUpdateAutoCommitOn((con, st) -> {
 										String sql;
 										PreparedStatement ps;
-										sql = "INSERT INTO public.creator("
-												+ "	creator)"
+										sql = "INSERT INTO public.publisher("
+												+ "	publisher)"
 												+ "	VALUES (?);";
 										ps = con.prepareStatement(sql);
 										ps.setString(1, creator.getPublisher());
 										ps.executeUpdate();
 										ps.close();
 										
-										sql = "INSERT INTO public.book_creator("
-												+ "	item_id, creator)"
+										sql = "INSERT INTO public.book_publisher("
+												+ "	item_id, publisher)"
 												+ "	VALUES (?, ?);";
 										ps = con.prepareStatement(sql);
 										ps.setString(1, getItem_id());

@@ -5,13 +5,15 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import main.Config;
+
 public class JDBCTool {
 	
 	public static Connection getConnection() {
 		Connection con = null;
 		try {
 			Class.forName("org.postgresql.Driver");
-			String url = "jdbc:postgresql://localhost/postgres?user=postgres&password=postgres&ssl=false";
+			String url = Config.JDBC_POSTGRES_URL;
 			con = DriverManager.getConnection(url);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -21,7 +23,7 @@ public class JDBCTool {
 		return con;
 	}
 	
-	public static void executeUpdate(SQLExecutable worker) throws Exception {
+	public static void executeUpdate(SQLExecutable worker) throws SQLException {
 		Connection con = getConnection();
 		try {
 			con.setAutoCommit (false);
@@ -37,7 +39,7 @@ public class JDBCTool {
 				throw new SQLException(e);
 			} finally {
 				try { 
-					con.setAutoCommit (true); 
+					con.setAutoCommit(true); 
 					con.close();
 				} catch (SQLException e3) {
 					System.out.println(e3);
@@ -45,7 +47,7 @@ public class JDBCTool {
 			}
 	}
 	
-	public static void executeUpdateAutoCommit(SQLExecutable worker) throws Exception {
+	public static void executeUpdateAutoCommitOn(SQLExecutable worker) throws SQLException {
 		Connection con = getConnection();
 		try {
 			Statement st = con.createStatement();
@@ -59,7 +61,7 @@ public class JDBCTool {
 				throw new SQLException(e);
 			} finally {
 				try { 
-					con.setAutoCommit (true); 
+					con.setAutoCommit(true); 
 					con.close();
 				} catch (SQLException e3) {
 					System.out.println(e3);

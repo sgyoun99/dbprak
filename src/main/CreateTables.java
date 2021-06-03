@@ -37,7 +37,7 @@ public class CreateTables {
 	public static String Artist = "Artist";
 	public static String Label = "Label";
 	public static String Music_CD = "Music_CD";
-	public static String Titel = "Titel";
+	public static String Title = "Title";
 	public static String Music_CD_Artist = "Music_CD_Artist";
 	public static String Music_CD_Label = "Music_CD_Label";
 
@@ -75,7 +75,7 @@ public class CreateTables {
 		createTableMap.put(CreateTables.Artist, "CREATE TABLE artist(artist TEXT PRIMARY KEY);");          
 		createTableMap.put(CreateTables.Label, "CREATE TABLE label(label TEXT PRIMARY KEY);");  
 		createTableMap.put(CreateTables.Music_CD, "CREATE TABLE music_cd(item_id char(10) REFERENCES item(item_id) PRIMARY KEY, artist TEXT NOT NULL REFERENCES artist(artist), release_date DATE);");
-		createTableMap.put(CreateTables.Titel, "CREATE TABLE titel(item_id char(10) REFERENCES music_cd(item_id), titel TEXT, PRIMARY KEY(item_id, titel));");
+		createTableMap.put(CreateTables.Title, "CREATE TABLE title(item_id char(10) REFERENCES music_cd(item_id), title TEXT, PRIMARY KEY(item_id, title));");
 		createTableMap.put(CreateTables.Music_CD_Artist, "CREATE TABLE music_cd_artist(item_id char(10) REFERENCES music_cd(item_id), artist TEXT REFERENCES artist(artist), PRIMARY KEY(item_id, artist));");
 		createTableMap.put(CreateTables.Music_CD_Label, "CREATE TABLE music_cd_label(item_id char(10) REFERENCES music_cd(item_id), label TEXT REFERENCES label(label), PRIMARY KEY(item_id, label));");
 		
@@ -87,41 +87,41 @@ public class CreateTables {
 		
 		
 
-		tableOrder.add("Item");
-        tableOrder.add("Shop");
-        tableOrder.add("Item_Shop");
-		tableOrder.add("Similar_Items");
+		tableOrder.add(CreateTables.Item);
+        tableOrder.add(CreateTables.Shop);
+        tableOrder.add(CreateTables.Item_Shop);
+		tableOrder.add(CreateTables.Similar_Items);
 		
-		tableOrder.add("Category");
-        tableOrder.add("Sub_Category");
-        tableOrder.add("Item_Category");
+		tableOrder.add(CreateTables.Category);
+        tableOrder.add(CreateTables.Sub_Category);
+        tableOrder.add(CreateTables.Item_Category);
         
-		tableOrder.add("Author");
-        tableOrder.add("Publisher");
-        tableOrder.add("Book");
-        tableOrder.add("Book_Author");
-		tableOrder.add("Book_Publisher");
+		tableOrder.add(CreateTables.Author);
+        tableOrder.add(CreateTables.Publisher);
+        tableOrder.add(CreateTables.Book);
+        tableOrder.add(CreateTables.Book_Author);
+		tableOrder.add(CreateTables.Book_Publisher);
 		
-		tableOrder.add("DVD");
-		tableOrder.add("Actor");
-		tableOrder.add("Creator");
-		tableOrder.add("Director");
-		tableOrder.add("DVD_Actor");
-		tableOrder.add("DVD_Creator");
-		tableOrder.add("DVD_Director");
+		tableOrder.add(CreateTables.DVD);
+		tableOrder.add(CreateTables.Actor);
+		tableOrder.add(CreateTables.Creator);
+		tableOrder.add(CreateTables.Director);
+		tableOrder.add(CreateTables.DVD_Actor);
+		tableOrder.add(CreateTables.DVD_Creator);
+		tableOrder.add(CreateTables.DVD_Director);
 
-		tableOrder.add("Artist");
-		tableOrder.add("Label");
-		tableOrder.add("Music_CD");
-		tableOrder.add("Titel");
-		tableOrder.add("Music_CD_Artist");
-		tableOrder.add("Music_CD_Label");
+		tableOrder.add(CreateTables.Artist);
+		tableOrder.add(CreateTables.Label);
+		tableOrder.add(CreateTables.Music_CD);
+		tableOrder.add(CreateTables.Title);
+		tableOrder.add(CreateTables.Music_CD_Artist);
+		tableOrder.add(CreateTables.Music_CD_Label);
 		
-		tableOrder.add("Customer");
-		tableOrder.add("Purchase");
-		tableOrder.add("Review");
+		tableOrder.add(CreateTables.Customer);
+		tableOrder.add(CreateTables.Purchase);
+		tableOrder.add(CreateTables.Review);
 
-		tableOrder.add("Errors");
+		tableOrder.add(CreateTables.Errors);
 			
 	}
 	

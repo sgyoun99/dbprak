@@ -266,7 +266,7 @@ public class XmlTool {
 	}
 	
 	//will returns null, when not exists
-	public List<Node> getNodesbyNameDFS(Node startNode, String nodeName) {
+	public List<Node> getNodesByNameDFS(Node startNode, String nodeName) {
 		List<Node> res = new ArrayList<Node>();
 		this.visitChildElementNodesDFS(startNode, (node, l) -> {
 			if(node.getNodeName().equals(nodeName)) {
@@ -278,7 +278,7 @@ public class XmlTool {
 	
 	//will returns null, when not exists
 	public Node getNodebyNameDFS(Node startNode, String nodeName) {
-		return getNodesbyNameDFS(startNode, nodeName).get(0) ;
+		return getNodesByNameDFS(startNode, nodeName).get(0) ;
 	}
 	
 	public void visitAllElementNodesDFS(XmlToolWorkable worker) {
@@ -338,6 +338,24 @@ public class XmlTool {
 			} 
 		}
 	}
+	
+	//take either textContent or attribute value when there is only one attribute in the node
+	public String getNodeContentForce(Node node) {
+		String content = null;
+		if(node.getAttributes().getLength() == 1) {
+			String attrName = node.getAttributes().item(0).getNodeName();	
+			try {
+				content = this.getAttributeValue(node, attrName);
+			} catch (XmlDataException e) {
+				//do nothing
+			}
+		} else {
+			content = this.getTextContent(node);
+		}
+
+		return content;
+	}
+	
 
 	public String getNodeContentDFS(Node startNode) {
 		StringBuilder sb = new StringBuilder();
@@ -553,17 +571,17 @@ public class XmlTool {
 //		xt.loadXML(Config.LEIPZIG);
 //		xt.analyseAttributesInNode("dvdspec");
 		
-		xt.encodeFileToUTF_8(Config.DRESDEN_ORIGINAL);
+//		xt.encodeFileToUTF_8(Config.DRESDEN_ORIGINAL);
 
 //		xt.loadXML(Config.DRESDEN_ENCODED);
 //		xt.analyseAttributesInNode("format");
 		
 		
 		
-		xt.analyseDirectChildNodes(Config.DRESDEN_ENCODED, "artists"); // <artist>...</artist>
+//		xt.analyseDirectChildNodes(Config.DRESDEN_ENCODED, "labels"); 
 //		xt.analyseDirectChildNodes(Config.DRESDEN_ENCODED, "authors");
 
-//		xt.analyseDirectChildNodes(Config.LEIPZIG, "artists"); // <artist name="..."/>
+		xt.analyseDirectChildNodes(Config.LEIPZIG, "tracks");  
 //		xt.analyseDirectChildNodes(Config.LEIPZIG, "authors");
 		
 
