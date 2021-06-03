@@ -6,8 +6,10 @@ import java.sql.SQLException;
 import org.w3c.dom.Node;
 
 import JDBCTools.JDBCTool;
-import XmlTools.XmlDataException;
 import XmlTools.XmlTool;
+import exception.XmlInvalidValueException;
+import exception.XmlNoAttributeException;
+import exception.XmlValidationFailException;
 import main.Config;
 import main.CreateTables;
 import main.DropTables;
@@ -31,10 +33,13 @@ public class Similar_Items {
 		this.sim_item_id = sim_item_id;
 	}
 	
-	public boolean test() throws Exception{
-		if(!Item.pred_item_id.test(getItem_id())) {throw new XmlDataException("item_id Error (length not 10): "+getItem_id()); }
-		if(!Item.pred_item_id.test(getSim_item_id())) {throw new XmlDataException("similar_item_id Error (length not 10): "+getSim_item_id()); }
-		return true;
+	public void test() throws XmlValidationFailException{
+		try {
+			if(!Item.pred_item_id.test(getItem_id())) {throw new XmlInvalidValueException("item_id Error (length not 10): "+getItem_id()); }
+			if(!Item.pred_item_id.test(getSim_item_id())) {throw new XmlInvalidValueException("similar_item_id Error (length not 10): "+getSim_item_id()); }
+		} catch (XmlInvalidValueException e) {
+			throw new XmlValidationFailException(e);
+		}
 	}
 	
 	
@@ -82,8 +87,12 @@ public class Similar_Items {
 				
 			} catch (IllegalArgumentException e) {
 				ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
-			} catch (XmlDataException e) {
-				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(node.getParentNode()));
+			} catch (XmlNoAttributeException e) {
+				e.setLocation(location);
+				ErrorLogger.write(e, xt.getNodeContentDFS(node));
+			} catch (XmlValidationFailException e) {
+				e.setLocation(location);
+				ErrorLogger.write(e, xt.getNodeContentDFS(node));
 			} catch (SQLException e) {
 				if(!e.getMessage().contains("duplicate key value")) {
 					ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(node));
@@ -115,7 +124,7 @@ public class Similar_Items {
 					setItem_id(item_id);
 
 					String sim_item_id = "";
-					sim_item_id = xt.getTextContent(node);
+					sim_item_id = xt.getTextContentOfLeafNode(node);
 					setSim_item_id(sim_item_id);
 				}
 
@@ -139,15 +148,17 @@ public class Similar_Items {
 				
 			} catch (IllegalArgumentException e) {
 				ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
-			} catch (XmlDataException e) {
-				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(node.getParentNode()));
+			} catch (XmlNoAttributeException e) {
+				e.setLocation(location);
+				ErrorLogger.write(e, xt.getNodeContentDFS(node));
+			} catch (XmlValidationFailException e) {
+				e.setLocation(location);
+				ErrorLogger.write(e, xt.getNodeContentDFS(node));
 			} catch (SQLException e) {
 				if(!e.getMessage().contains("duplicate key value")) {
 					ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(node));
 				}
 			} catch (Exception e) {
-				//temp
-				e.printStackTrace();
 				ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(node));
 			}	
 

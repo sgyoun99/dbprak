@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 import org.w3c.dom.Node;
 
 import JDBCTools.JDBCTool;
-import XmlTools.XmlDataException;
 import XmlTools.XmlTool;
+import exception.XmlDataException;
 import main.Config;
 import main.CreateTables;
 import main.DropTables;
@@ -117,19 +117,19 @@ public class Music_CD {
 				//xml
 
 				List<Node> artistNodes = xt.getNodesByNameDFS(musicItemNode, "artist");
-				artistNodes.forEach(artistNode -> artistNameList.add(xt.getTextContent(artistNode)));
+				artistNodes.forEach(artistNode -> artistNameList.add(xt.getTextContentOfLeafNode(artistNode)));
 				List<Node> creatorNodes = xt.getNodesByNameDFS(musicItemNode, "creator");
-				creatorNodes.forEach(creatorNode -> artistNameList.add(xt.getTextContent(creatorNode)));
+				creatorNodes.forEach(creatorNode -> artistNameList.add(xt.getTextContentOfLeafNode(creatorNode)));
 				
 				List<Node> labelNodes = xt.getNodesByNameDFS(musicItemNode, "label");
-				labelNodes.forEach(labelNode -> labelNameList.add(xt.getTextContent(labelNode)));
+				labelNodes.forEach(labelNode -> labelNameList.add(xt.getTextContentOfLeafNode(labelNode)));
 				
 				List<Node> titleNodes = xt.getNodesByNameDFS(musicItemNode, "title");
-				titleNodes.forEach(titleNode -> titleNameList.add(xt.getTextContent(titleNode)));
+				titleNodes.forEach(titleNode -> titleNameList.add(xt.getTextContentOfLeafNode(titleNode)));
 				
 				music_cd.setItem_id(xt.getAttributeValue(musicItemNode, "asin"));
 				Node releasedate = xt.getNodebyNameDFS(musicItemNode, "releasedate");
-				music_cd.setRelease_date(xt.getTextContent(releasedate));
+				music_cd.setRelease_date(xt.getTextContentOfLeafNode(releasedate));
 				music_cd.setArtist(artistNameList.get(0));//to set artist attribute NOT NULL
 				
 				//Insert
@@ -207,11 +207,11 @@ public class Music_CD {
 				});
 				
 				List<Node> titleNodes = xt.getNodesByNameDFS(musicItemNode, "title");
-				titleNodes.forEach(titleNode -> titleNameList.add(xt.getTextContent(titleNode)));
+				titleNodes.forEach(titleNode -> titleNameList.add(xt.getTextContentOfLeafNode(titleNode)));
 				
 				music_cd.setItem_id(xt.getAttributeValue(musicItemNode, "asin"));
 				Node releasedate = xt.getNodebyNameDFS(musicItemNode, "releasedate");
-				music_cd.setRelease_date(xt.getTextContent(releasedate));
+				music_cd.setRelease_date(xt.getTextContentOfLeafNode(releasedate));
 				music_cd.setArtist(artistNameList.get(0));//to set artist attribute NOT NULL
 				
 				//Insert

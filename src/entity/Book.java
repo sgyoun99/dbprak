@@ -10,8 +10,10 @@ import java.util.stream.Collectors;
 import org.w3c.dom.Node;
 
 import JDBCTools.JDBCTool;
-import XmlTools.XmlDataException;
 import XmlTools.XmlTool;
+import exception.XmlDataException;
+import exception.XmlInvalidValueException;
+import exception.XmlValidationFailException;
 import main.Config;
 import main.CreateTables;
 import main.DropTables;
@@ -137,22 +139,58 @@ public class Book {
 	public static Predicate<String> pred_isbn = date -> true; //allow
 	public static Predicate<Short> pred_pages = pages -> pages == null || (pages >= 0 && pages < Short.MAX_VALUE); // ?
 	
-	public void testBook(Book book) throws Exception {
-		if(!Item.pred_item_id.test(book.getItem_id())) {throw new XmlDataException("item_id Error (length not 10): \""+book.getItem_id()+"\""); }
-		if(!pred_pages.test(book.getPages())) {throw new XmlDataException("regioncode Error "+ book.getPages()); }
-		if(!pred_isbn.test(book.getIsbn())) {throw new XmlDataException("isbn Error "+ book.getIsbn()); }
-		if(!pred_publicationdate.test(book.getPublication_date())) {throw new XmlDataException("publication date Error "+ book.getPublication_date()); }
+	public void testBook(Book book) throws XmlValidationFailException {
+		try {
+			if(!Item.pred_item_id.test(book.getItem_id())) {
+				XmlInvalidValueException e = new XmlInvalidValueException("item_id Error (length not 10): \""+book.getItem_id()+"\""); 
+				e.setAttrName("item_id");
+				throw e;
+			}
+			if(!pred_pages.test(book.getPages())) {
+				XmlInvalidValueException e = new XmlInvalidValueException("regioncode Error "+ book.getPages()); 
+				e.setAttrName("pages");
+				throw e;
+			}
+			if(!pred_isbn.test(book.getIsbn())) {
+				XmlInvalidValueException e = new XmlInvalidValueException("isbn Error "+ book.getIsbn()); 
+				e.setAttrName("isbn");
+				throw e;
+			}
+			if(!pred_publicationdate.test(book.getPublication_date())) {
+				XmlInvalidValueException e = new XmlInvalidValueException("publication date Error "+ book.getPublication_date()); 
+				e.setAttrName("publication_date)");
+				throw e;
+			}
+		} catch (XmlInvalidValueException e) {
+			throw new XmlValidationFailException(e);
+		}
 		
 	}
 	
 	public static Predicate<String> pred_author = author -> true; //allow
 	public static Predicate<String> pred_publisher = publisher -> publisher != null;
 	public static Predicate<String> pred_director = director -> director != null;
-	public void testAuthor(Author autor) throws Exception {
-		if(!pred_author.test(getAuthor())) {throw new XmlDataException("author Error: \""+getAuthor()+"\""); }
+	public void testAuthor(Author autor) throws XmlValidationFailException {
+		try {
+			if(!pred_author.test(getAuthor())) {
+				XmlInvalidValueException e = new XmlInvalidValueException("author Error: \""+getAuthor()+"\""); 
+				e.setAttrName("author");
+				throw e;
+			}
+		} catch (XmlInvalidValueException e) {
+			throw new XmlValidationFailException(e);
+		}
 	}
-	public void testPublisher(Publisher publisher) throws Exception {
-		if(!pred_publisher.test(publisher.getPublisher())) {throw new XmlDataException("publisher Error. publisher is null.");}
+	public void testPublisher(Publisher publisher) throws XmlValidationFailException {
+		try {
+			if(!pred_publisher.test(publisher.getPublisher())) {
+				XmlInvalidValueException e = new XmlInvalidValueException("publisher Error. publisher is null.");
+				e.setAttrName("publisher");
+				throw e;
+			}
+		} catch (XmlInvalidValueException e) {
+			throw new XmlValidationFailException(e);
+		}
 	}
 	
 
@@ -187,7 +225,7 @@ public class Book {
 					Node isbn = xt.getNodebyNameDFS(bookspec, "isbn");
 					if(isbn != null) {
 						if(xt.hasTextContent(isbn)){
-							book.setIsbn(xt.getTextContent(isbn));
+							book.setIsbn(xt.getTextContentOfLeafNode(isbn));
 						} else {
 								try {
 								book.setIsbn(xt.getAttributeValue(isbn, "val"));
@@ -197,7 +235,7 @@ public class Book {
 						}
 					}
 					Node pages = xt.getNodebyNameDFS(bookspec, "pages");
-					book.setPages(xt.getTextContent(pages));
+					book.setPages(xt.getTextContentOfLeafNode(pages));
 					Node publication = xt.getNodebyNameDFS(bookspec, "publication");
 					try {
 						book.setPublication_date(xt.getAttributeValue(publication,"date"));
@@ -278,7 +316,7 @@ public class Book {
 								try {
 									author.setAuthor(xt.getAttributeValue(nd, "name"));
 								} catch (XmlDataException e) {
-									author.setAuthor(xt.getTextContent(nd));
+									author.setAuthor(xt.getTextContentOfLeafNode(nd));
 								}
 								try {
 									this.testAuthor(author);
@@ -357,7 +395,7 @@ public class Book {
 								try {
 									creator.setPublisher(xt.getAttributeValue(nd, "name"));
 								} catch (XmlDataException e) {
-									creator.setPublisher(xt.getTextContent(nd));
+									creator.setPublisher(xt.getTextContentOfLeafNode(nd));
 								}
 								try {
 									this.testPublisher(creator);

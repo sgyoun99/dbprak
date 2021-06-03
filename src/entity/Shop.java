@@ -49,7 +49,7 @@ public class Shop {
 //			System.out.println(e);
 			e.printStackTrace();
 			if(shopNode != null) {
-				ErrorLogger.write("Shop.read", ErrType.XML, e, xt.getAllAttributeContents(shopNode)+": at "+ xmlPath);
+				ErrorLogger.write("Shop.read", "", ErrType.XML, "", e, xt.getAllAttributeContents(shopNode)+": at "+ xmlPath);
 			}
 		}
 	}
@@ -67,7 +67,7 @@ public class Shop {
 				}
 			);
 		} catch (Exception e) {
-			ErrorLogger.write("Shop.insert", ErrType.SQL, e, "Shop Insert filed: "+xmlPath);
+			ErrorLogger.write("Shop.insert", "", ErrType.SQL, "", e, "Shop Insert filed: "+xmlPath);
 		}
 		System.out.println("insert shop complete.");
 	}
