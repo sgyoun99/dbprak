@@ -81,8 +81,7 @@ public class CreateTables {
 		
 		createTableMap.put(CreateTables.Customer, "CREATE TABLE customer(customer_id TEXT PRIMARY KEY, street CHAR(5), nr SMALLINT, zip SMALLINT, city TEXT, account_number TEXT UNIQUE NOT NULL);");
 		createTableMap.put(CreateTables.Purchase, "CREATE TABLE purchase(customer_id TEXT REFERENCES customer(customer_id), item_id CHAR(10) REFERENCES item(item_id), shop_name TEXT NOT NULL, street TEXT NOT NULL, zip CHAR(5) NOT NULL, order_date DATE NOT NULL, FOREIGN KEY(shop_name, street, zip) REFERENCES shop(shop_name, street, zip), PRIMARY KEY(item_id, shop_name, street, zip, order_date));");
-		createTableMap.put(CreateTables.Review, "CREATE TABLE review(item_id CHAR(10) REFERENCES item(item_id), customer_id TEXT REFERENCES customer(customer_id), review_date DATE, summary TEXT, contect TEXT, rating SMALLINT, PRIMARY KEY(item_id, customer_id));");
-
+		createTableMap.put(CreateTables.Review, "CREATE TABLE review(item_id CHAR(10) REFERENCES item(item_id), customer_id TEXT"/* REFERENCES customer(customer_id)*/+", review_date DATE, summary TEXT, content TEXT, rating SMALLINT, PRIMARY KEY(item_id, customer_id, review_date));");
 		createTableMap.put(CreateTables.Errors, "CREATE TABLE errors(error_id SERIAL PRIMARY KEY, location TEXT, errtype ErrType, exception TEXT, error_message TEXT, contents TEXT);"); 
 		
 		
