@@ -16,7 +16,6 @@ public class XmlGetAttributeException extends XmlDataException {
 
 	public XmlGetAttributeException(Node node, String attrName) {
 		this.setErrType(ErrType.XML_NO_ATTRIBUTE);
-		this.setNode(node);
 		this.setAttrName(attrName);
 		this.setMessage("<"+node.getNodeName()+" "+attrName+">");
 	}

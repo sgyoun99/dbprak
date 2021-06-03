@@ -188,12 +188,10 @@ public class Item {
 			} catch (XmlValidationFailException e) {
 				e.setLocation(location);
 				e.setItem_id(item.getItem_id());
-				e.setNode(itemNode);
 				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
 			} catch (XmlDataException e) {
 				e.setLocation(location);
 				e.setItem_id(item.getItem_id());
-				e.setNode(itemNode);
 				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
 			} catch (SQLException e) {
 				if(e.getMessage().contains(JDBCTool.KEY_DUPLICATED)) {
@@ -260,12 +258,10 @@ public class Item {
 			} catch (XmlValidationFailException e) {
 				e.setLocation(location);
 				e.setItem_id(item.getItem_id());
-				e.setNode(itemNode);
 				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
 			} catch (XmlDataException e) {
 				e.setLocation(location);
 				e.setItem_id(item.getItem_id());
-				e.setNode(itemNode);
 				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
 			} catch (SQLException e) {
 				if(e.getMessage().contains(JDBCTool.KEY_DUPLICATED)) {

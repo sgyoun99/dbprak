@@ -7,7 +7,6 @@ import main.ErrType;
 public class XmlDataException extends Exception {
 
 	private String location;
-	private Node node;
 	private String item_id;
 	public String getItem_id() {
 		return item_id;
@@ -46,19 +45,6 @@ public class XmlDataException extends Exception {
 	public void setLocation(String location) {
 		this.location = location;
 	}
-
-
-
-	public Node getNode() {
-		return node;
-	}
-
-
-
-	public void setNode(Node node) {
-		this.node = node;
-	}
-
 
 
 	public String getAttrName() {

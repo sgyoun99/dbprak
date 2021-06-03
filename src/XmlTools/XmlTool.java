@@ -25,6 +25,7 @@ import org.w3c.dom.NodeList;
 import exception.XmlDataException;
 import exception.XmlGetNodeContentNullException;
 import exception.XmlNoAttributeException;
+import exception.XmlNullNodeException;
 import main.Config;
 
 import org.w3c.dom.Node;
@@ -335,12 +336,14 @@ public class XmlTool {
 		String res = null;
 		String textContent = null;
 		String attrValue = null;
+		if(node == null) {
+			throw new XmlNullNodeException();	
+		}
 		if(node.getAttributes().getLength() == 1) {
 			String attrName = node.getAttributes().item(0).getNodeName();	
 			try {
 				attrValue = this.getAttributeValue(node, attrName).trim();
 			} catch (XmlNoAttributeException e) {
-				e.setNode(node);
 				e.setAttrName(attrName);
 				throw e;
 			}
@@ -363,6 +366,9 @@ public class XmlTool {
 	//take either textContent or attribute value when there is only one attribute in the node
 	public String getNodeContentForceNullable(Node node) {
 		String res = null;
+		if(node == null) {
+			return null;
+		}
 		if(node.getAttributes().getLength() == 1) {
 			String attrName = node.getAttributes().item(0).getNodeName();	
 			try {

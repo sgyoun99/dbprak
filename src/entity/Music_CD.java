@@ -12,6 +12,7 @@ import org.w3c.dom.Node;
 import JDBCTools.JDBCTool;
 import XmlTools.XmlTool;
 import exception.XmlDataException;
+import exception.XmlInvalidValueException;
 import main.Config;
 import main.CreateTables;
 import main.DropTables;
@@ -79,11 +80,18 @@ public class Music_CD {
 		this.release_date = release_date;
 	}
 	
-	public void setRelease_date(String release_date) throws IllegalArgumentException{
+	public void setRelease_date(String release_date) throws XmlInvalidValueException{
 		if(release_date != null) {
-			this.release_date = Date.valueOf(release_date);
+			try {
+				this.release_date = Date.valueOf(release_date);
+			} catch (IllegalArgumentException e) {
+				XmlInvalidValueException ex = new XmlInvalidValueException("date is not in the form yyyy-mm-dd");
+				ex.setAttrName("releasedate");
+				throw ex;
+			}
 		}
 	}
+	
 	public void musicCdDresden() {
 		String location = "Music_CD(Dresden)";
 		XmlTool xt = new XmlTool();

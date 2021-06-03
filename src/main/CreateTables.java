@@ -145,7 +145,7 @@ public class CreateTables {
 			
 			//create Enum
             createEnum("pgroup", "'Book', 'Music_CD', 'DVD'", st);
-            createEnum("ErrType", "'XML', 'XML_NO_VALUE', 'XML_INVALID_VALUE', 'XML_DATA_INCOMPLETE', 'XML_NO_ATTRIBUTE', 'SQL', 'SQL_FK_ERROR', 'SQL_DUPLICATE', 'PROGRAM'", st);
+            createEnum("ErrType", "'XML', 'XML_NO_VALUE', 'XML_INVALID_VALUE', 'XML_DATA_INCOMPLETE', 'XML_NO_ATTRIBUTE', 'XML_NO_NODE', 'SQL', 'SQL_FK_ERROR', 'SQL_DUPLICATE', 'PROGRAM'", st);
 
 			//create Tables
 			tableOrder.forEach(tableName -> {

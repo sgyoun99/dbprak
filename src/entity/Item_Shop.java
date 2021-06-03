@@ -221,12 +221,10 @@ public class Item_Shop {
 			} catch (XmlValidationFailException e) {
 				e.setLocation(location);
 				e.setItem_id(item_shop.getItem_id());
-				e.setNode(itemNode);
 				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
 			} catch (XmlDataException e) {
 				e.setLocation(location);
 				e.setItem_id(item_shop.getItem_id());
-				e.setNode(itemNode);
 				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
 			} catch (SQLException e) {
 				if(e.getMessage().contains(JDBCTool.KEY_DUPLICATED)) {
@@ -308,12 +306,10 @@ public class Item_Shop {
 			} catch (XmlValidationFailException e) {
 				e.setLocation(location);
 				e.setItem_id(item_shop.getItem_id());
-				e.setNode(itemNode);
 				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
 			} catch (XmlDataException e) {
 				e.setLocation(location);
 				e.setItem_id(item_shop.getItem_id());
-				e.setNode(itemNode);
 				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
 			} catch (SQLException e) {
 				if(e.getMessage().contains(JDBCTool.KEY_DUPLICATED)) {

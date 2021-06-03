@@ -260,12 +260,10 @@ public class Dvd {
 			} catch (XmlValidationFailException e) {
 				e.setLocation(location);
 				e.setItem_id(dvd.getItem_id());
-				e.setNode(itemNode);
 				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
 			} catch (XmlDataException e) {
 				e.setLocation(location);
 				e.setItem_id(dvd.getItem_id());
-				e.setNode(itemNode);
 				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
 			} catch (SQLException e) {
 				if(e.getMessage().contains(JDBCTool.KEY_DUPLICATED)) {
@@ -348,7 +346,6 @@ public class Dvd {
 									e.setLocation(location);
 									e.setItem_id(item_id);
 									e.setAttrName("actor");
-									e.setNode(nd);
 									ErrorLogger.write(e, xt.getNodeContentDFS(nd));
 								} catch (SQLException e) {
 									if(e.getMessage().contains(JDBCTool.KEY_DUPLICATED)) {
@@ -442,7 +439,6 @@ public class Dvd {
 									e.setLocation(location);
 									e.setItem_id(item_id);
 									e.setAttrName("creator");
-									e.setNode(nd);
 									ErrorLogger.write(e, xt.getNodeContentDFS(nd));
 								} catch (SQLException e) {
 									if(e.getMessage().contains(JDBCTool.KEY_DUPLICATED)) {
@@ -536,7 +532,6 @@ public class Dvd {
 									e.setLocation(location);
 									e.setItem_id(item_id);
 									e.setAttrName("director");
-									e.setNode(nd);
 									ErrorLogger.write(e, xt.getNodeContentDFS(nd));
 								} catch (SQLException e) {
 									if(e.getMessage().contains(JDBCTool.KEY_DUPLICATED)) {

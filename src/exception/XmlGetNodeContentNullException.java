@@ -16,7 +16,6 @@ public class XmlGetNodeContentNullException extends XmlDataException {
 	
 	public XmlGetNodeContentNullException(Node node) {
 		this.setErrType(ErrType.XML_NO_VALUE);
-		this.setNode(node);
 		this.setMessage("<"+node.getNodeName()+">" +" returns null.");
 	}
 
