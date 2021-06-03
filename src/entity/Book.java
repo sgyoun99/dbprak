@@ -143,9 +143,9 @@ public class Book {
 	}
 	
 	
-	public static Predicate<Date> pred_publicationdate = date -> true; //allow. let DB check.
-	public static Predicate<String> pred_isbn = date -> date == null || date != null && (date.length()==10 || date.length() ==13); //null allowed
 	public static Predicate<Short> pred_pages = pages -> pages == null || (pages >= 0 && pages < Short.MAX_VALUE); // ?
+	public static Predicate<String> pred_isbn = date -> date == null || date != null && (date.length()==10 || date.length() ==13); //null allowed
+	public static Predicate<Date> pred_publicationdate = date -> true; //will be tested in the setter
 	
 	public void testBook(Book book) throws XmlValidationFailException, XmlNullNodeException {
 		try {
@@ -179,7 +179,7 @@ public class Book {
 	
 	public static Predicate<String> pred_author = author -> true; //allow
 	public static Predicate<String> pred_publisher = publisher -> publisher != null;
-	public void testAuthor(Author autor) throws XmlValidationFailException {
+	public void testAuthor(Author author) throws XmlValidationFailException {
 		try {
 			if(!pred_author.test(getAuthor())) {
 				XmlInvalidValueException e = new XmlInvalidValueException("author Error: \""+getAuthor()+"\""); 
@@ -263,13 +263,16 @@ public class Book {
 				e.setLocation(location);
 				e.setItem_id(book.getItem_id());
 				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-			} catch (SQLException e) {
-				if(e.getMessage().contains(JDBCTool.KEY_DUPLICATED)) {
-//					this.handleDuplicatedPKDresden();
-					SQLKeyDuplicatedException keyDupException = new SQLKeyDuplicatedException(e.getMessage());
-					ErrorLogger.write(location,book.getItem_id(),  ErrType.SQL_DUPLICATE, "", keyDupException, xt.getNodeContentDFS(itemNode));
+			} catch (SQLException ex) {
+				if(ex.getMessage().contains("duplicate key value")) {
+					SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
+					e.setAttrName("item_id");
+					e.setItem_id(book.getItem_id());
+					e.setLocation(location);
+					e.setMessage("duplicate key value");
+					ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
 				} else {
-					ErrorLogger.write(location,book.getItem_id(),  ErrType.SQL, "", e, xt.getNodeContentDFS(itemNode));
+					ErrorLogger.write(location, book.getItem_id(), ErrType.SQL, "", ex, xt.getNodeContentDFS(itemNode));
 				}
 			} catch (Exception e) {
 				ErrorLogger.write(location, book.getItem_id(), ErrType.PROGRAM, "", e, xt.getNodeContentDFS(itemNode));
@@ -282,8 +285,8 @@ public class Book {
 	
 	public void author() {
 		String location = "author(" + this.location + ")";
-		String attrName = "autor";
-		System.out.println(">> autor " + this.location + " ...");
+		String attrName = "author";
+		System.out.println(">> author " + this.location + " ...");
 		XmlTool xt = new XmlTool(this.xmlPath);
 		xt.getNodesByNameDFS(xt.getDocumentNode(), "item").stream().filter(itemNode -> {
 			try {
@@ -297,8 +300,8 @@ public class Book {
 			}
 			return false;
 		}).collect(Collectors.toList()).forEach(itemNode -> {
+			Book book = new Book();
 			try {
-				Book book = new Book();
 				try {
 					book.setItem_id(xt.getAttributeValue(itemNode, "asin"));
 				} catch (XmlNoAttributeException e) {
@@ -337,17 +340,21 @@ public class Book {
 						e.setItem_id(book.getItem_id());
 						e.setAttrName(attrName);
 						ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-					} catch (SQLException e) {
-						if(e.getMessage().contains(JDBCTool.KEY_DUPLICATED)) {
-							SQLKeyDuplicatedException keyDupException = new SQLKeyDuplicatedException(e.getMessage());
-							ErrorLogger.write(location, book.getItem_id(),  ErrType.SQL_DUPLICATE, attrName, keyDupException, xt.getNodeContentDFS(itemNode));
+					} catch (SQLException ex) {
+						if(ex.getMessage().contains("duplicate key value")) {
+							SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
+							e.setAttrName(attrName);
+							e.setItem_id(book.getItem_id());
+							e.setLocation(location);
+							e.setMessage("duplicate key value");
+							ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
 						} else {
-							ErrorLogger.write(location, book.getItem_id(),  ErrType.SQL, attrName, e, xt.getNodeContentDFS(itemNode));
+							ErrorLogger.write(location, book.getItem_id(), ErrType.SQL, attrName, ex, xt.getNodeContentDFS(itemNode));
 						}
 					}
 				});
 				}  catch (Exception e) {
-					ErrorLogger.write(location, item_id, ErrType.PROGRAM, attrName, e, xt.getNodeContentDFS(itemNode));
+					ErrorLogger.write(location, book.getItem_id(), ErrType.PROGRAM, attrName, e, xt.getNodeContentDFS(itemNode));
 				}	
 			}	
 		);
@@ -357,7 +364,7 @@ public class Book {
 	public void publisher() {
 		String location = "publisher(" + this.location + ")";
 		String attrName = "publisher";
-		System.out.println(">> autor " + this.location + " ...");
+		System.out.println(">> publisher " + this.location + " ...");
 		XmlTool xt = new XmlTool(this.xmlPath);
 		xt.getNodesByNameDFS(xt.getDocumentNode(), "item").stream().filter(itemNode -> {
 			try {
@@ -371,8 +378,8 @@ public class Book {
 			}
 			return false;
 		}).collect(Collectors.toList()).forEach(itemNode -> {
+			Book book = new Book();
 			try {
-				Book book = new Book();
 				try {
 					book.setItem_id(xt.getAttributeValue(itemNode, "asin"));
 				} catch (XmlDataException e) {
@@ -411,17 +418,21 @@ public class Book {
 						e.setItem_id(book.getItem_id());
 						e.setAttrName(attrName);
 						ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-					} catch (SQLException e) {
-						if(e.getMessage().contains(JDBCTool.KEY_DUPLICATED)) {
-							SQLKeyDuplicatedException keyDupException = new SQLKeyDuplicatedException(e.getMessage());
-							ErrorLogger.write(location, book.getItem_id(),  ErrType.SQL_DUPLICATE, attrName, keyDupException, xt.getNodeContentDFS(itemNode));
+					} catch (SQLException ex) {
+						if(ex.getMessage().contains("duplicate key value")) {
+							SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
+							e.setAttrName(attrName);
+							e.setItem_id(book.getItem_id());
+							e.setLocation(location);
+							e.setMessage("duplicate key value");
+							ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
 						} else {
-							ErrorLogger.write(location, book.getItem_id(),  ErrType.SQL, attrName, e, xt.getNodeContentDFS(itemNode));
+							ErrorLogger.write(location, book.getItem_id(), ErrType.SQL, attrName, ex, xt.getNodeContentDFS(itemNode));
 						}
 					}
 				});
 				}  catch (Exception e) {
-					ErrorLogger.write(location, item_id, ErrType.PROGRAM, attrName, e, xt.getNodeContentDFS(itemNode));
+					ErrorLogger.write(location, book.getItem_id(), ErrType.PROGRAM, attrName, e, xt.getNodeContentDFS(itemNode));
 				}	
 			}	
 		);

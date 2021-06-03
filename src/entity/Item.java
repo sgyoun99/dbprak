@@ -193,13 +193,16 @@ public class Item {
 				e.setLocation(location);
 				e.setItem_id(item.getItem_id());
 				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-			} catch (SQLException e) {
-				if(e.getMessage().contains(JDBCTool.KEY_DUPLICATED)) {
-					this.handleDuplicatedPKDresden(item);
-					SQLKeyDuplicatedException keyDupExc = new SQLKeyDuplicatedException(e.getMessage());
-					ErrorLogger.write(location,item.getItem_id(),  ErrType.SQL_DUPLICATE, "", keyDupExc, xt.getNodeContentDFS(itemNode));
+			} catch (SQLException ex) {
+				if(ex.getMessage().contains("duplicate key value")) {
+					SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
+					e.setAttrName("item_id");
+					e.setItem_id(item_id);
+					e.setLocation(location);
+					e.setMessage("List Empty");
+					ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
 				} else {
-					ErrorLogger.write(location,item.getItem_id(),  ErrType.SQL, "", e, xt.getNodeContentDFS(itemNode));
+					ErrorLogger.write(location, item_id, ErrType.SQL, "", ex, xt.getNodeContentDFS(itemNode));
 				}
 			} catch (Exception e) {
 				ErrorLogger.write(location, item.getItem_id(), ErrType.PROGRAM, "", e, xt.getNodeContentDFS(itemNode));
@@ -263,13 +266,16 @@ public class Item {
 				e.setLocation(location);
 				e.setItem_id(item.getItem_id());
 				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-			} catch (SQLException e) {
-				if(e.getMessage().contains(JDBCTool.KEY_DUPLICATED)) {
-					this.handleDuplicatedPKDresden(item);
-					SQLKeyDuplicatedException keyDupExc = new SQLKeyDuplicatedException(e.getMessage());
-					ErrorLogger.write(location,item.getItem_id(),  ErrType.SQL_DUPLICATE, "", keyDupExc, xt.getNodeContentDFS(itemNode));
+			} catch (SQLException ex) {
+				if(ex.getMessage().contains("duplicate key value")) {
+					SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
+					e.setAttrName("item_id");
+					e.setItem_id(item_id);
+					e.setLocation(location);
+					e.setMessage("List Empty");
+					ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
 				} else {
-					ErrorLogger.write(location,item.getItem_id(),  ErrType.SQL, "", e, xt.getNodeContentDFS(itemNode));
+					ErrorLogger.write(location, item_id, ErrType.SQL, "", ex, xt.getNodeContentDFS(itemNode));
 				}
 			} catch (Exception e) {
 				ErrorLogger.write(location, item.getItem_id(), ErrType.PROGRAM, "", e, xt.getNodeContentDFS(itemNode));

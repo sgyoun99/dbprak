@@ -265,13 +265,16 @@ public class Dvd {
 				e.setLocation(location);
 				e.setItem_id(dvd.getItem_id());
 				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-			} catch (SQLException e) {
-				if(e.getMessage().contains(JDBCTool.KEY_DUPLICATED)) {
-//					this.handleDuplicatedPKDresden();
-					SQLKeyDuplicatedException keyDupExc = new SQLKeyDuplicatedException(e.getMessage());
-					ErrorLogger.write(location,dvd.getItem_id(),  ErrType.SQL_DUPLICATE, "", keyDupExc, xt.getNodeContentDFS(itemNode));
+			} catch (SQLException ex) {
+				if(ex.getMessage().contains("duplicate key value")) {
+					SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
+					e.setAttrName("item_id");
+					e.setItem_id(dvd.getItem_id());
+					e.setLocation(location);
+					e.setMessage("duplicate key value");
+					ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
 				} else {
-					ErrorLogger.write(location,dvd.getItem_id(),  ErrType.SQL, "", e, xt.getNodeContentDFS(itemNode));
+					ErrorLogger.write(location, dvd.getItem_id(), ErrType.SQL, "", ex, xt.getNodeContentDFS(itemNode));
 				}
 			} catch (Exception e) {
 				ErrorLogger.write(location, dvd.getItem_id(), ErrType.PROGRAM, "", e, xt.getNodeContentDFS(itemNode));
@@ -284,6 +287,7 @@ public class Dvd {
 	
 	public void actor() {
 		String location = this.location + ".actor";
+		String attrName = "actor";
 		System.out.println(">> actor " + this.location + " ...");
 		XmlTool xt = new XmlTool(this.xmlPath);
 		List<Node> items = xt.filterElementNodesDFS(xt.getDocumentNode(), 
@@ -345,17 +349,21 @@ public class Dvd {
 								} catch (XmlDataException e) {
 									e.setLocation(location);
 									e.setItem_id(item_id);
-									e.setAttrName("actor");
+									e.setAttrName(attrName);
 									ErrorLogger.write(e, xt.getNodeContentDFS(nd));
-								} catch (SQLException e) {
-									if(e.getMessage().contains(JDBCTool.KEY_DUPLICATED)) {
-										SQLKeyDuplicatedException keyDupExc = new SQLKeyDuplicatedException(e.getMessage());
-										ErrorLogger.write(location, item_id,  ErrType.SQL_DUPLICATE, "actor", keyDupExc, xt.getNodeContentDFS(nd));
+								} catch (SQLException ex) {
+									if(ex.getMessage().contains("duplicate key value")) {
+										SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
+										e.setAttrName(attrName);
+										e.setItem_id(item_id);
+										e.setLocation(location);
+										e.setMessage("duplicate key value");
+										ErrorLogger.write(e, xt.getNodeContentDFS(nd));
 									} else {
-										ErrorLogger.write(location, item_id,  ErrType.SQL, "actor", e, xt.getNodeContentDFS(nd));
+										ErrorLogger.write(location, item_id, ErrType.SQL, attrName, ex, xt.getNodeContentDFS(nd));
 									}
 								} catch (Exception e) {
-									ErrorLogger.write(location, item_id, ErrType.PROGRAM, "actor", e, xt.getNodeContentDFS(nd));
+									ErrorLogger.write(location, item_id, ErrType.PROGRAM, attrName, e, xt.getNodeContentDFS(nd));
 								}
 							}
 						});
@@ -374,6 +382,7 @@ public class Dvd {
 
 	public void creator() {
 		String location = this.location + ".creator";
+		String attrName = "creator";
 		System.out.println(">> creator " + this.location + " ...");
 		XmlTool xt = new XmlTool(this.xmlPath);
 		List<Node> items = xt.filterElementNodesDFS(xt.getDocumentNode(), 
@@ -434,21 +443,25 @@ public class Dvd {
 										ps.close();
 									});
 								} catch (IllegalArgumentException e) {
-									ErrorLogger.write(location, null, ErrType.PROGRAM, "creator" ,e, xt.getNodeContentDFS(nd));
+									ErrorLogger.write(location, null, ErrType.PROGRAM, attrName ,e, xt.getNodeContentDFS(nd));
 								} catch (XmlDataException e) {
 									e.setLocation(location);
 									e.setItem_id(item_id);
-									e.setAttrName("creator");
+									e.setAttrName(attrName);
 									ErrorLogger.write(e, xt.getNodeContentDFS(nd));
-								} catch (SQLException e) {
-									if(e.getMessage().contains(JDBCTool.KEY_DUPLICATED)) {
-										SQLKeyDuplicatedException keyDupExc = new SQLKeyDuplicatedException(e.getMessage());
-										ErrorLogger.write(location, item_id,  ErrType.SQL_DUPLICATE, "creator", keyDupExc, xt.getNodeContentDFS(nd));
+								} catch (SQLException ex) {
+									if(ex.getMessage().contains("duplicate key value")) {
+										SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
+										e.setAttrName(attrName);
+										e.setItem_id(item_id);
+										e.setLocation(location);
+										e.setMessage("duplicate key value");
+										ErrorLogger.write(e, xt.getNodeContentDFS(nd));
 									} else {
-										ErrorLogger.write(location, item_id,  ErrType.SQL, "creator", e, xt.getNodeContentDFS(nd));
+										ErrorLogger.write(location, item_id, ErrType.SQL, attrName, ex, xt.getNodeContentDFS(nd));
 									}
 								} catch (Exception e) {
-									ErrorLogger.write(location, item_id, ErrType.PROGRAM, "creator", e, xt.getNodeContentDFS(nd));
+									ErrorLogger.write(location, item_id, ErrType.PROGRAM, attrName, e, xt.getNodeContentDFS(nd));
 								}
 							}
 						});
@@ -467,6 +480,7 @@ public class Dvd {
 
 	public void director() {
 		String location = this.location + ".director";
+		String attrName = "director";
 		System.out.println(">> director " + this.location + " ...");
 		XmlTool xt = new XmlTool(this.xmlPath);
 		List<Node> items = xt.filterElementNodesDFS(xt.getDocumentNode(), 
@@ -527,21 +541,25 @@ public class Dvd {
 										ps.close();
 									});
 								} catch (IllegalArgumentException e) {
-									ErrorLogger.write(location, null, ErrType.PROGRAM, "director" ,e, xt.getNodeContentDFS(nd));
+									ErrorLogger.write(location, null, ErrType.PROGRAM, attrName ,e, xt.getNodeContentDFS(nd));
 								} catch (XmlDataException e) {
 									e.setLocation(location);
 									e.setItem_id(item_id);
-									e.setAttrName("director");
+									e.setAttrName(attrName);
 									ErrorLogger.write(e, xt.getNodeContentDFS(nd));
-								} catch (SQLException e) {
-									if(e.getMessage().contains(JDBCTool.KEY_DUPLICATED)) {
-										SQLKeyDuplicatedException keyDupExc = new SQLKeyDuplicatedException(e.getMessage());
-										ErrorLogger.write(location, item_id,  ErrType.SQL_DUPLICATE, "director", keyDupExc, xt.getNodeContentDFS(nd));
+								} catch (SQLException ex) {
+									if(ex.getMessage().contains("duplicate key value")) {
+										SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
+										e.setAttrName(attrName);
+										e.setItem_id(item_id);
+										e.setLocation(location);
+										e.setMessage("duplicate key value");
+										ErrorLogger.write(e, xt.getNodeContentDFS(nd));
 									} else {
-										ErrorLogger.write(location, item_id,  ErrType.SQL, "director", e, xt.getNodeContentDFS(nd));
+										ErrorLogger.write(location, item_id, ErrType.SQL, attrName, ex, xt.getNodeContentDFS(nd));
 									}
 								} catch (Exception e) {
-									ErrorLogger.write(location, item_id, ErrType.PROGRAM, "director", e, xt.getNodeContentDFS(nd));
+									ErrorLogger.write(location, item_id, ErrType.PROGRAM, attrName, e, xt.getNodeContentDFS(nd));
 								}
 							}
 						});

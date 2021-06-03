@@ -1,6 +1,5 @@
 package exception;
 
-import org.w3c.dom.Node;
 
 import main.ErrType;
 

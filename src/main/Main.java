@@ -10,6 +10,8 @@ public class Main {
 		
 		try {
 			
+			ErrorLogger.willLogSQL_DUPLICATE = false;
+
 			/*
 			 */
 			DropTables.dropTables();

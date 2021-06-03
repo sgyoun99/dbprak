@@ -226,13 +226,16 @@ public class Item_Shop {
 				e.setLocation(location);
 				e.setItem_id(item_shop.getItem_id());
 				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-			} catch (SQLException e) {
-				if(e.getMessage().contains(JDBCTool.KEY_DUPLICATED)) {
-//					this.handleDuplicatedPK();
-					SQLKeyDuplicatedException keyDupExc = new SQLKeyDuplicatedException(e.getMessage());
-					ErrorLogger.write(location,item_shop.getItem_id(),  ErrType.SQL_DUPLICATE, "", keyDupExc, xt.getNodeContentDFS(itemNode));
+			} catch (SQLException ex) {
+				if(ex.getMessage().contains("duplicate key value")) {
+					SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
+					e.setAttrName("");
+					e.setItem_id(item_shop.getItem_id());
+					e.setLocation(location);
+					e.setMessage("duplicate key value");
+					ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
 				} else {
-					ErrorLogger.write(location,item_shop.getItem_id(),  ErrType.SQL, "", e, xt.getNodeContentDFS(itemNode));
+					ErrorLogger.write(location, item_shop.getItem_id(), ErrType.SQL, "", ex, xt.getNodeContentDFS(itemNode));
 				}
 			} catch (Exception e) {
 				ErrorLogger.write(location, item_shop.getItem_id(), ErrType.PROGRAM, "", e, xt.getNodeContentDFS(itemNode));
@@ -311,13 +314,16 @@ public class Item_Shop {
 				e.setLocation(location);
 				e.setItem_id(item_shop.getItem_id());
 				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-			} catch (SQLException e) {
-				if(e.getMessage().contains(JDBCTool.KEY_DUPLICATED)) {
-//					this.handleDuplicatedPK();
-					SQLKeyDuplicatedException keyDupExc = new SQLKeyDuplicatedException(e.getMessage());
-					ErrorLogger.write(location,item_shop.getItem_id(),  ErrType.SQL_DUPLICATE, "", keyDupExc, xt.getNodeContentDFS(itemNode));
+			} catch (SQLException ex) {
+				if(ex.getMessage().contains("duplicate key value")) {
+					SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
+					e.setAttrName("");
+					e.setItem_id(item_shop.getItem_id());
+					e.setLocation(location);
+					e.setMessage("duplicate key value");
+					ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
 				} else {
-					ErrorLogger.write(location,item_shop.getItem_id(),  ErrType.SQL, "", e, xt.getNodeContentDFS(itemNode));
+					ErrorLogger.write(location, item_shop.getItem_id(), ErrType.SQL, "", ex, xt.getNodeContentDFS(itemNode));
 				}
 			} catch (Exception e) {
 				ErrorLogger.write(location, item_shop.getItem_id(), ErrType.PROGRAM, "", e, xt.getNodeContentDFS(itemNode));
