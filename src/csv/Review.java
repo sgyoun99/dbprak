@@ -7,9 +7,12 @@ package csv;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-
-import java.io.FileNotFoundException;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.sql.ResultSet;
 import java.sql.Date;
+
+import java.util.HashMap;
 
 import JDBCTools.JDBCTool;
 
@@ -18,8 +21,9 @@ import JDBCTools.JDBCTool;
 public class Review{
 
     private CSV csvFile;
+    private HashMap<String, Double> ratingHM = new HashMap<>();;
 
-    public Review() throws FileNotFoundException{
+    public Review() {
         csvFile = new CSV();
         csvFile.readFile();
     }
@@ -51,14 +55,61 @@ public class Review{
         System.out.println("\033[1;34m*\033[35m*\033[33m*\033[32m* \033[91m reviews fully written \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
     }
     
+    /**
+     * Superfunction for getting ratings from the DB table review and adding them to items
+     */
+    public void addRatings(){
+        getRating();
+        setRating();
+    }
+
+    /**
+     * Function to get teh averages of the ratings from the DB (review) and add them to the Review HashMap
+     */
+    private void getRating() {
+        try{
+            Connection con = JDBCTool.getConnection();
+            con.setAutoCommit(false);
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery("Select item_id, CAST(ROUND(AVG(rating),1) AS DEC(10,1)) rr FROM review GROUP BY item_id ORDER BY item_id");
+         
+            while(rs.next()){
+                ratingHM.put(rs.getString("item_id"), rs.getDouble("rr"));
+            }
+            con.close();
+        
+        }catch(SQLException e){
+            System.out.println("Exception");
+        }
+    }
+
+    /**
+     * add Ratings from Review HashMap to DB item
+     */
+    private void setRating(){
+        for(HashMap.Entry<String,Double> set : ratingHM.entrySet()){
+            try{
+                JDBCTool.executeUpdate((con, st) ->	{
+                    String sql = "UPDATE item SET rating = ? WHERE item_id = ?";
+                    PreparedStatement ps = con.prepareStatement(sql);
+                    ps.setDouble(1, set.getValue()); 
+                    ps.setString(2, set.getKey()); 
+                    ps.executeUpdate();		
+                    ps.close();
+                });
+            }catch(SQLException sqle){
+                System.out.println("SQL_Exception while writing Rating to Item");
+            }catch(Exception e){
+                System.out.println("Other Exception while writing Rating to Item");
+            }
+        }
+        System.out.println("\033[1;34m*\033[35m*\033[33m*\033[32m* \033[91m Rating added to items \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
+    }
+    
 
     public static void main(String[] args){
-        try{
-            Review newReview = new Review();
-            newReview.writeReviewInDB();
-        }catch(FileNotFoundException f){
-            
-        }
+        Review newReview = new Review();
+        newReview.writeReviewInDB();
     }
 
 
