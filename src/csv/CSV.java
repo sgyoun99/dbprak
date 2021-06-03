@@ -17,7 +17,6 @@ public class CSV{
     private ArrayList<String[]> csvFile = new ArrayList<String[]>();
 
     public CSV(){
-        //System.out.println("\033[1;34m*\033[35m*\033[33m*\033[32m* \033[91m csv_file start \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
     }
 
     public void addToCSV(String[] str){
@@ -33,27 +32,31 @@ public class CSV{
      * Split into String-Arrays
      * call on functions for proper file data
      */
-    public void readFile() throws FileNotFoundException {
-        File file = new File(Config.class.getResource("").getPath() + "/../../data/reviews.csv");
-        Scanner sc = new Scanner(file);
-        ArrayList<String> lineList = new ArrayList<String>();
-        while (sc.hasNextLine()){
-            lineList.add(sc.nextLine());
-        }
-        sc.close();
+    public void readFile() {
+        try{
+            File file = new File(Config.class.getResource("").getPath() + "/../../data/reviews.csv");
+            Scanner sc = new Scanner(file);
+            ArrayList<String> lineList = new ArrayList<String>();
+            while (sc.hasNextLine()){
+                lineList.add(sc.nextLine());
+            }
+            sc.close();
 
-        for(String s : lineList) {
-            addToCSV(s.split("\",\""));
+            for(String s : lineList) {
+                addToCSV(s.split("\",\""));
+            }
+            //remove Header
+            csvFile.remove(0); 
+            trimQuotes();
+            changeMod();
+            System.out.println("\033[1;34m*\033[35m*\033[33m*\033[32m* \033[91m csv_file read in \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
+        }catch(FileNotFoundException e){
+            System.out.println("csv_file not found, cannot be read");
         }
-        //remove Header
-        csvFile.remove(0); 
-        trimQuotes();
-        changeMod();
-        System.out.println("\033[1;34m*\033[35m*\033[33m*\033[32m* \033[91m csv_file read in \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
     }
 
     /**
-     * Function to remove quotes at the Beginning und end.
+     * Function to remove quotes at the beginning und end.
      */
     private void trimQuotes(){
         for(String[] line : csvFile){
@@ -110,7 +113,7 @@ public class CSV{
 
 
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) {
 
         CSV csv = new CSV();
         csv.readFile();
