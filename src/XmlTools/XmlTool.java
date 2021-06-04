@@ -332,18 +332,18 @@ public class XmlTool {
 	//take either textContent or attribute value when there is only one attribute in the node
 	//textContent of node has higher priority
 	//the null return is not allowed
-	public String getNodeContentForceNotNull(Node node) throws XmlDataException{
+	public String getNodeContentForceNotNull(Node node) throws XmlDataException {
 		String res = null;
 		String textContent = null;
 		String attrValue = null;
 		if(node == null) {
-			throw new XmlNullNodeException();	
+			throw new XmlNullNodeException();
 		}
 		if(node.getAttributes().getLength() == 1) {
 			String attrName = node.getAttributes().item(0).getNodeName();	
 			try {
 				attrValue = this.getAttributeValue(node, attrName).trim();
-			} catch (XmlNoAttributeException e) {
+			} catch (XmlDataException e) {
 				e.setAttrName(attrName);
 				throw e;
 			}

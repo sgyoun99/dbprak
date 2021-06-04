@@ -76,6 +76,9 @@ public class Main {
 			newReview.writeReviewInDB();
 			newReview.addRatings();
 			
+		
+		} catch (RuntimeException e) {
+			System.out.println(e);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("= = = Main.main() failed = = =");

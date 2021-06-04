@@ -9,7 +9,6 @@ import main.Config;
 
 public class JDBCTool {
 	
-	public static final String KEY_DUPLICATED = "org.postgresql.util.PSQLException: ERROR: duplicate key value violates unique constraint";
 	public static Connection getConnection() {
 		Connection con = null;
 		try {

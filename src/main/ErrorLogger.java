@@ -13,9 +13,9 @@ public class ErrorLogger {
 			+ "location, item_id, attribute, errtype, exception, error_message, contents) values "
 			+ "(?,?,?,?::ErrType,?,?,?);" ;
 	
-	public static void write(XmlDataException e, String errorContent) {
+	public static void write(XmlDataException e, String errorContent) throws RuntimeException{
 
-		if( !willLogSQL_DUPLICATE && e.getErrType().equals(ErrType.SQL_DUPLICATE)) {
+		if( !willLogSQL_DUPLICATE && e.getMessage().contains("duplicate key value")) {
 			//not logging
 		} else {
 			
@@ -38,17 +38,19 @@ public class ErrorLogger {
 				});
 			} catch (Exception ex) {
 				ex.printStackTrace();
+				//TODO
+				throw new RuntimeException("test");
 			}	
 		}
 	}
 
-	public static void write(String location, ErrType errType, Exception e, String errorContent) {
+	public static void write(String location, ErrType errType, Exception e, String errorContent)throws RuntimeException {
 		write(location, "", errType, "", e, errorContent);
 	}
 
-	public static void write(String location, String item_id, ErrType errType, String attrName, Exception e, String errorContent) {
+	public static void write(String location, String item_id, ErrType errType, String attrName, Exception e, String errorContent)throws RuntimeException {
 
-		if( !willLogSQL_DUPLICATE && errType.equals(ErrType.SQL_DUPLICATE)) {
+		if( !willLogSQL_DUPLICATE && e.getMessage().contains("duplicate key value")) {
 			//not logging
 		} else {
 			//temp
@@ -70,6 +72,8 @@ public class ErrorLogger {
 				});
 			} catch (Exception ex) {
 				ex.printStackTrace();
+				//TODO
+				throw new RuntimeException("test");
 			}
 		}
 	}
