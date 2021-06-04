@@ -265,6 +265,9 @@ public class Book {
 				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
 			} catch (SQLException ex) {
 				if(ex.getMessage().contains("duplicate key value")) {
+
+					ErrorLogger.checkDuplicate(book);
+					
 					SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
 					e.setAttrName("item_id");
 					e.setItem_id(book.getItem_id());

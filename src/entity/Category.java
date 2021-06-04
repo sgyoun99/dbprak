@@ -1,7 +1,5 @@
 package entity;
 
-import java.util.ArrayList;
-import java.util.List;
 
 class ItemID {
 	String item_id;
@@ -18,8 +16,6 @@ class ItemID {
 public class Category {
 	int category_id;
 	String categoryName;
-	List<Category> subCategory = new ArrayList<>();
-	List<ItemID> item = new ArrayList<>();
 	public int getCategory_id() {
 		return category_id;
 	}
@@ -32,18 +28,6 @@ public class Category {
 	public void setCategoryName(String categoryName) {
 		this.categoryName = categoryName;
 	}
-	public List<Category> getSubCategory() {
-		return subCategory;
-	}
-	public List<ItemID> getItem() {
-		return item;
-	}
-	
-	
-	public boolean hasSubCategory() {
-		return this.subCategory.size() > 0;
-	}
-	
 	
 	
 	

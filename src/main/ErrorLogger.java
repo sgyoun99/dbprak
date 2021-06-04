@@ -6,6 +6,14 @@ import JDBCTools.JDBCTool;
 import exception.SQLKeyDuplicatedException;
 import exception.XmlDataException;
 
+import entity.*;
+import JDBCTools.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Connection;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+
 public class ErrorLogger {
 
 	public static boolean willLogSQL_DUPLICATE = false;
@@ -106,4 +114,37 @@ public class ErrorLogger {
 		}
 		
 	}
+
+
+	public static void checkDuplicate(Book book){
+		try{
+            Connection con = JDBCTool.getConnection();
+            con.setAutoCommit(false);
+			PreparedStatement ps = con.prepareStatement("Select pages, publication_date, isbn FROM book where item_id = ?");
+			ps.setString(1, book.getItem_id());
+            ResultSet rs = ps.executeQuery();
+         
+            while(rs.next()){
+                if(! (rs.getShort("pages") == book.getPages())){
+					System.out.println("wrong page count on item " + book.getItem_id());
+				}
+				if (rs.getDate("publication_date").compareTo(book.getPublication_date()) != 0){
+					System.out.println("wrong date on item " + book.getItem_id());
+				}
+				if (!(rs.getString("isbn").equals(book.getIsbn()))){
+					System.out.println("wrong isbn on item " + book.getItem_id());
+				}
+            }
+            con.close();
+        
+        }catch(SQLException e){
+            System.out.println("Exception in ErrorLogger");
+        }
+	}
+
+
+
 }
+
+
+

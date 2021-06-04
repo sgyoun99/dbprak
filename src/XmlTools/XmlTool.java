@@ -75,7 +75,8 @@ public class XmlTool {
 	public void printNodeContentsDFS(Node startNode) {
 		System.out.println(this.getNodeContentDFS(startNode));
 	}
-	public String getPrintOpeningNode(Node node, int level) {
+	
+	public String getPrintOpeningNode(Node node, int level) {//
 		StringBuilder sb = new StringBuilder();
 			for(int i=0; i<level*2; i++){sb.append(" ");}
 			//sb.append(" ".repeat((level)*2));
@@ -84,21 +85,32 @@ public class XmlTool {
 			sb.append(getAllAttributeContents(node));
 			sb.append(">\n");
 
-//changed to this.
-			for(int i=0; i<2; i++){sb.append(" ");}
-			//sb.append(" ".repeat(2));
-			for(int i=0; i<level*2; i++){sb.append(" ");}
-			//sb.append(" ".repeat((level)*2));
 
-/* changed to above
-			sb.append(" ".repeat(2));
-			sb.append(" ".repeat((level)*2));
-*/
-			sb.append(this.getTextContentOfLeafNode(node));
-			sb.append("\n");
+//			sb.append(this.getTextContentOfLeafNode(node));
+			String textValue = this.getFirstTextNodeValue(node).trim();
+			if(textValue == null || textValue.length() == 0) {
+			} else {
+				
+				//changed to this.
+				for(int i=0; i<2; i++){sb.append(" ");}
+				//sb.append(" ".repeat(2));
+				for(int i=0; i<level*2; i++){sb.append(" ");}
+				//sb.append(" ".repeat((level)*2));
+
+				/* changed to above
+				sb.append(" ".repeat(2));
+				sb.append(" ".repeat((level)*2));
+				*/
+				
+				sb.append("  ");
+				sb.append(this.getFirstTextNodeValue(node).trim());
+				sb.append("\n");
+			}
 	
 		return sb.toString();
 	}
+	
+
 	public String getPrintClosingNode(Node node, int level) {
 		StringBuilder sb = new StringBuilder();
 			for(int i=0; i<level*2; i++){sb.append(" ");}
@@ -149,22 +161,6 @@ public class XmlTool {
         
 	}
 	
-	// error
-	// does not working with the leipzig.xml
-	public boolean isLeafElementNode2(Node currentNode) {
-		Node node = currentNode.getFirstChild();
-		// only when the node is a leaf Element node(= has only one Text child node.)
-		if(node != null 
-				&& node.getNodeType() == Node.TEXT_NODE
-				&& node.getTextContent().trim().length() == 0) {
-			// \n between Nodes will be ignored.
-			return true;
-		} else if(currentNode.getFirstChild() == null) {
-			return true;
-		} else {
-			return false;
-		}
-	}
 	
 	//test
 	public boolean isLeafElementNode(Node currentNode) {
@@ -382,16 +378,16 @@ public class XmlTool {
 		
 		return res;
 	}
-	
 	public String getNodeContentDFS(Node startNode) {
-		StringBuilder sb = new StringBuilder();
 		Node currentNode = startNode;
+		StringBuilder sb = new StringBuilder();
 		int level = 0;
 	
 		if(this.isLeafElementNode(currentNode)) {
-//			level = this.getLevel(currentNode);
 			sb.append(this.getPrintOpeningNode(currentNode, level));
+			//System.out.print(this.getPrintOpeningNode(currentNode, level));
 			sb.append(this.getPrintClosingNode(currentNode, level));
+			//System.out.print(this.getPrintClosingNode(currentNode, level));
 		} else {
 			Stack<Node> dfsStack = new Stack<Node>();
 			dfsStack.push(currentNode);
@@ -399,9 +395,12 @@ public class XmlTool {
 				if(currentNode.getNodeType() == Node.ELEMENT_NODE) {
 					if(this.isLeafElementNode(currentNode)) {
 						sb.append(this.getPrintOpeningNode(currentNode, level));
+						//System.out.print(this.getPrintOpeningNode(currentNode, level));
 						sb.append(this.getPrintClosingNode(currentNode, level));
+						//System.out.print(this.getPrintClosingNode(currentNode, level));
 					} else {
 						sb.append(this.getPrintOpeningNode(currentNode, level));
+						//System.out.print(this.getPrintOpeningNode(currentNode, level));
 					}
 				}
 				
@@ -416,7 +415,10 @@ public class XmlTool {
 						try{
 							currentNode = dfsStack.pop();
 							level--;
-							sb.append(this.getPrintClosingNode(currentNode, level));
+							if(!this.isLeafElementNode(currentNode)) {
+								sb.append(this.getPrintClosingNode(currentNode, level));
+								//System.out.print(this.getPrintClosingNode(currentNode, level));
+							}
 							if(currentNode.isSameNode(startNode)) { break dfs; }
 								
 						} catch (EmptyStackException e) {
@@ -431,6 +433,8 @@ public class XmlTool {
 		}
 		return sb.toString();
 	}
+		
+
 	public List<Node> filterElementNodesDFS(Node startNode, IntPredicate levelPredicate, Predicate<Node> predicate) {
 		List<Node> res = new ArrayList<Node>();
 		this.visitChildElementNodesDFS(startNode, (node, level) -> {
@@ -598,7 +602,7 @@ public class XmlTool {
 			if(nl.item(i).getNodeType() == Node.TEXT_NODE) {
 				String textValue = nl.item(i).getTextContent();
 				if(textValue != null && textValue.length() > 0) {
-					res = nl.item(i);
+					return res = nl.item(i);
 				}
 			}
 			
@@ -607,7 +611,13 @@ public class XmlTool {
 	}
 	
 	public String getFirstTextNodeValue(Node node) {
-		return this.getFirstTextNodeOf(node).getTextContent();
+		Node textNode = this.getFirstTextNodeOf(node);
+//		return this.getFirstTextNodeOf(node).getTextContent().trim();
+		if(textNode == null) {
+			return "";
+		} else {
+			return textNode.getTextContent().trim();
+		}
 	}
 	
 	public static void main(String[] args) {
