@@ -1,10 +1,8 @@
 package entity;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.EmptyStackException;
 import java.util.HashMap;
 import java.util.List;
@@ -17,9 +15,7 @@ import org.w3c.dom.Node;
 import JDBCTools.JDBCTool;
 import XmlTools.XmlTool;
 import exception.SQLKeyDuplicatedException;
-import exception.XmlDataException;
 import exception.XmlInvalidValueException;
-import exception.XmlValidationFailException;
 import main.Config;
 import main.CreateTables;
 import main.DropTables;
@@ -28,15 +24,6 @@ import main.ErrorLogger;
 
 public class Categories {
 
-/*
-		Node categoriesNode = xt.getDocumentNode().getFirstChild().getNextSibling();
-		List<Node> mainCategoryNodesList = xt.getDirectChildElementNodes(categoriesNode); //12
-
-		mainCategoryNodesList.forEach(n->{
-			System.out.println(xt.getFirstTextNodeValue(n));
-		});		
- */
-	
 	
 	public void insertMainCategory() {
 		String location = "mainCategory";
@@ -50,8 +37,6 @@ public class Categories {
 			Category category = new Category();
 			
 			String catName = xt.getFirstTextNodeValue(mainCategoryNode);
-//			category.setCategoryName(catName);
-//			this.mainCategoryMap.put(catName, category);
 			
 			try {
 				JDBCTool.executeUpdateAutoCommitOn((con, st) -> {
@@ -105,19 +90,20 @@ public class Categories {
 		});
 	}
 	
-	class CurrentNode {
-		Node currentNode;
-
-		public Node getCurrentNode() {
-			return currentNode;
-		}
-
-		public void setCurrentNode(Node currentNode) {
-			this.currentNode = currentNode;
-		}
-		
-	}
+	
 	private void insertSubCategoryDFS(Node startNode) {
+		class CurrentNode {
+			private Node currentNode;
+
+			public Node getCurrentNode() {
+				return currentNode;
+			}
+
+			public void setCurrentNode(Node currentNode) {
+				this.currentNode = currentNode;
+			}
+			
+		}
 		String location = "subCategory";
 		XmlTool xt = new XmlTool();
 
@@ -126,7 +112,7 @@ public class Categories {
 		currentNode.setCurrentNode(startNode);
 		
 		
-		int level = 0;
+		//int level = 0;
 	
 		Stack<Node> dfsStack = new Stack<Node>();
 		dfsStack.push(currentNode.getCurrentNode());
@@ -134,6 +120,8 @@ public class Categories {
 
 			if(currentNode.getCurrentNode().getNodeType() == Node.ELEMENT_NODE  && !"item".equals(currentNode.getCurrentNode().getNodeName())) {
 				//System.out.print(xt.getPrintOpeningNode(currentNode.getCurrentNode(), level));
+				Node curNode = currentNode.getCurrentNode();
+				String parentCategory = xt.getFirstTextNodeValue(curNode.getParentNode());
 				Category category = new Category();	
 				String catName = xt.getFirstTextNodeValue(currentNode.getCurrentNode());
 				category.setCategoryName(catName);
@@ -150,6 +138,24 @@ public class Categories {
 						ps.close();	
 						
 					});
+					//sub_category
+					int parentCategoryId = this.getCategory_id(parentCategory);
+					int currentCategoryId = this.getCategory_id(xt.getFirstTextNodeValue(curNode));
+					JDBCTool.executeUpdateAutoCommitOn((con, st) -> {
+						String sql;
+						PreparedStatement ps;
+						sql = "INSERT INTO public.sub_category("
+								+ "	main_category_id, sub_category_id)"
+								+ "	VALUES (?, ?);";
+						ps = con.prepareStatement(sql);
+						ps.setInt(1, parentCategoryId);
+						ps.setInt(2, currentCategoryId);
+						ps.executeUpdate();
+						ps.close();	
+						
+					});
+					
+					
 				} catch (IllegalArgumentException e) {
 					ErrorLogger.write(location, category.getCategoryName(), ErrType.PROGRAM, "" ,e, xt.getNodeContentDFS(currentNode.getCurrentNode()));
 				} catch (SQLException ex) {
@@ -176,7 +182,6 @@ public class Categories {
 
 				List<Node> itemNodeList = xt.getNodesByNameDFS(currentNode.getCurrentNode(), "item");
 				itemNodeList.forEach(itemNode -> {
-				//TODO
 					String item_id = xt.getTextContentOfLeafNode(itemNode);
 					
 					try {
@@ -210,14 +215,12 @@ public class Categories {
 						ErrorLogger.write(location, item_id, ErrType.PROGRAM, "item_category", e, xt.getNodeContentDFS(currentNode.getCurrentNode()));
 					}
 					
-					
-					
 				});
 			}
 			
 			if(currentNode.getCurrentNode().hasChildNodes()) {
 				dfsStack.push(currentNode.getCurrentNode());
-				level++;
+				//level++;
 				currentNode.setCurrentNode(currentNode.getCurrentNode().getFirstChild());
 			} else if(currentNode.getCurrentNode().getNextSibling() != null) {
 				currentNode.setCurrentNode(currentNode.getCurrentNode().getNextSibling());
@@ -225,7 +228,7 @@ public class Categories {
 				while(currentNode.getCurrentNode().getNextSibling() == null) {
 					try{
 						currentNode.setCurrentNode(dfsStack.pop());
-						level--;
+						//level--;
 						if(!xt.isLeafElementNode(currentNode.getCurrentNode())) {
 							//System.out.print(xt.getPrintClosingNode(currentNode.getCurrentNode(), level));
 						}
@@ -242,13 +245,9 @@ public class Categories {
 		} 
 	}
 	
-	public void insertCategory_SubCategory() {
-		
-	}
-	
 	
 	@SuppressWarnings("finally")
-	public Integer getCategory_id(String categoryName) {
+	private Integer getCategory_id(String categoryName) {
 		Category category = new Category();
 		String location = "getCategory_id";
 		try {
@@ -290,6 +289,9 @@ public class Categories {
 	
 	public static void main(String[] args) throws Exception {
 		
+		DropTables.dropTable("Errors");
+		CreateTables.createTable("Errors");
+
 		DropTables.dropTable(CreateTables.Item_Category);
 		DropTables.dropTable(CreateTables.Sub_Category);
 		DropTables.dropTable(CreateTables.Category);
