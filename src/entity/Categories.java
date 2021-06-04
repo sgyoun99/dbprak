@@ -303,5 +303,6 @@ public class Categories {
 		categories.insertMainCategory();
 		categories.insertSubCategory();
 
+		System.out.println("finished");
 	}
 }

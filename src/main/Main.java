@@ -67,8 +67,6 @@ public class Main {
 			book.author();
 			book.publisher();
 
-	/*
-	 */
 			Music_CD music_cd = new Music_CD();
 			music_cd.musicCdLeipzig();
 			music_cd.musicCdDresden();
@@ -77,6 +75,9 @@ public class Main {
 			newReview.writeReviewInDB();
 			newReview.addRatings();
 			
+			Categories categories = new Categories();
+			categories.insertMainCategory();
+			categories.insertSubCategory();
 		
 		} catch (RuntimeException e) {
 			System.out.println(e);
