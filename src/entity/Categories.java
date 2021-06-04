@@ -96,7 +96,7 @@ public class Categories {
 			category.setCategoryName(catName);
 			this.mainCategoryMap.put(catName, category);
 			
-			this.insertSubCategory(mainCategoryNode, category);
+			this.insertSubCategoryDFS(mainCategoryNode);
 			
 			
 		});
@@ -114,7 +114,7 @@ public class Categories {
 		}
 		
 	}
-	private void insertSubCategory(Node startNode, Category parentCategory) {
+	private void insertSubCategoryDFS(Node startNode) {
 		String location = "subCategory";
 		XmlTool xt = new XmlTool();
 
@@ -125,16 +125,13 @@ public class Categories {
 		
 		int level = 0;
 	
-		if(xt.isLeafElementNode(currentNode.getCurrentNode())) {// exclude item nodes
-			System.out.print(xt.getPrintOpeningNode(currentNode.getCurrentNode(), level));
-			{//insert DFS
-				
-				Category category = new Category();
+		Stack<Node> dfsStack = new Stack<Node>();
+		dfsStack.push(currentNode.getCurrentNode());
+		dfs:while(currentNode.getCurrentNode() != null) {
+			if(currentNode.getCurrentNode().getNodeType() == Node.ELEMENT_NODE  && !"item".equals(currentNode.getCurrentNode().getNodeName())) {
+				Category category = new Category();	
 				String catName = xt.getFirstTextNodeValue(currentNode.getCurrentNode());
 				category.setCategoryName(catName);
-				parentCategory.getSubCategory().add(category);
-
-				//insert
 				try {
 					JDBCTool.executeUpdateAutoCommitOn((con, st) -> {
 						String sql;
@@ -143,7 +140,7 @@ public class Categories {
 								+ "	name)"
 								+ "	VALUES (?);";
 						ps = con.prepareStatement(sql);
-						ps.setString(1, xt.getFirstTextNodeValue(currentNode.getCurrentNode()));
+						ps.setString(1, catName);
 						ps.executeUpdate();
 						ps.close();	
 						
@@ -164,126 +161,33 @@ public class Categories {
 				} catch (Exception e) {
 					ErrorLogger.write(location, category.getCategoryName(), ErrType.PROGRAM, "mainCategoryName", e, xt.getNodeContentDFS(currentNode.getCurrentNode()));
 				}
-
 			}
-			System.out.print(xt.getPrintClosingNode(currentNode.getCurrentNode(), level));
-		} else {
-			Stack<Node> dfsStack = new Stack<Node>();
-			dfsStack.push(currentNode.getCurrentNode());
-			dfs:while(currentNode.getCurrentNode() != null) {
-				if(currentNode.getCurrentNode().getNodeType() == Node.ELEMENT_NODE) {
-					if(xt.isLeafElementNode(currentNode.getCurrentNode()) || "item".equals(currentNode.getCurrentNode().getNodeName())) {
-						System.out.print(xt.getPrintOpeningNode(currentNode.getCurrentNode(), level));
-						{//insert DFS
-							
-							Category category = new Category();
-							String catName = xt.getFirstTextNodeValue(currentNode.getCurrentNode());
-							category.setCategoryName(catName);
-							parentCategory.getSubCategory().add(category);
-
-							//insert
-							try {
-								JDBCTool.executeUpdateAutoCommitOn((con, st) -> {
-									String sql;
-									PreparedStatement ps;
-									sql = "INSERT INTO public.category("
-											+ "	name)"
-											+ "	VALUES (?);";
-									ps = con.prepareStatement(sql);
-									ps.setString(1, xt.getFirstTextNodeValue(currentNode.getCurrentNode()));
-									ps.executeUpdate();
-									ps.close();	
-									
-								});
-							} catch (IllegalArgumentException e) {
-								ErrorLogger.write(location, category.getCategoryName(), ErrType.PROGRAM, "" ,e, xt.getNodeContentDFS(currentNode.getCurrentNode()));
-							} catch (SQLException ex) {
-								if(ex.getMessage().contains("duplicate key value")) {
-									SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
-									e.setAttrName("item_id");
-									e.setItem_id(category.getCategoryName());
-									e.setLocation(location);
-									e.setMessage("duplicate key value");
-									ErrorLogger.write(e, xt.getNodeContentDFS(currentNode.getCurrentNode()));
-								} else {
-									ErrorLogger.write(location, category.getCategoryName(), ErrType.SQL, "mainCategoryName", ex, xt.getNodeContentDFS(currentNode.getCurrentNode()));
-								}
-							} catch (Exception e) {
-								ErrorLogger.write(location, category.getCategoryName(), ErrType.PROGRAM, "mainCategoryName", e, xt.getNodeContentDFS(currentNode.getCurrentNode()));
-							}
-
+			
+			if(currentNode.getCurrentNode().hasChildNodes()) {
+				dfsStack.push(currentNode.getCurrentNode());
+				level++;
+				currentNode.setCurrentNode(currentNode.getCurrentNode().getFirstChild());
+			} else if(currentNode.getCurrentNode().getNextSibling() != null) {
+				currentNode.setCurrentNode(currentNode.getCurrentNode().getNextSibling());
+			} else {
+				while(currentNode.getCurrentNode().getNextSibling() == null) {
+					try{
+						currentNode.setCurrentNode(dfsStack.pop());
+						level--;
+						if(!xt.isLeafElementNode(currentNode.getCurrentNode())) {
+							System.out.print(xt.getPrintClosingNode(currentNode.getCurrentNode(), level));
 						}
-						System.out.print(xt.getPrintClosingNode(currentNode.getCurrentNode(), level));
-					} else {
-						System.out.print(xt.getPrintOpeningNode(currentNode.getCurrentNode(), level));
-						{//insert DFS
+						if(currentNode.getCurrentNode().isSameNode(startNode)) { break dfs; }
 							
-							Category category = new Category();
-							String catName = xt.getFirstTextNodeValue(currentNode.getCurrentNode());
-							category.setCategoryName(catName);
-							parentCategory.getSubCategory().add(category);
-
-							//insert
-							try {
-								JDBCTool.executeUpdateAutoCommitOn((con, st) -> {
-									String sql;
-									PreparedStatement ps;
-									sql = "INSERT INTO public.category("
-											+ "	name)"
-											+ "	VALUES (?);";
-									ps = con.prepareStatement(sql);
-									ps.setString(1, xt.getFirstTextNodeValue(currentNode.getCurrentNode()));
-									ps.executeUpdate();
-									ps.close();	
-									
-								});
-							} catch (IllegalArgumentException e) {
-								ErrorLogger.write(location, category.getCategoryName(), ErrType.PROGRAM, "" ,e, xt.getNodeContentDFS(currentNode.getCurrentNode()));
-							} catch (SQLException ex) {
-								if(ex.getMessage().contains("duplicate key value")) {
-									SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
-									e.setAttrName("item_id");
-									e.setItem_id(category.getCategoryName());
-									e.setLocation(location);
-									e.setMessage("duplicate key value");
-									ErrorLogger.write(e, xt.getNodeContentDFS(currentNode.getCurrentNode()));
-								} else {
-									ErrorLogger.write(location, category.getCategoryName(), ErrType.SQL, "mainCategoryName", ex, xt.getNodeContentDFS(currentNode.getCurrentNode()));
-								}
-							} catch (Exception e) {
-								ErrorLogger.write(location, category.getCategoryName(), ErrType.PROGRAM, "mainCategoryName", e, xt.getNodeContentDFS(currentNode.getCurrentNode()));
-							}
-
-						}
+					} catch (EmptyStackException e) {
+						e.printStackTrace();
+						break;
 					}
 				}
+				currentNode.setCurrentNode(currentNode.getCurrentNode().getNextSibling());
 				
-				if(currentNode.getCurrentNode().hasChildNodes()) {
-					dfsStack.push(currentNode.getCurrentNode());
-					level++;
-					currentNode.setCurrentNode(currentNode.getCurrentNode().getFirstChild());
-				} else if(currentNode.getCurrentNode().getNextSibling() != null) {
-					currentNode.setCurrentNode(currentNode.getCurrentNode().getNextSibling());
-				} else {
-					while(currentNode.getCurrentNode().getNextSibling() == null) {
-						try{
-							currentNode.setCurrentNode(dfsStack.pop());
-							level--;
-							if(!xt.isLeafElementNode(currentNode.getCurrentNode())) {
-								System.out.print(xt.getPrintClosingNode(currentNode.getCurrentNode(), level));
-							}
-							if(currentNode.getCurrentNode().isSameNode(startNode)) { break dfs; }
-								
-						} catch (EmptyStackException e) {
-							e.printStackTrace();
-							break;
-						}
-					}
-					currentNode.setCurrentNode(currentNode.getCurrentNode().getNextSibling());
-					
-				}
-			} 
-		}
+			}
+		} 
 	}
 	
 	public void insertCategory_SubCategory() {
