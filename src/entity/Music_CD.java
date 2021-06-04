@@ -430,9 +430,9 @@ public class Music_CD {
 							e.setMessage("duplicate key value");
 							ErrorLogger.write(e, xt.getNodeContentDFS(musicItemNode));
 						} else {
-							ErrorLogger.write(location+locationSurfix+"3", item_id, ErrType.SQL, attrName, ex, xt.getNodeContentDFS(musicItemNode));
+							ErrorLogger.write(location+locationSurfix, item_id, ErrType.SQL, attrName, ex, xt.getNodeContentDFS(musicItemNode));
 						}
-						ErrorLogger.write(location+locationSurfix+"4", item_id, ErrType.SQL, attrName, ex, xt.getNodeContentDFS(musicItemNode));
+						ErrorLogger.write(location+locationSurfix, item_id, ErrType.SQL, attrName, ex, xt.getNodeContentDFS(musicItemNode));
 					}
 				});
 				ps.close();

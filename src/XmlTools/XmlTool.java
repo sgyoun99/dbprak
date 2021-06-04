@@ -591,6 +591,25 @@ public class XmlTool {
 		
 	}
 	
+	public Node getFirstTextNodeOf(Node node) {
+		NodeList nl = node.getChildNodes();
+		Node res = null;
+		for (int i = 0; i < nl.getLength(); i++) {
+			if(nl.item(i).getNodeType() == Node.TEXT_NODE) {
+				String textValue = nl.item(i).getTextContent();
+				if(textValue != null && textValue.length() > 0) {
+					res = nl.item(i);
+				}
+			}
+			
+		}
+		return res;
+	}
+	
+	public String getFirstTextNodeValue(Node node) {
+		return this.getFirstTextNodeOf(node).getTextContent();
+	}
+	
 	public static void main(String[] args) {
 		
 		XmlTool xt = new XmlTool();

@@ -14,13 +14,22 @@ public class Test {
 	public static void main(String[] args) throws Exception {
 		XmlTool xt = new XmlTool();
 		
-		xt.analyseDirectChildNodes(Config.DRESDEN_ENCODED,"publishers");
-		xt.analyseDirectChildNodes(Config.LEIPZIG,"publishers");
+//		xt.analyseDirectChildNodes(Config.DRESDEN_ENCODED,"publishers");
+//		xt.analyseDirectChildNodes(Config.LEIPZIG,"publishers");
 		
-		xt.loadXML(Config.DRESDEN_ENCODED);
+		xt.loadXML(Config.CATEGORY);
 		Map<String, Integer> map = new HashMap<>();
 		xt.visitChildElementNodesDFS(xt.getDocumentNode(), (node, level) -> {
-			
+		});
+		
+		xt.getDirectChildElementNodes(xt.getDocumentNode().getFirstChild().getNextSibling()).forEach(currentNode -> {
+			try {
+				System.out.println(xt.getNodeContentForceNotNull(currentNode));
+			} catch (XmlDataException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.println(currentNode.getNodeName());
 		});
 	}
 

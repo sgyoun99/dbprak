@@ -33,15 +33,12 @@ public class Similar_Items {
 		this.sim_item_id = sim_item_id;
 	}
 	
-	public void test(Similar_Items item) throws XmlValidationFailException{
+	public void test() throws XmlValidationFailException{
 		try {
-			if(!Item.pred_item_id.test(item.getItem_id())) {throw new XmlInvalidValueException("item_id Error (length not 10): "+getItem_id()); }
-			if(!Item.pred_item_id.test(item.getSim_item_id())) {throw new XmlInvalidValueException("similar_item_id Error (length not 10): "+getSim_item_id()); }
+			if(!Item.pred_item_id.test(getItem_id())) {throw new XmlInvalidValueException("item_id Error (length not 10): "+getItem_id()); }
+			if(!Item.pred_item_id.test(getSim_item_id())) {throw new XmlInvalidValueException("similar_item_id Error (length not 10): "+getSim_item_id()); }
 		} catch (XmlInvalidValueException e) {
-			XmlValidationFailException ex = new XmlValidationFailException(e);
-			ex.setItem_id(item.getItem_id());
-			ex.setAttrName("item_id");
-			throw ex;
+			throw new XmlValidationFailException(e);
 		}
 	}
 	
@@ -57,33 +54,36 @@ public class Similar_Items {
 			try {
 				
 			//xml data
-				Similar_Items item = new Similar_Items();
+				setItem_id("");
+				setSim_item_id("");
 				if(node.getNodeName().equals("item")) {
 					Node parentItemNode = similars.getParentNode();
 					String item_id = "";
 					item_id = xt.getAttributeValue(parentItemNode, "asin");
-					item.setItem_id(item_id);
+					setItem_id(item_id);
 
 					String sim_item_id = "";
 					sim_item_id = xt.getAttributeValue(node, "asin");
-					item.setSim_item_id(sim_item_id);
+					setSim_item_id(sim_item_id);
 				}
 
+				if(!getItem_id().equals("") && !getSim_item_id().equals("")) {
 			//test
-				test(item);
-				
-			//insert
-				JDBCTool.executeUpdate((con, st) ->	{
-					String sql = "INSERT INTO SIMILAR_ITEMS "
-							+ "(item_id, similar_item_id) "
-							+ "values (?,?)";
-					PreparedStatement ps = con.prepareStatement(sql);
-					ps.setString(1, item.getItem_id());
-					ps.setString(2, item.getSim_item_id());
-					ps.executeUpdate();
-					ps.close();
+					test();
 					
-				});
+			//insert
+					JDBCTool.executeUpdate((con, st) ->	{
+						String sql = "INSERT INTO SIMILAR_ITEMS "
+								+ "(item_id, similar_item_id) "
+								+ "values (?,?)";
+						PreparedStatement ps = con.prepareStatement(sql);
+						ps.setString(1, getItem_id());
+						ps.setString(2, getSim_item_id());
+						ps.executeUpdate();
+						ps.close();
+						
+					});
+				}
 				
 			} catch (IllegalArgumentException e) {
 				ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
@@ -115,33 +115,36 @@ public class Similar_Items {
 			try {
 				
 			//xml data
-				Similar_Items item = new Similar_Items();
+				setItem_id("");
+				setSim_item_id("");
 				if(node.getNodeName().equals("asin")) {
 					Node parentItemNode = similars.getParentNode();
 					String item_id = "";
 					item_id = xt.getAttributeValue(parentItemNode, "asin");
-					item.setItem_id(item_id);
+					setItem_id(item_id);
 
 					String sim_item_id = "";
 					sim_item_id = xt.getTextContentOfLeafNode(node);
-					item.setSim_item_id(sim_item_id);
+					setSim_item_id(sim_item_id);
 				}
 
+				if(!getItem_id().equals("") && !getSim_item_id().equals("")) {
 			//test
-				test(item);
+					test();
 					
 			//insert
-				JDBCTool.executeUpdate((con, st) ->	{
-					String sql = "INSERT INTO SIMILAR_ITEMS "
-							+ "(item_id, similar_item_id) "
-							+ "values (?,?)";
-					PreparedStatement ps = con.prepareStatement(sql);
-					ps.setString(1, item.getItem_id());
-					ps.setString(2, item.getSim_item_id());
-					ps.executeUpdate();
-					ps.close();
-					
-				});
+					JDBCTool.executeUpdate((con, st) ->	{
+						String sql = "INSERT INTO SIMILAR_ITEMS "
+								+ "(item_id, similar_item_id) "
+								+ "values (?,?)";
+						PreparedStatement ps = con.prepareStatement(sql);
+						ps.setString(1, getItem_id());
+						ps.setString(2, getSim_item_id());
+						ps.executeUpdate();
+						ps.close();
+						
+					});
+				}
 				
 			} catch (IllegalArgumentException e) {
 				ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
