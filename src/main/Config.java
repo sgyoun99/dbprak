@@ -9,6 +9,7 @@ public class Config {
 	public final static String LEIPZIG = DATA_DIRECTORY+"/leipzig_transformed.xml";
 	public final static String DRESDEN_ORIGINAL = DATA_DIRECTORY+"/dresden.xml";
 	public final static String DRESDEN_ENCODED = DRESDEN_ORIGINAL + UTF8_SURFIX;
-	public final static String CATEGORY = DATA_DIRECTORY+"/categories.xml";
+	public final static String CATEGORY_ORIGINAL = DATA_DIRECTORY+"/categories.xml";
+	public final static String CATEGORY_ENCODED = CATEGORY_ORIGINAL + UTF8_SURFIX;
 
 }
