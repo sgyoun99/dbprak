@@ -1,8 +1,10 @@
 package XmlTools;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import exception.XmlDataException;
@@ -22,14 +24,25 @@ public class Test {
 		xt.visitChildElementNodesDFS(xt.getDocumentNode(), (node, level) -> {
 		});
 		
+//		System.out.println(xt.getDocumentNode().getFirstChild().getNextSibling().getNodeName());
+
+		Node categoriesNode = xt.getDocumentNode().getFirstChild().getNextSibling();
+		List<Node> categoryNodesList = xt.getDirectChildElementNodes(categoriesNode);
+		Node featuresNode = categoryNodesList.get(0);
+//		List<Node> categoryNodesList = xt.getDirectChildElementNodes(categoriesNode);
+		System.out.println(categoryNodesList.size()); // 12
+		for (int i = 0; i < categoryNodesList.size(); i++) {
+			Node node = categoryNodesList.get(i);
+			Element element = ((Element)node);
+			System.out.println(xt.getFirstTextNodeValue(node));
+		}
+		
+		categoryNodesList.forEach(categoryNode -> {
+//			System.out.println(categoryNode.getTextContent());
+		});
+		
 		xt.getDirectChildElementNodes(xt.getDocumentNode().getFirstChild().getNextSibling()).forEach(currentNode -> {
-			try {
-				System.out.println(xt.getNodeContentForceNotNull(currentNode));
-			} catch (XmlDataException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			System.out.println(currentNode.getNodeName());
+//			System.out.println(xt.getFirstTextNodeValue(currentNode));
 		});
 	}
 
