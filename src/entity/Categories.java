@@ -129,6 +129,7 @@ public class Categories {
 		dfsStack.push(currentNode.getCurrentNode());
 		dfs:while(currentNode.getCurrentNode() != null) {
 			if(currentNode.getCurrentNode().getNodeType() == Node.ELEMENT_NODE  && !"item".equals(currentNode.getCurrentNode().getNodeName())) {
+				//System.out.print(xt.getPrintOpeningNode(currentNode.getCurrentNode(), level));
 				Category category = new Category();	
 				String catName = xt.getFirstTextNodeValue(currentNode.getCurrentNode());
 				category.setCategoryName(catName);
@@ -175,7 +176,7 @@ public class Categories {
 						currentNode.setCurrentNode(dfsStack.pop());
 						level--;
 						if(!xt.isLeafElementNode(currentNode.getCurrentNode())) {
-							System.out.print(xt.getPrintClosingNode(currentNode.getCurrentNode(), level));
+							//System.out.print(xt.getPrintClosingNode(currentNode.getCurrentNode(), level));
 						}
 						if(currentNode.getCurrentNode().isSameNode(startNode)) { break dfs; }
 							
