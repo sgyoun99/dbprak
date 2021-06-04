@@ -38,7 +38,7 @@
         Label(label:PK)
         Title(item_id:PK:FK on Music_CD, title:PK)
     # n:m    
-        Music_CD-Other_Artists(item_id:PK:FK on Music_CD, artist:PK:FK on Artist)
+        Music_CD-Artists(item_id:PK:FK on Music_CD, artist:PK:FK on Artist)
         Music_CD-Label(item_id:PK:FK on Music_CD, label:PK:FK on Label)
 
 # Category

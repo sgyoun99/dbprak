@@ -135,10 +135,10 @@ public class Music_CD {
 				music_cd.setRelease_date(xt.getTextContentOfLeafNode(releasedate));
 				music_cd.setArtist(artistNameList.get(0));//to set artist attribute NOT NULL
 				
-				//Insert
+				//Insert(Order important)
 				this.insertArtist(location, item_id, artistNameList, musicItemNode);
 				this.insertLabel(location, item_id, labelNameList, musicItemNode);
-				this.insertMusic_cd(location, item_id, music_cd, musicItemNode);
+				this.insertMusic_CD(location, item_id, music_cd, musicItemNode);
 				this.insertMusic_CD_Artist(location, item_id, artistNameList, musicItemNode);
 				this.insertMusic_CD_Label(location, item_id, labelNameList, musicItemNode);
 				this.insertTitle(location, item_id, titleNameList, music_cd, musicItemNode);
@@ -226,10 +226,10 @@ public class Music_CD {
 				music_cd.setRelease_date(xt.getTextContentOfLeafNode(releasedate));
 				music_cd.setArtist(artistNameList.get(0));//to set artist attribute NOT NULL
 				
-				//Insert
+				//Insert(Order important)
 				this.insertArtist(location, item_id, artistNameList, musicItemNode);
 				this.insertLabel(location, item_id, labelNameList, musicItemNode);
-				this.insertMusic_cd(location, item_id, music_cd, musicItemNode);
+				this.insertMusic_CD(location, item_id, music_cd, musicItemNode);
 				this.insertMusic_CD_Artist(location, item_id, artistNameList, musicItemNode);
 				this.insertMusic_CD_Label(location, item_id, labelNameList, musicItemNode);
 				this.insertTitle(location, item_id, titleNameList, music_cd, musicItemNode);
@@ -255,48 +255,6 @@ public class Music_CD {
 		});
 	}
 	
-	private void insertMusic_cd(String location, String item_id, Music_CD music_cd, Node musicItemNode) {
-		XmlTool xt = new XmlTool();
-		try {
-			
-			JDBCTool.executeUpdate((con, st) -> {
-				String sql;
-				PreparedStatement ps;
-				sql = "INSERT INTO public.music_cd("
-						+ "	item_id, artist, release_date)"
-						+ "	VALUES (?, ?, ?);";
-				ps = con.prepareStatement(sql);
-				ps.setString(1, music_cd.getItem_id());
-				ps.setString(2, music_cd.getArtist());
-				ps.setDate(3, music_cd.getRelease_date());
-				ps.executeUpdate();
-				
-				
-				ps.close();
-			});
-		} catch (IndexOutOfBoundsException ex) {
-			XmlInvalidValueException e = new XmlInvalidValueException(location);
-			e.setAttrName("music_cd");
-			e.setItem_id(item_id);
-			e.setLocation(location);
-			e.setMessage("List Empty");
-			ErrorLogger.write(e, xt.getNodeContentDFS(musicItemNode));
-		} catch (SQLException ex) {
-			if(ex.getMessage().contains("duplicate key value")) {
-				SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
-				e.setAttrName("item_id");
-				e.setItem_id(item_id);
-				e.setLocation(location);
-				e.setMessage("duplicate key value");
-				ErrorLogger.write(e, xt.getNodeContentDFS(musicItemNode));
-			} else {
-				ErrorLogger.write(location, item_id, ErrType.SQL, "item_id", ex, xt.getNodeContentDFS(musicItemNode));
-			}
-		} catch (Exception e) {
-			ErrorLogger.write(location, item_id, ErrType.PROGRAM, "", e, xt.getNodeContentDFS(musicItemNode));	
-		}
-	}
-
 	private void insertArtist(String location, String item_id, List<String> artistNameList, Node musicItemNode) {
 		String locationSurfix = ".artist";
 		String attrName = "artist";
@@ -353,6 +311,95 @@ public class Music_CD {
 			ErrorLogger.write(location+locationSurfix, item_id, ErrType.SQL, attrName, ex, xt.getNodeContentDFS(musicItemNode));
 		}
 	}
+	private void insertLabel(String location, String item_id, List<String> labelNameList, Node musicItemNode) {
+		String locationSurfix = ".label";
+		String attrName = "label";
+		XmlTool xt = new XmlTool();
+		//Label
+		try {
+			JDBCTool.executeUpdateAutoCommitOn((con, st) -> {
+				String sql;
+				PreparedStatement ps;
+				sql = "INSERT INTO public.label("
+						+ "	label)"
+						+ "	VALUES (?);";
+				ps = con.prepareStatement(sql);	
+				labelNameList.forEach(name -> {
+					try {
+						ps.setString(1, name);
+						ps.executeUpdate();
+					} catch (IndexOutOfBoundsException e) {
+							ErrorLogger.write(location+locationSurfix, item_id, ErrType.XML, attrName, e, xt.getNodeContentDFS(musicItemNode));
+					} catch (SQLException ex) {
+						if(ex.getMessage().contains("duplicate key value")) {
+							SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
+							e.setAttrName(attrName);
+							e.setItem_id(item_id);
+							e.setLocation(location+locationSurfix);
+							e.setMessage("duplicate key value");
+							ErrorLogger.write(e, xt.getNodeContentDFS(musicItemNode));
+						} else {
+							ErrorLogger.write(location+locationSurfix, item_id, ErrType.SQL, attrName, ex, xt.getNodeContentDFS(musicItemNode));
+						}
+						ErrorLogger.write(location+locationSurfix, item_id, ErrType.SQL, attrName, ex, xt.getNodeContentDFS(musicItemNode));
+					}
+				});
+				ps.close();
+			});
+			
+			
+		} catch (IndexOutOfBoundsException ex) {
+			XmlInvalidValueException e = new XmlInvalidValueException(location);
+			e.setAttrName(attrName);
+			e.setItem_id(item_id);
+			e.setLocation(location);
+			e.setMessage("List Empty");
+		} catch (SQLException e) {
+			ErrorLogger.write(location+locationSurfix, item_id, ErrType.SQL, attrName, e, xt.getNodeContentDFS(musicItemNode));
+		}	
+	}
+	private void insertMusic_CD(String location, String item_id, Music_CD music_cd, Node musicItemNode) {
+		XmlTool xt = new XmlTool();
+		try {
+			
+			JDBCTool.executeUpdate((con, st) -> {
+				String sql;
+				PreparedStatement ps;
+				sql = "INSERT INTO public.music_cd("
+						+ "	item_id, artist, release_date)"
+						+ "	VALUES (?, ?, ?);";
+				ps = con.prepareStatement(sql);
+				ps.setString(1, music_cd.getItem_id());
+				ps.setString(2, music_cd.getArtist());
+				ps.setDate(3, music_cd.getRelease_date());
+				ps.executeUpdate();
+				
+				
+				ps.close();
+			});
+		} catch (IndexOutOfBoundsException ex) {
+			XmlInvalidValueException e = new XmlInvalidValueException(location);
+			e.setAttrName("music_cd");
+			e.setItem_id(item_id);
+			e.setLocation(location);
+			e.setMessage("List Empty");
+			ErrorLogger.write(e, xt.getNodeContentDFS(musicItemNode));
+		} catch (SQLException ex) {
+			if(ex.getMessage().contains("duplicate key value")) {
+				SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
+				e.setAttrName("item_id");
+				e.setItem_id(item_id);
+				e.setLocation(location);
+				e.setMessage("duplicate key value");
+				ErrorLogger.write(e, xt.getNodeContentDFS(musicItemNode));
+			} else {
+				ErrorLogger.write(location, item_id, ErrType.SQL, "item_id", ex, xt.getNodeContentDFS(musicItemNode));
+			}
+		} catch (Exception e) {
+			ErrorLogger.write(location, item_id, ErrType.PROGRAM, "", e, xt.getNodeContentDFS(musicItemNode));	
+		}
+	}
+
 	private void insertMusic_CD_Artist(String location, String item_id, List<String> artistNameList, Node musicItemNode) {
 		String locationSurfix = ".artist";
 		String attrName = "artist";
@@ -411,54 +458,6 @@ public class Music_CD {
 			ErrorLogger.write(location+locationSurfix+"6", item_id, ErrType.SQL, attrName, ex, xt.getNodeContentDFS(musicItemNode));
 		}
 	}	
-	
-	private void insertLabel(String location, String item_id, List<String> labelNameList, Node musicItemNode) {
-		String locationSurfix = ".label";
-		String attrName = "label";
-		XmlTool xt = new XmlTool();
-		//Label
-		try {
-			JDBCTool.executeUpdateAutoCommitOn((con, st) -> {
-				String sql;
-				PreparedStatement ps;
-				sql = "INSERT INTO public.label("
-						+ "	label)"
-						+ "	VALUES (?);";
-				ps = con.prepareStatement(sql);	
-				labelNameList.forEach(name -> {
-					try {
-						ps.setString(1, name);
-						ps.executeUpdate();
-					} catch (IndexOutOfBoundsException e) {
-							ErrorLogger.write(location+locationSurfix, item_id, ErrType.XML, attrName, e, xt.getNodeContentDFS(musicItemNode));
-					} catch (SQLException ex) {
-						if(ex.getMessage().contains("duplicate key value")) {
-							SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
-							e.setAttrName(attrName);
-							e.setItem_id(item_id);
-							e.setLocation(location+locationSurfix);
-							e.setMessage("duplicate key value");
-							ErrorLogger.write(e, xt.getNodeContentDFS(musicItemNode));
-						} else {
-							ErrorLogger.write(location+locationSurfix, item_id, ErrType.SQL, attrName, ex, xt.getNodeContentDFS(musicItemNode));
-						}
-						ErrorLogger.write(location+locationSurfix, item_id, ErrType.SQL, attrName, ex, xt.getNodeContentDFS(musicItemNode));
-					}
-				});
-				ps.close();
-			});
-			
-			
-		} catch (IndexOutOfBoundsException ex) {
-			XmlInvalidValueException e = new XmlInvalidValueException(location);
-			e.setAttrName(attrName);
-			e.setItem_id(item_id);
-			e.setLocation(location);
-			e.setMessage("List Empty");
-		} catch (SQLException e) {
-			ErrorLogger.write(location+locationSurfix, item_id, ErrType.SQL, attrName, e, xt.getNodeContentDFS(musicItemNode));
-		}	
-	}
 	
 	private void insertMusic_CD_Label(String location, String item_id, List<String> labelNameList, Node musicItemNode) {
 		String locationSurfix = ".label";
