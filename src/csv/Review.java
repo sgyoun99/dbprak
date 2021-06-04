@@ -15,6 +15,8 @@ import java.sql.Date;
 import java.util.HashMap;
 
 import JDBCTools.JDBCTool;
+import main.ErrorLogger;
+import main.ErrType;
 
 
 
@@ -35,7 +37,7 @@ public class Review{
         for(String[] review : csvFile.getFile()){
             try{
                 JDBCTool.executeUpdate((con, st) ->	{
-                    String sql = "INSERT INTO review(item_id, customer_id, review_date, summary, content, rating) values (?,?,?,?,?,?)";
+                    String sql = "INSERT INTO review(review_id, item_id, customer, review_date, summary, content, rating) values (DEFAULT,?,?,?,?,?,?)";
                     PreparedStatement ps = con.prepareStatement(sql);
                     ps.setString(1, review[0]); 
                     ps.setString(2, review[4]); 
@@ -47,9 +49,11 @@ public class Review{
                     ps.close();
                 });
             }catch(SQLException sqle){
-                System.out.println("SQL_Exception while writing Review to Table: " + review[0]);
+                //System.out.println("SQL_Exception while writing Review to Table: " + review[0]);
+                ErrorLogger.write("Review", review[0], ErrType.SQL, "", sqle,"SQL_Exception while writing Review to Table" + review[0]);
             }catch(Exception e){
-                System.out.println("Other Exception while writing Review to Table");
+                //System.out.println("Other Exception while writing Review to Table");
+                ErrorLogger.write("Review", review[0], ErrType.PROGRAM, "", e, "Other Exception while writing Review to Table" + review[0]);
             }
         }
         System.out.println("\033[1;34m*\033[35m*\033[33m*\033[32m* \033[91m reviews fully written \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
@@ -79,7 +83,8 @@ public class Review{
             con.close();
         
         }catch(SQLException e){
-            System.out.println("Exception");
+            //System.out.println("Exception");
+            ErrorLogger.write("Review", "", ErrType.SQL, "", e, "SQL_Exception while getting Rating from DB");
         }
     }
 
@@ -98,9 +103,11 @@ public class Review{
                     ps.close();
                 });
             }catch(SQLException sqle){
-                System.out.println("SQL_Exception while writing Rating to Item");
+                //System.out.println("SQL_Exception while writing Rating to Item");
+                ErrorLogger.write("Review", set.getKey(), ErrType.SQL, "", sqle, "SQL_Exception while writing Rating to Item");
             }catch(Exception e){
-                System.out.println("Other Exception while writing Rating to Item");
+                //System.out.println("Other Exception while writing Rating to Item");
+                ErrorLogger.write("Review", set.getKey(), ErrType.PROGRAM, "", e, "other Exception while writing Rating to Item");
             }
         }
         System.out.println("\033[1;34m*\033[35m*\033[33m*\033[32m* \033[91m Rating added to items \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
