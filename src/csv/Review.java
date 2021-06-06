@@ -50,10 +50,10 @@ public class Review{
                 });
             }catch(SQLException sqle){
                 //System.out.println("SQL_Exception while writing Review to Table: " + review[0]);
-                ErrorLogger.write("Review", review[0], ErrType.SQL, "", sqle,"SQL_Exception while writing Review to Table" + review[0]);
+                ErrorLogger.write("Review", review[0], ErrType.SQL_FK_ERROR, "", sqle, "SQL_Exception while writing Review to Table " + review[0]);
             }catch(Exception e){
                 //System.out.println("Other Exception while writing Review to Table");
-                ErrorLogger.write("Review", review[0], ErrType.PROGRAM, "", e, "Other Exception while writing Review to Table" + review[0]);
+                ErrorLogger.write("Review", review[0], ErrType.PROGRAM, "", e, "Other Exception while writing Review to Table " + review[0]);
             }
         }
         System.out.println("\033[1;34m*\033[35m*\033[33m*\033[32m* \033[91m reviews fully written \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");

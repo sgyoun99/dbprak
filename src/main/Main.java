@@ -5,8 +5,13 @@ import XmlTools.XmlTool;
 import entity.*;
 import csv.*;
 
+import java.util.Date;
+
 public class Main {
 	public static void main(String[] args) {
+
+		Date dateAnf = new Date();
+		long secAnf = dateAnf.getTime();
 		
 		try {
 			
@@ -22,8 +27,8 @@ public class Main {
 			xt.encodeFileToUTF_8(Config.DRESDEN_ORIGINAL);
 			xt.encodeFileToUTF_8(Config.CATEGORY_ORIGINAL);
 
-			/*
-			 */
+			
+			 
 			//Shop
 			Shop shop = new Shop(Config.DRESDEN_ENCODED);
 			shop.readShop();
@@ -75,17 +80,30 @@ public class Main {
 			newReview.writeReviewInDB();
 			newReview.addRatings();
 			
-			Categories categories = new Categories();
+			/*Categories categories = new Categories();
 			categories.insertMainCategory();
-			categories.insertSubCategory();
+			categories.insertSubCategory();*/
+
+			Cat cat = new Cat();
+			cat.readCat();
 		
 		} catch (RuntimeException e) {
 			System.out.println(e);
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("= = = Main.main() failed = = =");
+
+			Date dateEnde = new Date();
+			System.out.println("Dauer: " + (dateEnde.getTime()-dateAnf.getTime()) + " ms");
+			System.out.println("Start:\t" + dateAnf.toString());
+			System.out.println("Ende:\t" + dateEnde.toString());
 		}
 		
 		System.out.println("= = = Main.main() complete = = =");
+		
+		Date dateEnde = new Date();
+		System.out.println("Dauer:\t" + ((dateEnde.getTime()-dateAnf.getTime()) / 60000) + " min" + ( ( (dateEnde.getTime()-dateAnf.getTime() ) % 60000) % 1000) + " s");
+		System.out.println("Start:\t" + dateAnf.toString());
+		System.out.println("Ende:\t" + dateEnde.toString());
 	}
 }

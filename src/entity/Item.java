@@ -87,7 +87,7 @@ public class Item {
 		}
 	}
 
-	public static Predicate<String> pred_item_id = item_id -> item_id.length() == 10;
+	public static Predicate<String> pred_item_id = item_id -> true;//item_id.length() == 10;
 	public static Predicate<String> pred_title = title -> title != null && title.length() != 0;
 	public static Predicate<Double> pred_rating = rating -> rating >= 0 && rating <= 5;
 	public static Predicate<Integer> pred_salesranking = ranking -> ranking >= 0;
