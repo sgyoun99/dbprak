@@ -1,10 +1,13 @@
 1. set classpath
-2. make "bin" directory => "yourproject/bin"
+    at the project directory(dbprak)
+    dbprak$ export CLASSPATH=$PWD/jar/postgresql-42.2.18.jar:.
 
-3. compile
-    yourproject/src$ javac -d ../bin ../src/*/*.java
+2. compile
+    dbprak/src$ javac -d ../bin ../src/*/*.java
     or
-    yourproject/bin$ javac -d ../bin ../src/*/*.java
+    dbprak/bin$ javac -d ../bin ../src/*/*.java
+    or
+    dbprak$ javac -d bin src/*/*.java
 
-4. run 
-    yourproject/bin$ java main.Main
+3. run 
+    dbprak/bin$ java main.Main
