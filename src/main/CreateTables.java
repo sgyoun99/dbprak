@@ -204,6 +204,22 @@ public class CreateTables {
 				System.out.println(e);
 			}
 	}
+	
+	public static void countAllTables() {
+		CreateTables.tableOrder.forEach(tableName -> {
+			try {
+				JDBCTool.executeUpdateAutoCommitOn((con, st) -> {
+					ResultSet rs = st.executeQuery("select count(*) from " +tableName);
+					if(rs.next()) {
+						System.out.println(tableName +" has "+rs.getInt(1) + " rows.");
+					}
+					rs.close();
+				});
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		});
+	}
 
 
 

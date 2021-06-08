@@ -80,9 +80,9 @@ public class Main {
 			newReview.writeReviewInDB();
 			newReview.addRatings();
 			
-			/*Categories categories = new Categories();
-			categories.insertMainCategory();
-			categories.insertSubCategory();*/
+			//Categories categories = new Categories();
+			//categories.insertMainCategory();
+			//categories.insertSubCategory();
 
 			Cat cat = new Cat();
 			cat.readCat();
@@ -105,5 +105,6 @@ public class Main {
 		System.out.println("Dauer:\t" + ((dateEnde.getTime()-dateAnf.getTime()) / 60000) + " min" + ( ( (dateEnde.getTime()-dateAnf.getTime() ) % 60000) % 1000) + " s");
 		System.out.println("Start:\t" + dateAnf.toString());
 		System.out.println("Ende:\t" + dateEnde.toString());
+		CreateTables.countAllTables();
 	}
 }

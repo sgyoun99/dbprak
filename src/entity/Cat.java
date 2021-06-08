@@ -93,7 +93,8 @@ public class Cat {
 		Node root;
 
 		try {
-			File inputFile = new File("../data/categories.xml");
+//			File inputFile = new File("../data/categories.xml");
+			File inputFile = new File(Config.CATEGORY_ENCODED);
 	
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();

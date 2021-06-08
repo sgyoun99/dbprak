@@ -20,3 +20,4 @@ tmp*
 #.classpath
 #.settings/
 data/
+.metadata/
