@@ -136,10 +136,6 @@ public class CreateTables {
 			
 	}
 	
-	public static void main(String[] args) {
-		createTables();
-	}
-	
 	
 	/**
 	 * Function to create enums and tables for the DB
@@ -211,7 +207,8 @@ public class CreateTables {
 				JDBCTool.executeUpdateAutoCommitOn((con, st) -> {
 					ResultSet rs = st.executeQuery("select count(*) from " +tableName);
 					if(rs.next()) {
-						System.out.println(tableName +" has "+rs.getInt(1) + " rows.");
+						System.out.print(String.format(" -%20s: ", tableName));
+						System.out.println(String.format("%8d rows.", rs.getInt(1)));
 					}
 					rs.close();
 				});
@@ -222,5 +219,8 @@ public class CreateTables {
 	}
 
 
+	public static void main(String[] args) {
+		CreateTables.countAllTables();
+	}
 
 }
