@@ -88,7 +88,7 @@ public class Main {
 			cat.readCat();
 		
 		} catch (RuntimeException e) {
-			System.out.println(e);
+			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("= = = Main.main() failed = = =");
