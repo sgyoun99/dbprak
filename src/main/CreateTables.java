@@ -221,7 +221,6 @@ public class CreateTables {
 
 
 	public static void main(String[] args) {
-//		CreateTables.countAllTables();
 		CreateTables.createTables();
 	}
 
