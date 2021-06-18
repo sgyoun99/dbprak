@@ -18,6 +18,7 @@ tmp*
 
 .DS_Store
 #.classpath
-#.settings/
+.settings/
 data/
 .metadata/
+/bin/

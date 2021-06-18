@@ -59,8 +59,9 @@ public class CreateTables {
 		
 		//create Table statements
         createTableSQLMap.put(CreateTables.Item, "CREATE TABLE item(item_id text PRIMARY KEY, title TEXT, rating numeric(2,1), salesranking INTEGER, image TEXT, productgroup pgroup NOT NULL);");
-        createTableSQLMap.put(CreateTables.Shop, "CREATE TABLE shop(shop_name TEXT NOT NULL, street TEXT NOT NULL, zip CHAR(5) NOT NULL, PRIMARY KEY(shop_name, street, zip));");
-        createTableSQLMap.put(CreateTables.Item_Shop, "CREATE TABLE item_shop(item_id text NOT NULL, shop_name TEXT NOT NULL, street TEXT NOT NULL, zip CHAR(5) NOT NULL, currency CHAR(3), price numeric(8,2), availability BOOLEAN, condition CHAR(11), FOREIGN KEY(item_id) REFERENCES item(item_id) ON DELETE CASCADE, FOREIGN KEY(shop_name, street, zip) REFERENCES shop(shop_name, street, zip) ON DELETE CASCADE, PRIMARY KEY(item_id, shop_name, street, zip));");
+        createTableSQLMap.put(CreateTables.Shop, "CREATE TABLE shop(shop_id SERIAL, shop_name TEXT NOT NULL, street TEXT NOT NULL, zip CHAR(5) NOT NULL, PRIMARY KEY(shop_id), UNIQUE(shop_name, street, zip));");
+//        createTableSQLMap.put(CreateTables.Item_Shop, "CREATE TABLE item_shop(item_id text NOT NULL, shop_name TEXT NOT NULL, street TEXT NOT NULL, zip CHAR(5) NOT NULL, currency CHAR(3), price numeric(8,2), availability BOOLEAN, condition CHAR(11), FOREIGN KEY(item_id) REFERENCES item(item_id) ON DELETE CASCADE, FOREIGN KEY(shop_name, street, zip) REFERENCES shop(shop_name, street, zip) ON DELETE CASCADE, PRIMARY KEY(item_id, shop_name, street, zip));");
+        createTableSQLMap.put(CreateTables.Item_Shop, "CREATE TABLE item_shop(item_id text NOT NULL, shop_id Integer NOT NULL, currency CHAR(3), price numeric(8,2), availability BOOLEAN, condition CHAR(11), FOREIGN KEY(item_id) REFERENCES item(item_id) ON DELETE CASCADE, FOREIGN KEY(shop_id) REFERENCES shop(shop_id) ON DELETE CASCADE, PRIMARY KEY(item_id, shop_id, condition));");
 		createTableSQLMap.put(CreateTables.Similar_Items, "CREATE TABLE similar_items(item_id text, similar_item_id text, PRIMARY KEY(item_id, similar_item_id), FOREIGN KEY(item_id) REFERENCES item(item_id) ON DELETE CASCADE, FOREIGN KEY (similar_item_id) REFERENCES item(item_id) ON DELETE CASCADE);");
 		
 		//createTableSQLMap.put(CreateTables.Category, "CREATE TABLE category(category_id SERIAL PRIMARY KEY NOT NULL, name TEXT);");
@@ -136,10 +137,6 @@ public class CreateTables {
 			
 	}
 	
-	public static void main(String[] args) {
-		createTables();
-	}
-	
 	
 	/**
 	 * Function to create enums and tables for the DB
@@ -211,7 +208,8 @@ public class CreateTables {
 				JDBCTool.executeUpdateAutoCommitOn((con, st) -> {
 					ResultSet rs = st.executeQuery("select count(*) from " +tableName);
 					if(rs.next()) {
-						System.out.println(tableName +" has "+rs.getInt(1) + " rows.");
+						System.out.print(String.format(" -%20s: ", tableName));
+						System.out.println(String.format("%8d rows.", rs.getInt(1)));
 					}
 					rs.close();
 				});
@@ -222,5 +220,9 @@ public class CreateTables {
 	}
 
 
+	public static void main(String[] args) {
+//		CreateTables.countAllTables();
+		CreateTables.createTables();
+	}
 
 }

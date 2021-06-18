@@ -87,7 +87,7 @@ public class Item {
 		}
 	}
 
-	public static Predicate<String> pred_item_id = item_id -> true;//item_id.length() == 10;
+	public static Predicate<String> pred_item_id = item_id -> item_id != null && item_id.length() > 0;
 	public static Predicate<String> pred_title = title -> title != null && title.length() != 0;
 	public static Predicate<Double> pred_rating = rating -> rating >= 0 && rating <= 5;
 	public static Predicate<Integer> pred_salesranking = ranking -> ranking >= 0;
@@ -98,7 +98,7 @@ public class Item {
 	public void test(Item item) throws XmlValidationFailException {
 		try {
 			if(!pred_item_id.test(item.getItem_id())) {
-				XmlInvalidValueException e = new XmlInvalidValueException("item_id Error (length not 10): "+item.getItem_id());
+				XmlInvalidValueException e = new XmlInvalidValueException("item_id Error (id does not exist): "+item.getItem_id());
 				e.setAttrName("item_id");
 				throw e;
 			}

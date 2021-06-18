@@ -12,4 +12,7 @@ public class Config {
 	public final static String CATEGORY_ORIGINAL = DATA_DIRECTORY+"/categories.xml";
 	public final static String CATEGORY_ENCODED = CATEGORY_ORIGINAL + UTF8_SURFIX;
 
+	public static void main(String[] args) {
+		CreateTables.countAllTables();
+	}
 }

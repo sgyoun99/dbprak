@@ -8,10 +8,6 @@ import JDBCTools.JDBCTool;
 
 public class DropTables {
 
-	public static void main(String[] args) {
-		dropTables();
-	}
-	
 	public static void dropTables() {
 		
 		try {
@@ -68,6 +64,10 @@ public class DropTables {
 			catch (SQLException e){
 				System.out.println(e);
 			}
+	}
+
+	public static void main(String[] args) {
+		dropTables();
 	}
 
 

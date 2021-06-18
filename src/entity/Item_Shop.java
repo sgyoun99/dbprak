@@ -25,9 +25,7 @@ import main.ErrorLogger;
 public class Item_Shop {
 
 	private String item_id;
-	private String shop_name;
-	private String street;
-	private String zip;
+	private Integer shop_id;
 	private String currency;
 	private Double price;
 	private Boolean availaility;
@@ -39,24 +37,6 @@ public class Item_Shop {
 	}
 	public void setItem_id(String item_id) {
 		this.item_id = item_id;
-	}
-	public String getShop_name() {
-		return shop_name;
-	}
-	public void setShop_name(String shop_name) {
-		this.shop_name = shop_name;
-	}
-	public String getStreet() {
-		return street;
-	}
-	public void setStreet(String street) {
-		this.street = street;
-	}
-	public String getZip() {
-		return zip;
-	}
-	public void setZip(String zip) {
-		this.zip = zip;
 	}
 	public String getCurrency() {
 		return currency;
@@ -161,6 +141,7 @@ public class Item_Shop {
 		XmlTool xt = new XmlTool(Config.DRESDEN_ENCODED);
 		Shop shop = new Shop(Config.DRESDEN_ENCODED);
 		shop.readShop();
+		int shop_id = shop.getShopId();
 		
 		List<Node> itemList = xt.filterElementNodesDFS(xt.getDocumentNode(), 
 				level -> level == 2, 
@@ -171,9 +152,6 @@ public class Item_Shop {
 			try {
 			//xml data
 				item_shop.setItem_id(xt.getAttributeValue(itemNode, "asin"));
-				item_shop.setShop_name(shop.getShop_name());
-				item_shop.setStreet(shop.getStreet());
-				item_shop.setZip(shop.getZip());
 				xt.visitChildElementNodesDFS(itemNode, (nd, lv) -> {
 					if(nd.getNodeName().equals("price")) {
 						String mult = "";
@@ -201,17 +179,15 @@ public class Item_Shop {
 			//insert
 				JDBCTool.executeUpdate((con, st) ->	{
 					String sql = "INSERT INTO ITEM_SHOP "
-							+ "(item_id, shop_name, street, zip, currency, price, availability, condition) "
-							+ "values (?,?,?,?,?,?,?,?)";
+							+ "(item_id, shop_id, currency, price, availability, condition) "
+							+ "values (?,?,?,?,?,?)";
 					PreparedStatement ps = con.prepareStatement(sql);
 					ps.setString(1, item_shop.getItem_id());
-					ps.setString(2, item_shop.getShop_name());
-					ps.setString(3, item_shop.getStreet());
-					ps.setString(4, item_shop.getZip());
-					ps.setString(5, item_shop.getCurrency());
-					ps.setDouble(6, item_shop.getPrice());
-					ps.setBoolean(7, item_shop.getAvailaility());
-					ps.setString(8, item_shop.getCondition());
+					ps.setInt(2, shop_id);
+					ps.setString(3, item_shop.getCurrency());
+					ps.setDouble(4, item_shop.getPrice());
+					ps.setBoolean(5, item_shop.getAvailaility());
+					ps.setString(6, item_shop.getCondition());
 					ps.executeUpdate();
 					ps.close();
 					
@@ -249,6 +225,7 @@ public class Item_Shop {
 		XmlTool xt = new XmlTool(Config.LEIPZIG);
 		Shop shop = new Shop(Config.LEIPZIG);
 		shop.readShop();
+		int shop_id = shop.getShopId();
 		
 		List<Node> itemList = xt.filterElementNodesDFS(xt.getDocumentNode(), 
 				level -> level == 2, 
@@ -259,9 +236,6 @@ public class Item_Shop {
 			try {
 			//xml data
 				item_shop.setItem_id(xt.getAttributeValue(itemNode, "asin"));
-				item_shop.setShop_name(shop.getShop_name());
-				item_shop.setStreet(shop.getStreet());
-				item_shop.setZip(shop.getZip());
 				xt.visitChildElementNodesDFS(itemNode, (nd, lv) -> {
 					if(nd.getNodeName().equals("price")) {
 						String mult = "";
@@ -286,20 +260,18 @@ public class Item_Shop {
 		
 			//test
 				this.test(item_shop);
-			//insert
+				//insert
 				JDBCTool.executeUpdate((con, st) ->	{
 					String sql = "INSERT INTO ITEM_SHOP "
-							+ "(item_id, shop_name, street, zip, currency, price, availability, condition) "
-							+ "values (?,?,?,?,?,?,?,?)";
+							+ "(item_id, shop_id, currency, price, availability, condition) "
+							+ "values (?,?,?,?,?,?)";
 					PreparedStatement ps = con.prepareStatement(sql);
 					ps.setString(1, item_shop.getItem_id());
-					ps.setString(2, item_shop.getShop_name());
-					ps.setString(3, item_shop.getStreet());
-					ps.setString(4, item_shop.getZip());
-					ps.setString(5, item_shop.getCurrency());
-					ps.setDouble(6, item_shop.getPrice());
-					ps.setBoolean(7, item_shop.getAvailaility());
-					ps.setString(8, item_shop.getCondition());
+					ps.setInt(2, shop_id);
+					ps.setString(3, item_shop.getCurrency());
+					ps.setDouble(4, item_shop.getPrice());
+					ps.setBoolean(5, item_shop.getAvailaility());
+					ps.setString(6, item_shop.getCondition());
 					ps.executeUpdate();
 					ps.close();
 					
