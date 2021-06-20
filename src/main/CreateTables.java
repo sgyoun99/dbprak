@@ -66,7 +66,7 @@ public class CreateTables {
 		
 		//createTableSQLMap.put(CreateTables.Category, "CREATE TABLE category(category_id SERIAL PRIMARY KEY NOT NULL, name TEXT);");
 		createTableSQLMap.put(CreateTables.Category, "CREATE TABLE category(category_id Integer PRIMARY KEY NOT NULL, name TEXT);");
-        createTableSQLMap.put(CreateTables.Sub_Category, "CREATE TABLE sub_category(main_category_id INTEGER REFERENCES category(category_id), sub_category_id INTEGER REFERENCES category(category_id), PRIMARY KEY(main_category_id, sub_category_id));");
+        createTableSQLMap.put(CreateTables.Sub_Category, "CREATE TABLE sub_category(over_category_id INTEGER REFERENCES category(category_id), sub_category_id INTEGER REFERENCES category(category_id), PRIMARY KEY(over_category_id, sub_category_id));");
         createTableSQLMap.put(CreateTables.Item_Category, "CREATE TABLE item_category(item_id text REFERENCES item(item_id), category_id INTEGER REFERENCES category(category_id), PRIMARY KEY(item_id, category_id));");
         
 		createTableSQLMap.put(CreateTables.Author, "CREATE TABLE author(author TEXT PRIMARY KEY);");

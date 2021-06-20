@@ -106,19 +106,19 @@ RETURNS integer AS $main_cat$
 DECLARE main_cat integer;
 BEGIN
     WITH recursive cat_tree AS (
-        SELECT main_category_id, sub_category_id
+        SELECT over_category_id, sub_category_id
         FROM sub_category
         WHERE sub_category_id = cat_id     --start, going up from here
         
         UNION ALL
         
-        SELECT main.main_category_id, main.sub_category_id
-        FROM sub_category AS main
+        SELECT sub.over_category_id, sub.sub_category_id
+        FROM sub_category AS sub
         
-        JOIN cat_tree AS sub ON sub.main_category_id = main.sub_category_id
+        JOIN cat_tree AS sub ON sub.over_category_id = sub.sub_category_id
     )    
-    SELECT main_category_id FROM cat_tree
-    ORDER BY main_category_id ASC
+    SELECT over_category_id FROM cat_tree
+    ORDER BY over_category_id ASC
     LIMIT 1;
     RETURN main_cat;
 END;
@@ -128,19 +128,19 @@ LANGUAGE plpgsql;*/
 
 -- get main category of set category
 /*WITH recursive cat_tree AS (
-    SELECT main_category_id, sub_category_id
+    SELECT over_category_id, sub_category_id
     FROM sub_category
     WHERE sub_category_id = 126     --start, going up from here
     
     UNION ALL
     
-    SELECT main.main_category_id, main.sub_category_id
-    FROM sub_category AS main
+    SELECT sub.over_category_id, sub.sub_category_id
+    FROM sub_category AS sub
     
-    JOIN cat_tree AS sub ON sub.main_category_id = main.sub_category_id
+    JOIN cat_tree AS sub ON sub.over_category_id = sub.sub_category_id
 )    
-SELECT main_category_id FROM cat_tree
-ORDER BY main_category_id ASC
+SELECT over_category_id FROM cat_tree
+ORDER BY over_category_id ASC
 LIMIT 1;*/
     
 

@@ -165,7 +165,7 @@ public class Cat {
 					JDBCTool.executeUpdateAutoCommitOn((con, st) -> {
 						String sql;
 						PreparedStatement ps;
-						sql = "INSERT INTO sub_category(main_category_id, sub_category_id)	VALUES (?, ?);";
+						sql = "INSERT INTO sub_category(over_category_id, sub_category_id)	VALUES (?, ?);";
 						ps = con.prepareStatement(sql);
 						ps.setInt(1, cat.getParent());
 						ps.setInt(2, cat.getOwnId());
