@@ -138,16 +138,21 @@ public class XmlTool {
 		try (
 			FileOutputStream fos = new FileOutputStream(encodedFilePath, true);
 			BufferedReader br = new BufferedReader(new InputStreamReader(
-									new FileInputStream(xmlFilePath), StandardCharsets.UTF_8));) {
+//									new FileInputStream(xmlFilePath), StandardCharsets.UTF_8));) {
+//									new FileInputStream(xmlFilePath), StandardCharsets.ISO_8859_1));) {
+									new FileInputStream(xmlFilePath)));) {
 			
 			
 
 			br.readLine(); // skip the first line and write <?xml version=\"1.0\" encoding=\"UTF-8\"?>
-			fos.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n".getBytes()); //specify encoding
+			fos.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n".getBytes("UTF-8")); //specify encoding
 			String line;
 			while ((line = br.readLine()) != null) {
 				//System.out.println(line);
-				fos.write(line.getBytes());
+				byte[] line_utf8 = new String(line.getBytes("ISO-8859-1")).getBytes("UTF-8");
+//				byte[] line_utf8 = new String(line.getBytes()).getBytes("UTF-8");
+//				fos.write(line.getBytes());
+				fos.write(line_utf8);
 				fos.write("\n".getBytes());
 
 			}
@@ -623,24 +628,30 @@ public class XmlTool {
 	public static void main(String[] args) {
 		
 		XmlTool xt = new XmlTool();
-//		xt.loadXML(Config.LEIPZIG);
-//		xt.analyseAttributesInNode("dvdspec");
+		xt.encodeFileToUTF_8(Config.CATEGORY_ORIGINAL);
 		
-//		xt.encodeFileToUTF_8(Config.DRESDEN_ORIGINAL);
+//		xt.loadXML(Config.CATEGORY_ENCODED);
+		xt.loadXML(Config.CATEGORY_ORIGINAL);
+		Map<String, Integer> map = new HashMap<>();
 
-//		xt.loadXML(Config.DRESDEN_ENCODED);
-//		xt.analyseAttributesInNode("format");
-		
-		
-		
-//		xt.analyseDirectChildNodes(Config.DRESDEN_ENCODED, "labels"); 
-//		xt.analyseDirectChildNodes(Config.DRESDEN_ENCODED, "authors");
-
-		xt.analyseDirectChildNodes(Config.LEIPZIG, "tracks");  
-//		xt.analyseDirectChildNodes(Config.LEIPZIG, "authors");
-		
+		Node categoriesNode = xt.getDocumentNode().getFirstChild().getNextSibling();
+		List<Node> mainCategoryNodesList = xt.getDirectChildElementNodes(categoriesNode); //12
 
 
+		mainCategoryNodesList.forEach(n->{
+			xt.visitChildElementNodesDFS(n, (node, level) -> {
+				if(node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals("category")) {
+					System.out.print(level+":");
+					System.out.print(++Test.count+":");
+					String catName = xt.getFirstTextNodeValue(node);
+					for (int i = 0; i < level; i++) {
+						System.out.print(".");
+					}
+					System.out.println(catName);
+				}
+			});
+		});
+		
 
 		
 	}
