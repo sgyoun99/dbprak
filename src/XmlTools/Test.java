@@ -39,60 +39,28 @@ public class Test {
 
 	public static void main(String[] args) throws Exception {
 
-		String fileToRead  = "data/categories.xml";
-		InputStream is = new FileInputStream(new File(fileToRead));
+		String fileToRead  = Config.CATEGORY_ORIGINAL;
+		String fileToWrite = Config.CATEGORY_ENCODED;
 
-//		byte[] arr = new byte[1621269+100];
-
-		byte[] arrB = new byte[3250];
 		try {
-			System.out.println("read:"+is.read(arrB));
-//			System.out.println(new String(arrB, "ISO-8859-1"));
-			for(byte b : arrB) {
-//				System.out.println(b);
-			}
-			
-//			System.out.println(new String(arrB, "ISO-8859-1"));
-//			System.out.println(new String(arrB, "UTF-8"));
-
-			/*
-			byte[] arrToWrite = new String(arrB).getBytes("ISO-8859-1");
-
+			InputStream is = new FileInputStream(new File(fileToRead));
 			OutputStream os = new FileOutputStream(fileToWrite, true);
-			os.write("\n".getBytes());
-			os.write(arrToWrite);
+			
+		    BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileToRead), "ISO-8859-1"));
+			br.readLine(); // skip the first line and write <?xml version=\"1.0\" encoding=\"UTF-8\"?>
+			os.write("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n".getBytes("UTF-8")); //specify encoding
+		    String str;
+			while((str = br.readLine()) != null) {
+				String strInUTF8 = new String(str.getBytes(), "UTF-8");
+				System.out.println(strInUTF8);
+				os.write(strInUTF8.getBytes("UTF-8"));
+				os.write("\n".getBytes());
+			}
 			os.flush();
 			os.close();
-			 */
-			
-			/*
-		    BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(fileToRead),
-		            "8859_1"));
-		    String str;
-			while((str = in.readLine()) != null) {
-				System.out.println(str);
-			}
-			*/
 
-			Path path = Paths.get(fileToRead);
-			byte[] data = Files.readAllBytes(path);
-			for (int i = 3188; i < 3200; i++) {
-				System.out.print(data[i]+" ");
-//				System.out.println(new String((char)data[i]));
-			}
-			System.out.println();
-			System.out.println("s".getBytes()[0]);
-			System.out.println("p".getBytes()[0]);
-			System.out.println("i".getBytes()[0]);
-			System.out.println("e".getBytes()[0]);
-			System.out.println("l".getBytes()[0]);
-			System.out.println("e".getBytes()[0]);
-			
-			String latin1 = new String(data, "ISO-8859-1");
-			System.out.println(latin1);
 		} catch (Exception e) {
 			e.printStackTrace();
-			// TODO: handle exception
 		}
 	}
 

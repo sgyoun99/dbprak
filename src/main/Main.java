@@ -24,8 +24,8 @@ public class Main {
 			
 			//Encoding to UTF-8
 			XmlTool xt = new XmlTool();
-			xt.encodeFileToUTF_8(Config.DRESDEN_ORIGINAL);
-			xt.encodeFileToUTF_8(Config.CATEGORY_ORIGINAL);
+			xt.encodeDresdenXMLToUTF8();
+			xt.encodeCategoriesXMLToUTF8();
 
 			
 			 

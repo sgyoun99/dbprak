@@ -6,7 +6,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
@@ -122,8 +124,9 @@ public class XmlTool {
 		return sb.toString();
 	}
 	// encodes a xml file into UTF-8 and create a xml file name with "__to__UTF-8.xml" in the end.
-	public void encodeFileToUTF_8(String xmlFilePath) {
-		String encodedFilePath = xmlFilePath + Config.UTF8_SURFIX;
+	public void encodeDresdenXMLToUTF8() {
+		String xmlFilePath = Config.DRESDEN_ORIGINAL;
+		String encodedFilePath = Config.DRESDEN_ENCODED;
 		try {
 			//to prevent from endless extending to the existing encoded xml,
 			//delete the existing encoded file which was created by this program.
@@ -138,21 +141,16 @@ public class XmlTool {
 		try (
 			FileOutputStream fos = new FileOutputStream(encodedFilePath, true);
 			BufferedReader br = new BufferedReader(new InputStreamReader(
-//									new FileInputStream(xmlFilePath), StandardCharsets.UTF_8));) {
-//									new FileInputStream(xmlFilePath), StandardCharsets.ISO_8859_1));) {
-									new FileInputStream(xmlFilePath)));) {
+									new FileInputStream(xmlFilePath), StandardCharsets.UTF_8));) {
 			
 			
 
 			br.readLine(); // skip the first line and write <?xml version=\"1.0\" encoding=\"UTF-8\"?>
-			fos.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n".getBytes("UTF-8")); //specify encoding
+			fos.write("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n".getBytes("UTF-8")); //specify encoding
 			String line;
 			while ((line = br.readLine()) != null) {
 				//System.out.println(line);
-				byte[] line_utf8 = new String(line.getBytes("ISO-8859-1")).getBytes("UTF-8");
-//				byte[] line_utf8 = new String(line.getBytes()).getBytes("UTF-8");
-//				fos.write(line.getBytes());
-				fos.write(line_utf8);
+				fos.write(line.getBytes());
 				fos.write("\n".getBytes());
 
 			}
@@ -166,6 +164,49 @@ public class XmlTool {
         
 	}
 	
+	
+	public void encodeCategoriesXMLToUTF8() {
+		String xmlFilePath = Config.CATEGORY_ORIGINAL;
+		String encodedFilePath = Config.CATEGORY_ENCODED;
+		try {
+			//to prevent from endless extending to the existing encoded xml,
+			//delete the existing encoded file which was created by this program.
+			File oldFile= new File(encodedFilePath);
+			oldFile.delete();
+		} catch (Exception e) {
+			// ok. do nothing
+		}
+		
+		System.out.println(">> Encoding start: " + xmlFilePath);
+
+		try (
+			InputStream is = new FileInputStream(new File(xmlFilePath));
+			OutputStream os = new FileOutputStream(encodedFilePath, true);
+		    BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(xmlFilePath), "ISO-8859-1"));
+			){
+
+			br.readLine(); // skip the first line and write <?xml version=\"1.0\" encoding=\"UTF-8\"?>
+			os.write("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n".getBytes("UTF-8")); //specify encoding
+		    String str;
+			while((str = br.readLine()) != null) {
+				String strInUTF8 = new String(str.getBytes(), "UTF-8");
+				System.out.println(strInUTF8);
+				os.write(strInUTF8.getBytes("UTF-8"));
+				os.write("\n".getBytes());
+			}
+			os.flush();
+			os.close();
+
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		System.out.println(">> Encoding Complete: " + encodedFilePath);
+        
+	}	
 	
 	//test
 	public boolean isLeafElementNode(Node currentNode) {
@@ -547,7 +588,7 @@ public class XmlTool {
 		System.out.println(el.getAttribute("zip"));
 
 		//after encoding
-		xt.encodeFileToUTF_8(Config.DRESDEN_ORIGINAL);
+		xt.encodeDresdenXMLToUTF8();
 
 		xt.loadXML(Config.DRESDEN_ENCODED);
 		doc = xt.getDocumentNode();
@@ -628,10 +669,10 @@ public class XmlTool {
 	public static void main(String[] args) {
 		
 		XmlTool xt = new XmlTool();
-		xt.encodeFileToUTF_8(Config.CATEGORY_ORIGINAL);
+		xt.encodeDresdenXMLToUTF8();
+		xt.encodeCategoriesXMLToUTF8();
 		
-//		xt.loadXML(Config.CATEGORY_ENCODED);
-		xt.loadXML(Config.CATEGORY_ORIGINAL);
+		xt.loadXML(Config.CATEGORY_ENCODED);
 		Map<String, Integer> map = new HashMap<>();
 
 		Node categoriesNode = xt.getDocumentNode().getFirstChild().getNextSibling();
