@@ -672,27 +672,6 @@ public class XmlTool {
 		xt.encodeDresdenXMLToUTF8();
 		xt.encodeCategoriesXMLToUTF8();
 		
-		xt.loadXML(Config.CATEGORY_ENCODED);
-		Map<String, Integer> map = new HashMap<>();
-
-		Node categoriesNode = xt.getDocumentNode().getFirstChild().getNextSibling();
-		List<Node> mainCategoryNodesList = xt.getDirectChildElementNodes(categoriesNode); //12
-
-
-		mainCategoryNodesList.forEach(n->{
-			xt.visitChildElementNodesDFS(n, (node, level) -> {
-				if(node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals("category")) {
-					System.out.print(level+":");
-					System.out.print(++Test.count+":");
-					String catName = xt.getFirstTextNodeValue(node);
-					for (int i = 0; i < level; i++) {
-						System.out.print(".");
-					}
-					System.out.println(catName);
-				}
-			});
-		});
-		
 
 		
 	}

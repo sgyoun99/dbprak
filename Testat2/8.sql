@@ -10,5 +10,5 @@ music_cd_participants AS (
 
 SELECT DISTINCT author FROM author
 WHERE author IN (SELECT participant FROM dvd_participants)
-OR author IN (SELECT participant FROM music_cd_participants)
+   OR author IN (SELECT participant FROM music_cd_participants)
 ORDER BY author ASC

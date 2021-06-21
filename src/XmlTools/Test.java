@@ -1,17 +1,5 @@
 package XmlTools;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,40 +16,29 @@ public class Test {
 	
 	static int count = 0;
 	
-	public static void dumpString(String text)
-	{
-	    for (int i=0; i < text.length(); i++)
-	    {
-	        System.out.println("U+" + Integer.toString(text.charAt(i), 16) 
-	                           + " " + text.charAt(i));
-	    }
-	}
-
 	public static void main(String[] args) throws Exception {
 
-		String fileToRead  = Config.CATEGORY_ORIGINAL;
-		String fileToWrite = Config.CATEGORY_ENCODED;
+		XmlTool xt = new XmlTool();
+		xt.loadXML(Config.CATEGORY_ENCODED);
+		
+		Map<String, Integer> map = new HashMap<>();
+		Node categoriesNode = xt.getDocumentNode().getFirstChild().getNextSibling();
+		List<Node> mainCategoryNodesList = xt.getDirectChildElementNodes(categoriesNode); //12
 
-		try {
-			InputStream is = new FileInputStream(new File(fileToRead));
-			OutputStream os = new FileOutputStream(fileToWrite, true);
-			
-		    BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fileToRead), "ISO-8859-1"));
-			br.readLine(); // skip the first line and write <?xml version=\"1.0\" encoding=\"UTF-8\"?>
-			os.write("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n".getBytes("UTF-8")); //specify encoding
-		    String str;
-			while((str = br.readLine()) != null) {
-				String strInUTF8 = new String(str.getBytes(), "UTF-8");
-				System.out.println(strInUTF8);
-				os.write(strInUTF8.getBytes("UTF-8"));
-				os.write("\n".getBytes());
-			}
-			os.flush();
-			os.close();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		mainCategoryNodesList.forEach(n->{
+			xt.visitChildElementNodesDFS(n, (node, level) -> {
+				if(node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals("category")) {
+					System.out.print(level+":");
+					System.out.print(++Test.count+":");
+					String catName = xt.getFirstTextNodeValue(node);
+					for (int i = 0; i < level; i++) {
+						System.out.print(".");
+					}
+					System.out.println(catName);
+				}
+			});
+		});
+		
 	}
 
 }

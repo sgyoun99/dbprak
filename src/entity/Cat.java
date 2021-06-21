@@ -213,8 +213,8 @@ public class Cat {
 
 	public static void main(String[] args) throws Exception {
 		
-		DropTables.dropTables();
-		CreateTables.createTables();
+//		DropTables.dropTables();
+//		CreateTables.createTables();
 
 		Cat cat = new Cat();
 		cat.readCat();

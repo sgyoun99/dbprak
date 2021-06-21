@@ -289,8 +289,8 @@ public class Categories {
 	
 	public static void main(String[] args) throws Exception {
 		
-		DropTables.dropTable("Errors");
-		CreateTables.createTable("Errors");
+//		DropTables.dropTable("Errors");
+//		CreateTables.createTable("Errors");
 
 		DropTables.dropTable(CreateTables.Item_Category);
 		DropTables.dropTable(CreateTables.Sub_Category);
@@ -299,9 +299,9 @@ public class Categories {
 		CreateTables.createTable(CreateTables.Sub_Category);
 		CreateTables.createTable(CreateTables.Item_Category);
 		
-		Categories categories = new Categories();
-		categories.insertMainCategory();
-		categories.insertSubCategory();
+//		Categories categories = new Categories();
+//		categories.insertMainCategory();
+//		categories.insertSubCategory();
 
 		System.out.println("finished");
 	}
