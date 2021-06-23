@@ -190,7 +190,7 @@ public class XmlTool {
 		    String str;
 			while((str = br.readLine()) != null) {
 				String strInUTF8 = new String(str.getBytes(), "UTF-8");
-				System.out.println(strInUTF8);
+//				System.out.println(strInUTF8);
 				os.write(strInUTF8.getBytes("UTF-8"));
 				os.write("\n".getBytes());
 			}

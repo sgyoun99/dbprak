@@ -12,7 +12,6 @@ import org.w3c.dom.Node;
 import JDBCTools.JDBCTool;
 import XmlTools.XmlTool;
 import exception.SQLKeyDuplicatedException;
-import exception.XmlDataException;
 import exception.XmlInvalidValueException;
 import exception.XmlNoAttributeException;
 import exception.XmlValidationFailException;
@@ -25,7 +24,6 @@ import main.ErrorLogger;
 public class Item_Shop {
 
 	private String item_id;
-	private Integer shop_id;
 	private String currency;
 	private Double price;
 	private Boolean availaility;
@@ -150,72 +148,74 @@ public class Item_Shop {
 		itemList.forEach(itemNode -> {
 			Item_Shop item_shop = new Item_Shop();
 			try {
-			//xml data
 				item_shop.setItem_id(xt.getAttributeValue(itemNode, "asin"));
 				xt.visitChildElementNodesDFS(itemNode, (nd, lv) -> {
-					if(nd.getNodeName().equals("price")) {
-						String mult = "";
-						String state = "";
-						String currency = "";
-						try {
-							mult = xt.getAttributeValue(nd, "mult");
-							currency = xt.getAttributeValue(nd, "currency");
-							state = xt.getAttributeValue(nd, "state");
-						} catch (XmlNoAttributeException e) {
-							e.setLocation(location);
-							e.setItem_id(item_shop.getItem_id());
-							ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-						} finally {
-							item_shop.setCurrency(currency);
-							item_shop.setPrice(xt.getTextContentOfLeafNode(nd),mult);
-							item_shop.setAvailaility(item_shop.getPrice());
-							item_shop.setCondition(state);
+					try {
+					//xml data
+						if(nd.getNodeName().equals("price")) {
+							String mult = "";
+							String state = "";
+							String currency = "";
+							try {
+								mult = xt.getAttributeValue(nd, "mult");
+								currency = xt.getAttributeValue(nd, "currency");
+								state = xt.getAttributeValue(nd, "state");
+							} catch (XmlNoAttributeException e) {
+								e.setLocation(location);
+								e.setItem_id(item_shop.getItem_id());
+								ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
+							} finally {
+								item_shop.setCurrency(currency);
+								item_shop.setPrice(xt.getTextContentOfLeafNode(nd),mult);
+								item_shop.setAvailaility(item_shop.getPrice());
+								item_shop.setCondition(state);
+							}
+			
+						//test
+							this.test(item_shop);
+						//insert
+							JDBCTool.executeUpdate((con, st) ->	{
+								String sql = "INSERT INTO ITEM_SHOP "
+										+ "(item_id, shop_id, currency, price, availability, condition) "
+										+ "values (?,?,?,?,?,?)";
+								PreparedStatement ps = con.prepareStatement(sql);
+								ps.setString(1, item_shop.getItem_id());
+								ps.setInt(2, shop_id);
+								ps.setString(3, item_shop.getCurrency());
+								ps.setDouble(4, item_shop.getPrice());
+								ps.setBoolean(5, item_shop.getAvailaility());
+								ps.setString(6, item_shop.getCondition());
+								ps.executeUpdate();
+								ps.close();
+								
+							});
 						}
-					}
+					} catch (IllegalArgumentException e) {
+						ErrorLogger.write(location, item_shop.getItem_id(), ErrType.PROGRAM, "" ,e, xt.getNodeContentDFS(itemNode));
+					} catch (XmlValidationFailException e) {
+						e.setLocation(location);
+						e.setItem_id(item_shop.getItem_id());
+						ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
+					} catch (SQLException ex) {
+						if(ex.getMessage().contains("duplicate key value")) {
+							SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
+							e.setAttrName("");
+							e.setItem_id(item_shop.getItem_id());
+							e.setLocation(location);
+							e.setMessage("duplicate key value");
+							ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
+						} else {
+							ErrorLogger.write(location, item_shop.getItem_id(), ErrType.SQL, "", ex, xt.getNodeContentDFS(itemNode));
+						}
+					} catch (Exception e) {
+						ErrorLogger.write(location, item_shop.getItem_id(), ErrType.PROGRAM, "", e, xt.getNodeContentDFS(itemNode));
+					}			
 				});
-		
-			//test
-				this.test(item_shop);
-			//insert
-				JDBCTool.executeUpdate((con, st) ->	{
-					String sql = "INSERT INTO ITEM_SHOP "
-							+ "(item_id, shop_id, currency, price, availability, condition) "
-							+ "values (?,?,?,?,?,?)";
-					PreparedStatement ps = con.prepareStatement(sql);
-					ps.setString(1, item_shop.getItem_id());
-					ps.setInt(2, shop_id);
-					ps.setString(3, item_shop.getCurrency());
-					ps.setDouble(4, item_shop.getPrice());
-					ps.setBoolean(5, item_shop.getAvailaility());
-					ps.setString(6, item_shop.getCondition());
-					ps.executeUpdate();
-					ps.close();
-					
-				});
-			} catch (IllegalArgumentException e) {
-				ErrorLogger.write(location, item_shop.getItem_id(), ErrType.PROGRAM, "" ,e, xt.getNodeContentDFS(itemNode));
-			} catch (XmlValidationFailException e) {
-				e.setLocation(location);
-				e.setItem_id(item_shop.getItem_id());
-				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-			} catch (XmlDataException e) {
-				e.setLocation(location);
-				e.setItem_id(item_shop.getItem_id());
-				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-			} catch (SQLException ex) {
-				if(ex.getMessage().contains("duplicate key value")) {
-					SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
-					e.setAttrName("");
-					e.setItem_id(item_shop.getItem_id());
-					e.setLocation(location);
-					e.setMessage("duplicate key value");
-					ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-				} else {
-					ErrorLogger.write(location, item_shop.getItem_id(), ErrType.SQL, "", ex, xt.getNodeContentDFS(itemNode));
-				}
-			} catch (Exception e) {
-				ErrorLogger.write(location, item_shop.getItem_id(), ErrType.PROGRAM, "", e, xt.getNodeContentDFS(itemNode));
-			}			
+			} catch (XmlNoAttributeException e1) {
+				e1.setLocation(location);
+				e1.setItem_id(item_shop.getItem_id());
+				ErrorLogger.write(e1, xt.getNodeContentDFS(itemNode));
+			}
 		});
 	}
 	
@@ -234,72 +234,74 @@ public class Item_Shop {
 		itemList.forEach(itemNode -> {
 			Item_Shop item_shop = new Item_Shop();
 			try {
-			//xml data
 				item_shop.setItem_id(xt.getAttributeValue(itemNode, "asin"));
 				xt.visitChildElementNodesDFS(itemNode, (nd, lv) -> {
-					if(nd.getNodeName().equals("price")) {
-						String mult = "";
-						String state = "";
-						String currency = "";
-						try {
-							mult = xt.getAttributeValue(nd, "mult");
-							currency = xt.getAttributeValue(nd, "currency");
-							state = xt.getAttributeValue(nd, "state");
-						} catch (XmlNoAttributeException e) {
-							e.setLocation(location);
-							e.setItem_id(item_shop.getItem_id());
-							ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-						} finally {
-							item_shop.setCurrency(currency);
-							item_shop.setPrice(xt.getTextContentOfLeafNode(nd),mult);
-							item_shop.setAvailaility(item_shop.getPrice());
-							item_shop.setCondition(state);
+					try {
+					//xml data
+						if(nd.getNodeName().equals("price")) {
+							String mult = "";
+							String state = "";
+							String currency = "";
+							try {
+								mult = xt.getAttributeValue(nd, "mult");
+								currency = xt.getAttributeValue(nd, "currency");
+								state = xt.getAttributeValue(nd, "state");
+							} catch (XmlNoAttributeException e) {
+								e.setLocation(location);
+								e.setItem_id(item_shop.getItem_id());
+								ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
+							} finally {
+								item_shop.setCurrency(currency);
+								item_shop.setPrice(xt.getTextContentOfLeafNode(nd),mult);
+								item_shop.setAvailaility(item_shop.getPrice());
+								item_shop.setCondition(state);
+							}
+				
+						//test
+							this.test(item_shop);
+							//insert
+							JDBCTool.executeUpdate((con, st) ->	{
+								String sql = "INSERT INTO ITEM_SHOP "
+										+ "(item_id, shop_id, currency, price, availability, condition) "
+										+ "values (?,?,?,?,?,?)";
+								PreparedStatement ps = con.prepareStatement(sql);
+								ps.setString(1, item_shop.getItem_id());
+								ps.setInt(2, shop_id);
+								ps.setString(3, item_shop.getCurrency());
+								ps.setDouble(4, item_shop.getPrice());
+								ps.setBoolean(5, item_shop.getAvailaility());
+								ps.setString(6, item_shop.getCondition());
+								ps.executeUpdate();
+								ps.close();
+								
+							});
 						}
-					}
+					} catch (IllegalArgumentException e) {
+						ErrorLogger.write(location, item_shop.getItem_id(), ErrType.PROGRAM, "" ,e, xt.getNodeContentDFS(itemNode));
+					} catch (XmlValidationFailException e) {
+						e.setLocation(location);
+						e.setItem_id(item_shop.getItem_id());
+						ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
+					} catch (SQLException ex) {
+						if(ex.getMessage().contains("duplicate key value")) {
+							SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
+							e.setAttrName("");
+							e.setItem_id(item_shop.getItem_id());
+							e.setLocation(location);
+							e.setMessage("duplicate key value");
+							ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
+						} else {
+							ErrorLogger.write(location, item_shop.getItem_id(), ErrType.SQL, "", ex, xt.getNodeContentDFS(itemNode));
+						}
+					} catch (Exception e) {
+						ErrorLogger.write(location, item_shop.getItem_id(), ErrType.PROGRAM, "", e, xt.getNodeContentDFS(itemNode));
+					}		
 				});
-		
-			//test
-				this.test(item_shop);
-				//insert
-				JDBCTool.executeUpdate((con, st) ->	{
-					String sql = "INSERT INTO ITEM_SHOP "
-							+ "(item_id, shop_id, currency, price, availability, condition) "
-							+ "values (?,?,?,?,?,?)";
-					PreparedStatement ps = con.prepareStatement(sql);
-					ps.setString(1, item_shop.getItem_id());
-					ps.setInt(2, shop_id);
-					ps.setString(3, item_shop.getCurrency());
-					ps.setDouble(4, item_shop.getPrice());
-					ps.setBoolean(5, item_shop.getAvailaility());
-					ps.setString(6, item_shop.getCondition());
-					ps.executeUpdate();
-					ps.close();
-					
-				});
-			} catch (IllegalArgumentException e) {
-				ErrorLogger.write(location, item_shop.getItem_id(), ErrType.PROGRAM, "" ,e, xt.getNodeContentDFS(itemNode));
-			} catch (XmlValidationFailException e) {
-				e.setLocation(location);
-				e.setItem_id(item_shop.getItem_id());
-				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-			} catch (XmlDataException e) {
-				e.setLocation(location);
-				e.setItem_id(item_shop.getItem_id());
-				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-			} catch (SQLException ex) {
-				if(ex.getMessage().contains("duplicate key value")) {
-					SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
-					e.setAttrName("");
-					e.setItem_id(item_shop.getItem_id());
-					e.setLocation(location);
-					e.setMessage("duplicate key value");
-					ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-				} else {
-					ErrorLogger.write(location, item_shop.getItem_id(), ErrType.SQL, "", ex, xt.getNodeContentDFS(itemNode));
-				}
-			} catch (Exception e) {
-				ErrorLogger.write(location, item_shop.getItem_id(), ErrType.PROGRAM, "", e, xt.getNodeContentDFS(itemNode));
-			}		
+			} catch (XmlNoAttributeException e1) {
+				e1.setLocation(location);
+				e1.setItem_id(item_shop.getItem_id());
+				ErrorLogger.write(e1, xt.getNodeContentDFS(itemNode));
+			}
 		});
 	}
 	

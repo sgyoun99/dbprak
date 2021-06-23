@@ -7,6 +7,7 @@ import java.util.Map;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import entity.Item_Shop;
 import entity.Shop;
 import exception.XmlDataException;
 import main.Config;
@@ -18,7 +19,8 @@ public class Test {
 	
 	public static void main(String[] args) throws Exception {
 
-		XmlTool xt = new XmlTool();
+/*
+	XmlTool xt = new XmlTool();
 		xt.loadXML(Config.CATEGORY_ENCODED);
 		
 		Map<String, Integer> map = new HashMap<>();
@@ -38,6 +40,10 @@ public class Test {
 				}
 			});
 		});
+*/
+		Item_Shop item_shop = new Item_Shop();
+		item_shop.dresden();
+		item_shop.leipzig();
 		
 	}
 

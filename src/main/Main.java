@@ -46,7 +46,7 @@ public class Main {
 			Item_Shop item_shop = new Item_Shop();
 			item_shop.dresden();
 			item_shop.leipzig();
-			
+
 			//Similar Items
 			Similar_Items simItems = new Similar_Items();
 			simItems.dresden();
@@ -86,6 +86,7 @@ public class Main {
 
 			Cat cat = new Cat();
 			cat.readCat();
+ 
 		
 		} catch (RuntimeException e) {
 			e.printStackTrace();
