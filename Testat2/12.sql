@@ -13,8 +13,9 @@ cheap_items AS (
 	GROUP BY item_shop.item_id),
 cheap_items_in_leipzig AS (
 	SELECT * 
-	FROM cheap_items ci INNER JOIN item_shop ON ci.item_id = item_shop.item_id AND ci.min_price = item_shop.price
+	FROM cheap_items ci INNER JOIN item_shop ON (ci.item_id = item_shop.item_id AND ci.min_price = item_shop.price)
 	WHERE item_shop.shop_id = (SELECT shop_id FROM shop WHERE shop.shop_name = 'Leipzig'))
 
-SELECT ((SELECT COUNT(*) FROM cheap_items_in_leipzig) * 100 / (SELECT COUNT(*) FROM cheap_items))::NUMERIC(4,2)
---SELECT (57*100 / 116)::NUMERIC(3,1)
+SELECT ((SELECT COUNT(*) * 100 FROM cheap_items_in_leipzig) / (SELECT COUNT(*) FROM cheap_items)::FLOAT)::NUMERIC(10,2)
+--SELECT COUNT(*) FROM cheap_items_in_leipzig --57
+--SELECT COUNT(*) FROM cheap_items --116

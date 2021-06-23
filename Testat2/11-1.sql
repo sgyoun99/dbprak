@@ -20,7 +20,10 @@ END;
 $$;
 
 --test
---SELECT is_item_in_shop('B00066KWNS',1) --true
---SELECT is_item_in_shop('B000002ONW',2) --true
---SELECT is_item_in_shop('3000147012',1) --true
---SELECT is_item_in_shop('3000147012',2) --false
+SELECT is_item_in_shop('B000002ONW',1) --true
+UNION ALL
+SELECT is_item_in_shop('B000002ONW',2) --true
+UNION ALL
+SELECT is_item_in_shop('3000147012',1) --true
+UNION ALL
+SELECT is_item_in_shop('3000147012',2) --false
