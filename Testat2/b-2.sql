@@ -1,0 +1,5 @@
+CREATE TRIGGER review_changes
+  AFTER INSERT or DELETE or UPDATE 
+  ON review
+  FOR EACH ROW
+  EXECUTE PROCEDURE update_avg();
