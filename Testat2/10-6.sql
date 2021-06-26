@@ -1,5 +1,4 @@
 -- find all items whose similar item has different main category.
-
 WITH
 diff_main_category AS (
 	SELECT s.item_id, s.similar_item_id
