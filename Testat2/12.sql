@@ -17,5 +17,5 @@ cheap_items_in_leipzig AS (
 	WHERE item_shop.shop_id = (SELECT shop_id FROM shop WHERE shop.shop_name = 'Leipzig'))
 
 SELECT ((SELECT COUNT(*) * 100 FROM cheap_items_in_leipzig) / (SELECT COUNT(*) FROM cheap_items)::FLOAT)::NUMERIC(10,2)
---SELECT COUNT(*) FROM cheap_items_in_leipzig --57
---SELECT COUNT(*) FROM cheap_items --116
+--SELECT COUNT(*) FROM cheap_items_in_leipzig --248
+--SELECT COUNT(*) FROM cheap_items --307

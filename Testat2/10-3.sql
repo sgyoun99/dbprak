@@ -17,4 +17,4 @@ $$;
 
 --test
 SELECT sim_item_id, diff_main_cat_id
-FROM select_sim_item_id_with_diff_main_cat('B0002H24N2','B0002JZ32E')
+FROM select_sim_item_id_with_diff_main_cat('B000266XCG','B00005NJJ9')

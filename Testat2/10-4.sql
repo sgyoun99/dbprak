@@ -25,11 +25,11 @@ RETURN 	QUERY
 	SELECT mc.item, mc.item_id, mc.main_cat, category.name, mc.diff
 	FROM main_categories mc INNER JOIN category ON mc.main_cat = CAST(category.category_id AS TEXT)
 	UNION
-	SELECT ' = = = = = = = = = = ', ' = = = = = = = = = = ', ' = = = = = = = = = = ', ' = = = = = = = = = = ', ' = = = = = = = = = = '
+	SELECT '_diff_item', param_item_id, '======', '======', '======'
 	ORDER BY item ASC, main_cat ASC;
 
 END;
 $$;
 
 --test
-SELECT * FROM select_main_cat_diff('B0007UARJW','3473344273')
+SELECT * FROM select_main_cat_diff('3899406788','3551551677')
