@@ -150,7 +150,7 @@ public class Book {
 	public void testBook(Book book) throws XmlValidationFailException, XmlNullNodeException {
 		try {
 			if(!Item.pred_item_id.test(book.getItem_id())) {
-				XmlInvalidValueException e = new XmlInvalidValueException("item_id Error (length not 10): \""+book.getItem_id()+"\""); 
+				XmlInvalidValueException e = new XmlInvalidValueException("item_id Error (id does not exist): "+book.getItem_id());
 				e.setAttrName("item_id");
 				throw e;
 			}

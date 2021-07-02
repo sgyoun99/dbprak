@@ -123,6 +123,22 @@ public class Test {
 		return categoryList.get(catId -1).categoryName;
 	}
 	
+	public String mainCatNamesToString(String itemId) {
+		String res = "(";
+		List<Integer> mainCatList = this.item_MainCatList_Map.get(itemId);
+		if(mainCatList == null) {
+			return res + "-)";
+		}
+		for(int i = 0; i < mainCatList.size(); i++) {
+			int mainCatId = mainCatList.get(i);
+			res += this.getCatName(mainCatId);
+			if(i < mainCatList.size()-1) {
+				res += ", ";
+			}
+		}
+		return res + ")";
+	}
+	
 	public void setSimItemsFromDB() {
 		try {
 			JDBCTool.executeUpdate((con, st) -> {
@@ -219,6 +235,24 @@ public class Test {
 		System.out.println(count);
 		System.out.println(res.size());
 		return res;
+	}
+	
+	
+	public List<Integer> intersection(List<Integer> mainCatList1, List<Integer> mainCatList2){
+		List<Integer> res = new ArrayList<Integer>();
+		if(mainCatList1 == null || mainCatList2 == null) {
+			return res;
+		}
+		mainCatList1.forEach(cat1 -> {
+			if(mainCatList2.contains(cat1)) {
+				res.add(cat1);
+			}
+		});
+		return res;
+	}
+	
+	public boolean hasNoIntersection(List<Integer> mainCatList1, List<Integer> mainCatList2) {
+		return this.intersection(mainCatList1, mainCatList2).size() == 0 ? true : false;
 	}
 	
 
@@ -350,5 +384,43 @@ public class Test {
 				System.out.println("Not in java: " + item_id);
 			}
 		});
+		
+		
+		Map<String,List<String>> resMap = new HashMap<String, List<String>>();
+		t.db_itemList.forEach(item -> {
+			List<String> simItemList = t.simMap.get(item);
+			if(simItemList != null) {
+				List<Integer> mainCatList1 = t.item_MainCatList_Map.get(item);
+				simItemList.forEach(simItem ->{
+					List<Integer> mainCatList2 = t.item_MainCatList_Map.get(simItem);
+					if(t.hasNoIntersection(mainCatList1, mainCatList2)) {
+						resMap.compute(item, (k, simList)->{
+							if(simList == null) {
+								simList = new ArrayList<String>();
+								simList.add(simItem);
+							} else {
+								simList.add(simItem);
+							}
+							return simList;
+						});
+					}
+				});
+			}
+		});
+		
+		System.out.println("================================");
+		System.out.println(resMap.size());
+		resMap.forEach((item, simItemList) -> {
+			System.out.print(item + t.mainCatNamesToString(item) + ": ");
+			simItemList.forEach(simItem -> {
+				System.out.print(simItem + t.mainCatNamesToString(simItem) + "/ ");
+			});
+			System.out.println();
+		});
+		
+		System.out.println((t.intersection(t.item_MainCatList_Map.get("B00006RYOL"), t.item_MainCatList_Map.get("B000679QWK"))));
+		System.out.println(t.getCatName(544));
+		System.out.println(t.getCatName(21520));
+		
 	}
 }

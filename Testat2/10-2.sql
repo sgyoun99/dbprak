@@ -16,5 +16,5 @@ $$;
 
 --test
 SELECT main_cat_id, category.name 
-FROM select_all_main_cat_id('B000266XCG') 
+FROM select_all_main_cat_id('B0000VS0HE') 
 INNER JOIN category ON main_cat_id = category.category_id

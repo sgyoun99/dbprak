@@ -67,7 +67,7 @@ public class Music_CD {
 	public void testMusic_CD(Music_CD music_cd, List<String> artists) throws XmlValidationFailException, XmlNullNodeException {
 		try {
 			if(!Item.pred_item_id.test(music_cd.getItem_id())) {
-				XmlInvalidValueException e = new XmlInvalidValueException("item_id Error (length not 10): \""+music_cd.getItem_id()+"\""); 
+				XmlInvalidValueException e = new XmlInvalidValueException("item_id Error (id does not exist): "+music_cd.getItem_id());
 				e.setAttrName("item_id");
 				throw e;
 			}

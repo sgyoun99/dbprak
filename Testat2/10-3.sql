@@ -1,20 +1,32 @@
--- check if a similar item has different main category as the given item.
--- if so, returns the similar item and its main category which differs from the given item.
-CREATE OR REPLACE FUNCTION select_sim_item_id_with_diff_main_cat (param_item_id TEXT, param_sim_item_id TEXT)
-RETURNS TABLE(sim_item_id TEXT, diff_main_cat_id INTEGER)
+-- shows how different the main categories between item und similar items are.
+CREATE OR REPLACE FUNCTION select_main_cat (param_item_id TEXT, param_sim_item_id TEXT)
+RETURNS TABLE(item TEXT, item_id TEXT, main_cat INTEGER, category_name TEXT)
 language plpgsql
 AS 
 $$
 BEGIN
 RETURN 	QUERY 
 
-	SELECT param_sim_item_id, sim.main_cat_id 
-	FROM (SELECT * FROM select_all_main_cat_id(param_sim_item_id)) sim
-	WHERE sim.main_cat_id NOT IN (SELECT * FROM select_all_main_cat_id(param_item_id));
+	WITH 
+	main_categories AS (
+	SELECT 	'item' AS item,
+			param_item_id AS item_id, 
+			select_all_main_cat_id(param_item_id) AS main_cat
+	UNION
+	SELECT	'similar_item' AS item,
+			param_sim_item_id AS item_id, 
+			select_all_main_cat_id(param_sim_item_id) AS main_cat
+	)
+
+	SELECT mc.item, mc.item_id, mc.main_cat, category.name
+	FROM main_categories mc INNER JOIN category ON mc.main_cat = category.category_id
+	UNION
+	SELECT CONCAT('>>',param_item_id,'<<'), NULL, NULL, NULL
+	ORDER BY item ASC, main_cat ASC;
 
 END;
 $$;
 
 --test
-SELECT sim_item_id, diff_main_cat_id
-FROM select_sim_item_id_with_diff_main_cat('B000266XCG','B00005NJJ9')
+SELECT * FROM select_main_cat('B00007BKGQ','B0000CFYEJ')
+--SELECT * FROM select_main_cat('3895847011','3551551685')

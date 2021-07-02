@@ -141,7 +141,7 @@ public class Dvd {
 	public void testDvd(Dvd dvd) throws XmlValidationFailException {
 		try {
 			if(!Item.pred_item_id.test(dvd.getItem_id())) {
-				XmlInvalidValueException e = new XmlInvalidValueException("item_id Error (length not 10): \""+dvd.getItem_id()+"\""); 
+				XmlInvalidValueException e = new XmlInvalidValueException("item_id Error (id does not exist): "+dvd.getItem_id());
 				e.setAttrName("item_id");
 				throw e;
 			}
