@@ -175,67 +175,6 @@ public class Test {
 		
 	}
 	
-	public List<Integer> diff_mainCat(List<Integer> item_mainCat, List<Integer> sim_item_mainCat){
-		List<Integer> res = new ArrayList<Integer>();
-		if(sim_item_mainCat == null) {
-			return res;
-		} else {
-			sim_item_mainCat.forEach(i -> {
-				if(item_mainCat == null) {
-					res.add(i);
-				} else if(!item_mainCat.contains(i)) {
-					res.add(i);
-				}
-			});
-			return res;
-		}
-	}
-	
-	public List<Integer> diff_mainCat(String item_id, String sim_item_id){
-		List<Integer> item_mainCat = item_MainCatList_Map.get(item_id);
-		List<Integer> sim_item_mainCat = item_MainCatList_Map.get(sim_item_id);
-		return this.diff_mainCat(item_mainCat, sim_item_mainCat);
-	}
-	
-	public List<Integer> diff_mainCat(String item_id, List<String> simItems){
-		List<Integer> res = new ArrayList<Integer>();
-		simItems.forEach(sim_item_id -> {
-			diff_mainCat(item_id, sim_item_id).forEach((Integer catID) -> {
-				addIfNotExists(res, catID);
-			});
-		});
-		return res;
-	}
-	
-	public List<String> allDiffItems() {
-		count = 0;
-		List<String> res = new ArrayList<String>();
-		simMap.forEach((item_id, sim_item_id_List) -> {
-			List<Integer> diff = diff_mainCat(item_id, sim_item_id_List);
-			if(diff.size() > 0) {
-				res.add(item_id);
-				System.out.print(item_id + ": ");
-				diff.forEach(catID -> {
-					count++;
-					System.out.print(catID + " " + getCatName(catID)+ "/ ");
-					diffMap.compute(item_id, (itemID, catIdList) -> {
-						if(catIdList == null) {
-							catIdList = new ArrayList<Integer>();
-							catIdList.add(catID);
-							return catIdList;
-						} else {
-							catIdList.add(catID);
-							return catIdList;
-						}
-					});
-				});
-				System.out.println();
-			}
-		});
-		System.out.println(count);
-		System.out.println(res.size());
-		return res;
-	}
 	
 	
 	public List<Integer> intersection(List<Integer> mainCatList1, List<Integer> mainCatList2){
@@ -354,37 +293,11 @@ public class Test {
 	}
 	
 	public static void main(String[] args) throws Exception {
+		XmlTool xt = new XmlTool();
+		xt.encodeCategoriesXMLToUTF8();
+
 		Test t = new Test();
 		t.init();
-
-		List<String> diffItems = t.allDiffItems();
-		
-		//check if java and DB are different
-		diffItems.forEach(item_id -> {
-			boolean exists = false;
-			for(int i = 0; i < t.diffItemsInDB.size(); i++) {
-				if(t.diffItemsInDB.get(i).equals(item_id)) {
-					exists = true;
-					break;
-				}
-			}
-			if(!exists) {
-				System.out.println("Not in DB: " + item_id);
-			}
-		});
-		t.diffItemsInDB.forEach(item_id -> {
-			boolean exists = false;
-			for(int i = 0; i < diffItems.size(); i++) {
-				if(diffItems.get(i).equals(item_id)) {
-					exists = true;
-					break;
-				}
-			}
-			if(!exists) {
-				System.out.println("Not in java: " + item_id);
-			}
-		});
-		
 		
 		Map<String,List<String>> resMap = new HashMap<String, List<String>>();
 		t.db_itemList.forEach(item -> {
@@ -417,10 +330,6 @@ public class Test {
 			});
 			System.out.println();
 		});
-		
-		System.out.println((t.intersection(t.item_MainCatList_Map.get("B00006RYOL"), t.item_MainCatList_Map.get("B000679QWK"))));
-		System.out.println(t.getCatName(544));
-		System.out.println(t.getCatName(21520));
 		
 	}
 }
