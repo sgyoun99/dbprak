@@ -110,14 +110,15 @@ public class Shop {
 				ps.setString(2, street);
 				ps.setString(3, zip);
 				ResultSet rs = ps.executeQuery();
+
+				//ps.close();
+				rs.next();
+				System.out.print(rs.getInt(1) + "\t");
+				System.out.print(rs.getString(2) + "\t");
+				System.out.print(rs.getString(3) + "\t"); 
+				System.out.println(rs.getString(4));
+				id.value = rs.getInt(1);
 				ps.close();
-				while(rs.next()) {
-					System.out.print(rs.getInt(1) + "\t");
-					System.out.print(rs.getString(2) + "\t");
-					System.out.print(rs.getString(3) + "\t"); 
-					System.out.println(rs.getString(4));
-					id.value = rs.getInt(1);
-				}
 					
 			});
 		} catch (Exception e) {
@@ -131,12 +132,12 @@ public class Shop {
 	public static void main(String[] args) {
 		Shop shop = new Shop(Config.DRESDEN_ENCODED);
 		shop.readShop();
-		shop.insertShop();
+//		shop.insertShop();
 		int shop_id = shop.getShopId(shop.getShop_name(), shop.getStreet(), shop.getZip());
 		System.out.println(shop_id);
 		shop = new Shop(Config.LEIPZIG);
 		shop.readShop();
-		shop.insertShop();
+//		shop.insertShop();
 		shop_id = shop.getShopId(shop.getShop_name(), shop.getStreet(), shop.getZip());
 		System.out.println(shop_id);
 		shop.selectShop();
