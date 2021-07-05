@@ -1,6 +1,9 @@
 package main;
 
-
+/**
+ * Configuration class for connection and XML path.
+ *
+ */
 public class Config {
 	public final static String JDBC_POSTGRES_URL = "jdbc:postgresql://localhost/postgres?user=postgres&password=postgres&ssl=false";
 	public final static String BIN_LOCATION = Config.class.getResource("").getPath();
@@ -12,7 +15,4 @@ public class Config {
 	public final static String CATEGORY_ORIGINAL = DATA_DIRECTORY+"/categories.xml";
 	public final static String CATEGORY_ENCODED = CATEGORY_ORIGINAL + UTF8_SURFIX;
 
-	public static void main(String[] args) {
-		CreateTables.countAllTables();
-	}
 }

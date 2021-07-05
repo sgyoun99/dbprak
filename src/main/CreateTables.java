@@ -15,6 +15,11 @@ import java.util.Map;
 
 import JDBCTools.JDBCTool;
 
+/**
+ * 
+ * Class for creating all tables
+ *
+ */
 public class CreateTables {
 	
 	public final static List<String> tableOrder = new ArrayList<>();
@@ -60,11 +65,9 @@ public class CreateTables {
 		//create Table statements
         createTableSQLMap.put(CreateTables.Item, "CREATE TABLE item(item_id text PRIMARY KEY, title TEXT, rating numeric(2,1), salesranking INTEGER, image TEXT, productgroup pgroup NOT NULL);");
         createTableSQLMap.put(CreateTables.Shop, "CREATE TABLE shop(shop_id SERIAL, shop_name TEXT NOT NULL, street TEXT NOT NULL, zip CHAR(5) NOT NULL, PRIMARY KEY(shop_id), UNIQUE(shop_name, street, zip));");
-//        createTableSQLMap.put(CreateTables.Item_Shop, "CREATE TABLE item_shop(item_id text NOT NULL, shop_name TEXT NOT NULL, street TEXT NOT NULL, zip CHAR(5) NOT NULL, currency CHAR(3), price numeric(8,2), availability BOOLEAN, condition CHAR(11), FOREIGN KEY(item_id) REFERENCES item(item_id) ON DELETE CASCADE, FOREIGN KEY(shop_name, street, zip) REFERENCES shop(shop_name, street, zip) ON DELETE CASCADE, PRIMARY KEY(item_id, shop_name, street, zip));");
         createTableSQLMap.put(CreateTables.Item_Shop, "CREATE TABLE item_shop(item_id text NOT NULL, shop_id Integer NOT NULL, currency CHAR(3), price numeric(8,2), availability BOOLEAN, condition CHAR(11), FOREIGN KEY(item_id) REFERENCES item(item_id) ON DELETE CASCADE, FOREIGN KEY(shop_id) REFERENCES shop(shop_id) ON DELETE CASCADE, PRIMARY KEY(item_id, shop_id, condition));");
 		createTableSQLMap.put(CreateTables.Similar_Items, "CREATE TABLE similar_items(item_id text, similar_item_id text, PRIMARY KEY(item_id, similar_item_id), FOREIGN KEY(item_id) REFERENCES item(item_id) ON DELETE CASCADE, FOREIGN KEY (similar_item_id) REFERENCES item(item_id) ON DELETE CASCADE);");
 		
-		//createTableSQLMap.put(CreateTables.Category, "CREATE TABLE category(category_id SERIAL PRIMARY KEY NOT NULL, name TEXT);");
 		createTableSQLMap.put(CreateTables.Category, "CREATE TABLE category(category_id Integer PRIMARY KEY NOT NULL, name TEXT);");
         createTableSQLMap.put(CreateTables.Sub_Category, "CREATE TABLE sub_category(over_category_id INTEGER REFERENCES category(category_id), sub_category_id INTEGER REFERENCES category(category_id), PRIMARY KEY(over_category_id, sub_category_id));");
         createTableSQLMap.put(CreateTables.Item_Category, "CREATE TABLE item_category(item_id text REFERENCES item(item_id), category_id INTEGER REFERENCES category(category_id), PRIMARY KEY(item_id, category_id));");
@@ -91,7 +94,6 @@ public class CreateTables {
 		createTableSQLMap.put(CreateTables.Music_CD_Label, "CREATE TABLE music_cd_label(item_id text NOT NULL, label TEXT NOT NULL, PRIMARY KEY(item_id, label), FOREIGN KEY (item_id) REFERENCES music_cd(item_id) ON DELETE CASCADE, FOREIGN KEY (label) REFERENCES label(label) ON DELETE CASCADE);");
 		
 		createTableSQLMap.put(CreateTables.Customer, "CREATE TABLE customer(customer_id SERIAL PRIMARY KEY, name TEXT NOT NULL, street CHAR(5) NOT NULL, nr SMALLINT NOT NULL, zip SMALLINT NOT NULL, city TEXT NOT NULL, account_number TEXT NOT NULL UNIQUE);");
-//		createTableSQLMap.put(CreateTables.Purchase, "CREATE TABLE purchase(customer_id INTEGER, item_id TEXT REFERENCES item(item_id), shop_name TEXT NOT NULL, street TEXT NOT NULL, zip CHAR(5) NOT NULL, order_date DATE NOT NULL, FOREIGN KEY (customer_id) REFERENCES customer(customer_id) ON DELETE NO ACTION, FOREIGN KEY(shop_name, street, zip) REFERENCES shop(shop_name, street, zip) ON DELETE CASCADE, PRIMARY KEY(item_id, shop_name, street, zip, order_date));"); // No ON DELETE CASCADE for customer_id -> allows keeping of record even if all other data from customer is deleted
 		createTableSQLMap.put(CreateTables.Purchase, "CREATE TABLE purchase(customer_id INTEGER, item_id TEXT REFERENCES item(item_id), shop_id Integer NOT NULL, order_date DATE NOT NULL, FOREIGN KEY (customer_id) REFERENCES customer(customer_id) ON DELETE NO ACTION, FOREIGN KEY(shop_id) REFERENCES shop(shop_id) ON DELETE CASCADE, PRIMARY KEY(item_id, shop_id, order_date));"); // No ON DELETE CASCADE for customer_id -> allows keeping of record even if all other data from customer is deleted
 		createTableSQLMap.put(CreateTables.Review, "CREATE TABLE review(review_id SERIAL PRIMARY KEY, item_id TEXT, customer TEXT"/* REFERENCES customer(customer_id)*/+", review_date DATE, summary TEXT, content TEXT, rating SMALLINT, FOREIGN KEY (item_id) REFERENCES item(item_id) ON DELETE CASCADE);");
 
@@ -99,7 +101,7 @@ public class CreateTables {
 		createTableSQLMap.put(CreateTables.Errors, "CREATE TABLE errors(error_id SERIAL PRIMARY KEY, location TEXT, item_id TEXT, attribute TEXT, errtype ErrType, exception TEXT, error_message TEXT, contents TEXT);"); 
 		
 		
-		//order
+		//create Table order
 		tableOrder.add(CreateTables.Item);
         tableOrder.add(CreateTables.Shop);
         tableOrder.add(CreateTables.Item_Shop);
@@ -177,6 +179,12 @@ public class CreateTables {
 		}
 	}
 
+	/**
+	 * To create enum
+	 * @param enumName enum name
+	 * @param enumValues enum values as a single String
+	 * @param st Statement
+	 */
     public static void createEnum(String enumName, String enumValues, Statement st){
         try{
 				st.executeUpdate("CREATE TYPE " + enumName + " AS ENUM (" + enumValues + ");");
@@ -187,6 +195,11 @@ public class CreateTables {
 			}
     }
     
+    /**
+     * To create table
+     * @param tableName table name
+     * @throws Exception
+     */
     public static void createTable(String tableName) throws Exception {
     	String sql = createTableSQLMap.get(tableName);
     	JDBCTool.executeUpdate((con, st) -> createTable(tableName, sql, st));
@@ -203,6 +216,9 @@ public class CreateTables {
 			}
 	}
 	
+	/**
+	 * To create all tables according to the table list.
+	 */
 	public static void countAllTables() {
 		CreateTables.tableOrder.forEach(tableName -> {
 			try {
@@ -220,9 +236,5 @@ public class CreateTables {
 		});
 	}
 
-
-	public static void main(String[] args) {
-		CreateTables.createTables();
-	}
 
 }

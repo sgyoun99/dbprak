@@ -7,27 +7,36 @@ import exception.SQLKeyDuplicatedException;
 import exception.XmlDataException;
 
 import entity.*;
-import JDBCTools.*;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Connection;
-import java.util.Date;
-import java.text.SimpleDateFormat;
 
+/**
+ * class for Error log in the DB.
+ *
+ */
 public class ErrorLogger {
 
+	//key duplication exception will be ignored as default.
 	public static boolean willLogSQL_DUPLICATE = false;
+	//insert SQL statement.
 	private final static String sql = "INSERT INTO ERRORS ("
 			+ "location, item_id, attribute, errtype, exception, error_message, contents) values "
 			+ "(?,?,?,?::ErrType,?,?,?);" ;
 	
+	/**
+	 * To write a log in the DB. Used when detailed information is included in the Exception.
+	 * @param e XmlDataException
+	 * @param errorContent error content.
+	 * @throws RuntimeException
+	 */
 	public static void write(XmlDataException e, String errorContent) throws RuntimeException{
 
 		if( !willLogSQL_DUPLICATE && e.getMessage().contains("duplicate key value")) {
 			//not logging
 		} else {
 			
-			//temp
+			//System standard out print
 			System.out.print(">> ErrorLogger::" + e.getErrType() + "::");
 			System.out.println(errorContent.split("\n")[0]);
 
@@ -46,17 +55,34 @@ public class ErrorLogger {
 				});
 			} catch (Exception ex) {
 				ex.printStackTrace();
-				//TODO
-				throw new RuntimeException("test");
+				throw new RuntimeException(ex);
 			}	
 		}
 	}
 
+	/**
+	 * To write a log in the DB. Used when some information is not included in the Exception.
+	 * @param location location where the log occurred.
+	 * @param errType error type.
+	 * @param e Exception.
+	 * @param errorContent error content.
+	 * @throws RuntimeException
+	 */
 	public static void write(String location, ErrType errType, Exception e, String errorContent)throws RuntimeException {
 		write(location, "", errType, "", e, errorContent);
 	}
 
-	public static void write(String location, String item_id, ErrType errType, String attrName, Exception e, String errorContent)throws RuntimeException {
+	/**
+	 * To write a log in the DB with full information.
+	 * @param location location where the log occurred.
+	 * @param item_id asin
+	 * @param errType error type.
+	 * @param attrName attribute name.
+	 * @param e Exception.
+	 * @param errorContent error content.
+	 * @throws RuntimeException
+	 */	
+	 public static void write(String location, String item_id, ErrType errType, String attrName, Exception e, String errorContent)throws RuntimeException {
 
 		if( !willLogSQL_DUPLICATE && e.getMessage().contains("duplicate key value")) {
 			//not logging
@@ -85,13 +111,18 @@ public class ErrorLogger {
 			}
 		}
 	}
-
+	
+	 /**
+	  * To write a log in the DB. Used when the Exception is key duplication exception.
+	  * @param e SQLKeyDuplicatedException
+	  * @param errorContent
+	  */
 	public static void write(SQLKeyDuplicatedException e, String errorContent) {
 		if( !willLogSQL_DUPLICATE && e.getErrType().equals(ErrType.SQL_DUPLICATE)) {
 			//not logging
 		} else {
 			
-			//temp
+			//System standard out print
 			System.out.print(">> ErrorLogger::" + e.getErrType() + "::");
 			System.out.println(errorContent.split("\n")[0]);
 
@@ -114,7 +145,6 @@ public class ErrorLogger {
 		}
 		
 	}
-
 
 	public static void checkDuplicate(Book book){
 		try{

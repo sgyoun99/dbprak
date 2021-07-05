@@ -7,18 +7,25 @@ import csv.*;
 
 import java.util.Date;
 
+/**
+ * Main class for project.
+ *
+ */
 public class Main {
+	/**
+	 * main method for project.
+	 * @param args args are not used.
+	 */
 	public static void main(String[] args) {
 
 		Date dateAnf = new Date();
-		long secAnf = dateAnf.getTime();
+		//long secAnf = dateAnf.getTime();
 		
 		try {
 			
 			ErrorLogger.willLogSQL_DUPLICATE = false;
 
-			/*
-			 */
+			//drop and create tables
 			DropTables.dropTables();
 			CreateTables.createTables();
 			
@@ -26,8 +33,6 @@ public class Main {
 			XmlTool xt = new XmlTool();
 			xt.encodeDresdenXMLToUTF8();
 			xt.encodeCategoriesXMLToUTF8();
-
-			
 			 
 			//Shop
 			Shop shop = new Shop(Config.DRESDEN_ENCODED);
@@ -52,6 +57,7 @@ public class Main {
 			simItems.dresden();
 			simItems.leipzig();
 			
+			//DVD
 			Dvd dvd = new Dvd(Config.LEIPZIG, "Leipzig");
 			dvd.dvd();
 			dvd.actor();
@@ -63,6 +69,7 @@ public class Main {
 			dvd.creator();
 			dvd.director();
 			
+			//Book
 			Book book = new Book(Config.LEIPZIG, "Leipzig");
 			book.book();
 			book.author();
@@ -72,18 +79,17 @@ public class Main {
 			book.author();
 			book.publisher();
 
+			//Music_CD
 			Music_CD music_cd = new Music_CD();
 			music_cd.musicCdLeipzig();
 			music_cd.musicCdDresden();
 			
-			Review newReview = new Review();
-			newReview.writeReviewInDB();
-			newReview.addRatings();
+			//Review
+			Review review = new Review();
+			review.writeReviewInDB();
+			review.addRatings();
 			
-			//Categories categories = new Categories();
-			//categories.insertMainCategory();
-			//categories.insertSubCategory();
-
+			//Category
 			Cat cat = new Cat();
 			cat.readCat();
  
@@ -106,6 +112,8 @@ public class Main {
 		System.out.println("Dauer:\t" + ((dateEnde.getTime()-dateAnf.getTime()) / 60000) + " min" + ( ( (dateEnde.getTime()-dateAnf.getTime() ) % 60000) % 1000) + " s");
 		System.out.println("Start:\t" + dateAnf.toString());
 		System.out.println("Ende:\t" + dateEnde.toString());
+		
+		//show all table count.
 		CreateTables.countAllTables();
 	}
 }
