@@ -7,8 +7,17 @@ import java.sql.Statement;
 
 import main.Config;
 
+/**
+ * 
+ * Class to use Postgres JDBC Driver
+ *
+ */
 public class JDBCTool {
 	
+	/**
+	 * 
+	 * @return JDBC Connection
+	 */
 	public static Connection getConnection() {
 		Connection con = null;
 		try {
@@ -23,14 +32,19 @@ public class JDBCTool {
 		return con;
 	}
 	
-	public static void executeUpdate(SQLExecutable worker) throws SQLException {
+	/**
+	 * 
+	 * @param handler Handler class for SQL
+	 * @throws SQLException
+	 */
+	public static void executeUpdate(SQLExecutable handler) throws SQLException {
 		Connection con = getConnection();
 		try {
 			con.setAutoCommit (false);
 			Statement st = con.createStatement();
 			
 			//Implemented class will do this job.
-			worker.work(con, st);
+			handler.handle(con, st);
 			
 			st.close();
 			con.commit();
@@ -46,15 +60,20 @@ public class JDBCTool {
 				} 
 			}
 	}
-	
-	public static void executeUpdateAutoCommitOn(SQLExecutable worker) throws SQLException {
+
+	/**
+	 * 
+	 * @param handler Handler class for SQL
+	 * @throws SQLException
+	 */	
+	public static void executeUpdateAutoCommitOn(SQLExecutable handler) throws SQLException {
 		Connection con = getConnection();
 		try {
 			Statement st = con.createStatement();
 			con.setAutoCommit (true); 
 			
 			//Implemented class will do this job.
-			worker.work(con, st);
+			handler.handle(con, st);
 			
 			st.close();
 			} catch (SQLException e) {

@@ -1,6 +1,7 @@
 package JDBCTools;
 import java.sql.*;
 
+//for JDBC connection test.(temporary)
 public class TestJDBC {
 
 	public static void main(String[] args) {
@@ -22,18 +23,6 @@ public class TestJDBC {
 			}
 			st.executeUpdate("drop table JDBC_TEST;");
 			rs.close();
-
-			/*
-			ResultSet rs = st.executeQuery("SHOW ALL;");
-			while (rs.next())
-			{
-			    System.out.print(rs.getString(1)+"\t");
-			    System.out.print(rs.getString(2)+"\t");
-			    System.out.println(rs.getString(3));
-			}
-			rs.close();
-			 */
-			st.close();
 
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
