@@ -1,4 +1,4 @@
-package JDBCTools;
+package test;
 import java.sql.*;
 
 //for JDBC connection test.(temporary)

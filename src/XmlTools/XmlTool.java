@@ -33,19 +33,32 @@ import main.Config;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 
-
+/**
+ * Class for XML parsing 
+ *
+ */
 public class XmlTool {
 
+	//Document node of XML file.
 	private Document documentNode;
-	private boolean printOption = false;
+	//Option for printing xml contents
+	public boolean printOption = false;
 	
 	public XmlTool() {
-		
 	}
+
+	/**
+	 * To set XML file path.
+	 * @param filePath file path.
+	 */
 	public XmlTool(String filePath) {
 		loadXML(filePath);
 	}
 	
+	/**
+	 * To load XML file with the path and set document node of the XML.
+	 * @param filePath file path.
+	 */
 	public void loadXML(String filePath) {
 		try {
 			File inputFile = new File(filePath);
@@ -59,6 +72,10 @@ public class XmlTool {
 		}
 	}
 
+	/**
+	 * To get document node of the XML.
+	 * @return Document Node.
+	 */
 	public Document getDocumentNode() {
 		if(this.documentNode == null) {
 			System.err.println("Load XML first!!");
@@ -66,44 +83,34 @@ public class XmlTool {
 		return this.documentNode;
 	}
 	
-	public void setPrintOn() {
-		this.printOption = true;
-	}
-	
-	public void setPrintOff() {
-		this.printOption = false;
-	}
-	
+	/**
+	 * To print contents of the given node with DFS.
+	 * @param startNode start node.
+	 */
 	public void printNodeContentsDFS(Node startNode) {
 		System.out.println(this.getNodeContentDFS(startNode));
 	}
 	
+	/**
+	 * To print contents of a node with the opening parenthesis
+	 * including all attributes and their contents.
+	 * @param node
+	 * @param level
+	 * @return hierarchy contents of a node
+	 */
 	public String getPrintOpeningNode(Node node, int level) {//
 		StringBuilder sb = new StringBuilder();
 			for(int i=0; i<level*2; i++){sb.append(" ");}
-			//sb.append(" ".repeat((level)*2));
 			sb.append("<");
 			sb.append(node.getNodeName());
 			sb.append(getAllAttributeContents(node));
 			sb.append(">\n");
 
-
-//			sb.append(this.getTextContentOfLeafNode(node));
 			String textValue = this.getFirstTextNodeValue(node).trim();
 			if(textValue == null || textValue.length() == 0) {
 			} else {
-				
-				//changed to this.
 				for(int i=0; i<2; i++){sb.append(" ");}
-				//sb.append(" ".repeat(2));
 				for(int i=0; i<level*2; i++){sb.append(" ");}
-				//sb.append(" ".repeat((level)*2));
-
-				/* changed to above
-				sb.append(" ".repeat(2));
-				sb.append(" ".repeat((level)*2));
-				*/
-				
 				sb.append("  ");
 				sb.append(this.getFirstTextNodeValue(node).trim());
 				sb.append("\n");
@@ -112,7 +119,12 @@ public class XmlTool {
 		return sb.toString();
 	}
 	
-
+	/**
+	 * To print closing parenthesis of a node
+	 * @param node Node
+	 * @param level level of the Node
+	 * @return closing parenthesis
+	 */
 	public String getPrintClosingNode(Node node, int level) {
 		StringBuilder sb = new StringBuilder();
 			for(int i=0; i<level*2; i++){sb.append(" ");}
@@ -123,7 +135,10 @@ public class XmlTool {
 			
 		return sb.toString();
 	}
-	// encodes a xml file into UTF-8 and create a xml file name with "__to__UTF-8.xml" in the end.
+
+	/**
+	 * To encode a xml file into UTF-8 and create a xml file name with "__to__UTF-8.xml" in the end.
+	 */
 	public void encodeDresdenXMLToUTF8() {
 		String xmlFilePath = Config.DRESDEN_ORIGINAL;
 		String encodedFilePath = Config.DRESDEN_ENCODED;
@@ -165,6 +180,9 @@ public class XmlTool {
 	}
 	
 	
+	/**
+	 * To encode a xml file into UTF-8 and create a xml file name with "__to__UTF-8.xml" in the end.
+	 */
 	public void encodeCategoriesXMLToUTF8() {
 		String xmlFilePath = Config.CATEGORY_ORIGINAL;
 		String encodedFilePath = Config.CATEGORY_ENCODED;
@@ -208,7 +226,11 @@ public class XmlTool {
         
 	}	
 	
-	//test
+	/**
+	 * To determine if the node is leaf node.
+	 * @param currentNode Node
+	 * @return true if it is leaf node.
+	 */
 	public boolean isLeafElementNode(Node currentNode) {
 		NodeList nodeList = currentNode.getChildNodes();
 		if(nodeList.getLength() == 0) {
@@ -222,25 +244,24 @@ public class XmlTool {
 		return true;
 	}
 	
-	//only for the leaf node
-	public boolean hasTextContent(Node node) {
-		if(isLeafElementNode(node)) {
-			return getTextContentOfLeafNode(node).length() > 0 ? true : false;
-		} else {
-			return false;
-		}
-	}
-	
+	/**
+	 * To get Text content of a leaf node
+	 * @param node Node
+	 * @return Text content of a leaf node
+	 */
 	public String getTextContentOfLeafNode(Node node) {
 		if(isLeafElementNode(node)) {
 			return node.getTextContent().trim();
 		} else {
-//			return "";
-//			hmm null is but risky...
 			return null;
 		}
 	}
 	
+	/**
+	 * To calculate level of a node from the document node.
+	 * @param node Node
+	 * @return level of a node
+	 */
 	public int getLevel(Node node) {
 		int level = 0;
 		while(node.getParentNode() != null) {
@@ -251,6 +272,11 @@ public class XmlTool {
 		return level;
 	}
 	
+	/**
+	 * To get direct child element nodes of the node
+	 * @param node Node
+	 * @return direct child element nodes
+	 */
 	public List<Node> getDirectChildElementNodes(Node node) {
 		List<Node> res = new ArrayList<Node>();
 		NodeList nl = node.getChildNodes();
@@ -261,6 +287,13 @@ public class XmlTool {
 		}
 		return res;
 	}
+
+	/**
+	 * To determine if the node has attribute with the name.
+	 * @param node Node
+	 * @param attributeName attribute name
+	 * @return true if the node has attribute with the name.
+	 */
 	public boolean hasAttribute(Node node, String attributeName) {
 		Element el = (Element)node;
 		if(el.hasAttribute(attributeName)) {
@@ -269,6 +302,11 @@ public class XmlTool {
 		return false;
 	}
 	
+	/**
+	 * To get all attribute name and its contents.
+	 * @param node Node
+	 * @return all attribute name and its contents
+	 */
 	public String getAllAttributeContents(Node node) {
 		String res = "";
 		if(node.hasAttributes()) {
@@ -281,7 +319,13 @@ public class XmlTool {
 		return res;
 	}
 	
-	//test if attribute name exists and return text content
+	/**
+	 * To get attribute content from the node with the attribute name
+	 * @param node Node
+	 * @param attributeName attribute name
+	 * @return attribute value
+	 * @throws XmlNoAttributeException when attribute does not exists.
+	 */
 	public String getAttributeValue(Node node, String attributeName) throws XmlNoAttributeException{
 		if(hasAttribute(node, attributeName)) {
 			Element el = (Element)node;
@@ -291,13 +335,14 @@ public class XmlTool {
 		}
 	}
 	
-	public List<Node> getAllElementNodesDFS() {
-		List<Node> res = new ArrayList<Node>();
-		this.visitChildElementNodesDFS(this.documentNode, (node, level) -> res.add(node));
-		return res;
-	}
 	
-	//will returns null, when not exists
+	//will return null, when not exists
+	/**
+	 * To get nodes with the name by DFS
+	 * @param startNode start Node
+	 * @param nodeName node name
+	 * @return nodes with the name
+	 */
 	public List<Node> getNodesByNameDFS(Node startNode, String nodeName) {
 		List<Node> res = new ArrayList<Node>();
 		this.visitChildElementNodesDFS(startNode, (node, l) -> {
@@ -308,17 +353,31 @@ public class XmlTool {
 		return res;
 	}
 	
-	//will returns null, when not exists
+	/**
+	 * To get node with the name by DFS.
+	 * will returns null, when not exists
+	 * @param startNode start Node
+	 * @param nodeName node name
+	 * @return node with the name
+	 */
 	public Node getNodeByNameDFS(Node startNode, String nodeName) {
 		return getNodesByNameDFS(startNode, nodeName).get(0) ;
 	}
 	
-	public void visitAllElementNodesDFS(XmlToolWorkable worker) {
-		this.visitChildElementNodesDFS(this.documentNode, worker);
+	/**
+	 * Visit all Element Nodes by DFS starting from Document Node
+	 * @param handler XML handler
+	 */
+	public void visitAllElementNodesDFS(XmlToolWorkable handler) {
+		this.visitChildElementNodesDFS(this.documentNode, handler);
 	}
 	
-	//DFS
-	public void visitChildElementNodesDFS(Node startNode, XmlToolWorkable worker) {
+	/**
+	 * Visit Element Nodes by DFS starting from given Node
+	 * @param startNode start Node
+	 * @param handler XML handler
+	 */
+	public void visitChildElementNodesDFS(Node startNode, XmlToolWorkable handler) {
 		Node currentNode = startNode;
 		if(this.isLeafElementNode(currentNode)) {
 			int level = this.getLevel(currentNode);
@@ -326,8 +385,8 @@ public class XmlTool {
 				System.out.println(this.getPrintOpeningNode(currentNode, level));
 				System.out.println(this.getPrintClosingNode(currentNode, level));
 			}
-			if(worker != null) {
-				worker.work(currentNode, level);
+			if(handler != null) {
+				handler.handle(currentNode, level);
 			}
 		} else {
 			Stack<Node> dfsStack = new Stack<Node>();
@@ -335,8 +394,8 @@ public class XmlTool {
 			int level = 0;
 			dfs:while(currentNode != null) {
 				if(currentNode.getNodeType() == Node.ELEMENT_NODE) {
-					if(worker != null) {
-						worker.work(currentNode, level);
+					if(handler != null) {
+						handler.handle(currentNode, level);
 					}
 					if(this.printOption) {
 						System.out.println(this.getPrintOpeningNode(currentNode, level));
@@ -371,9 +430,14 @@ public class XmlTool {
 		}
 	}
 	
-	//take either textContent or attribute value when there is only one attribute in the node
-	//textContent of node has higher priority
-	//the null return is not allowed
+	/**
+	 * To take either textContent or attribute value when there is only one attribute in the node
+	 * textContent of node has higher priority
+	 * the null return is not allowed
+	 * @param node
+	 * @return node content
+	 * @throws XmlDataException When node is null or both text content and attribute value are null 
+	 */
 	public String getNodeContentForceNotNull(Node node) throws XmlDataException {
 		String res = null;
 		String textContent = null;
@@ -399,13 +463,20 @@ public class XmlTool {
 		} else if (attrValue != null){
 			res = attrValue;
 		} else if (textContent != null){
+			// textContent of node has higher priority
 			res = textContent;
 		}
 
 		return res;
 	}
 	
-	//take either textContent or attribute value when there is only one attribute in the node
+	/**
+	 * To take either textContent or attribute value when there is only one attribute in the node
+	 * textContent of node has higher priority
+	 * the null return is allowed
+	 * @param node
+	 * @return node content
+	 */
 	public String getNodeContentForceNullable(Node node) {
 		String res = null;
 		if(node == null) {
@@ -424,6 +495,13 @@ public class XmlTool {
 		
 		return res;
 	}
+	
+	
+	/**
+	 * To retrieve all node Content
+	 * @param startNode start Node
+	 * @return all node Content
+	 */
 	public String getNodeContentDFS(Node startNode) {
 		Node currentNode = startNode;
 		StringBuilder sb = new StringBuilder();
@@ -481,6 +559,13 @@ public class XmlTool {
 	}
 		
 
+	/**
+	 * To filter nodes which fulfill the given level predicate and node predicate.
+	 * @param startNode start Node DFS
+	 * @param levelPredicate level predicate
+	 * @param predicate node predicate
+	 * @return filtered nodes which fulfill the given level predicate and node predicate.
+	 */
 	public List<Node> filterElementNodesDFS(Node startNode, IntPredicate levelPredicate, Predicate<Node> predicate) {
 		List<Node> res = new ArrayList<Node>();
 		this.visitChildElementNodesDFS(startNode, (node, level) -> {
@@ -490,53 +575,22 @@ public class XmlTool {
 		});
 		return res;
 	}
-	/*
-	public List<Node> filterElementNodesDFS(Node startNode, IntPredicate levelPredicate) {
-		return this.filterElementNodesDFS(startNode, levelPredicate, node -> true);
-	}
+	
+	/**
+	 * To filter nodes which fulfill the given node predicate.
+	 * @param startNode start Node DFS
+	 * @param predicate node predicate
+	 * @return filtered nodes which fulfill the given node predicate.
 	 */
 	public List<Node> filterElementNodesDFS(Node startNode, Predicate<Node> predicate) {
 		return this.filterElementNodesDFS(startNode, level -> true, predicate);
 	}
 
-	/*
-	public void visitAllElementNodesBFS(XmlToolWorkable worker) {
-		List<Node> allNodes = new ArrayList<Node>();
-		Queue<Node> q = new LinkedList<>();
-		NodeList nl = this.getDocumentNode().getChildNodes();
-		for (int i = 0; i < nl.getLength(); i++) {
-			if(nl.item(i).getNodeType() == Node.ELEMENT_NODE) {
-				q.add(nl.item(i));
-				allNodes.add(nl.item(i));
-			}
-		}
-		
-		while(!q.isEmpty()) {
-			Node node = q.poll();
-			if(worker != null) {
-				worker.work(node, 0);
-			}
-			printWithOption("<");
-			printWithOption(node.getNodeName());
-			printWithOption("> ");
-			if(this.hasTextContent(node)) {
-				printlnWithOption(node.getTextContent());
-			}
-			if(node.hasChildNodes()) {
-				nl = node.getChildNodes();
-				for (int i = 0; i < nl.getLength(); i++) {
-					if(nl.item(i).getNodeType() == Node.ELEMENT_NODE) {
-						q.add(nl.item(i));
-					}
-				}
-			} else {
-				continue;
-			}
-		}
-	}
+				
+	/**
+	 * To analyze all attributes under the node with the given name from Document Node by DFS.
+	 * @param nodeName node name
 	 */
-	
-	//find all attribute within the Element Node with the given name
 	public void analyseAttributesInNode(String nodeName) {
 		Map<Integer, Map<String, Integer>> level_AttrName_Occurence = new HashMap<Integer, Map<String,Integer>>();
 
@@ -571,76 +625,12 @@ public class XmlTool {
 	}
 	
 	
-	
-	public void testDresdenEncodeToUTF8() {
-		XmlTool xt = new XmlTool();
-		xt.loadXML(Config.DRESDEN_ORIGINAL);
-
-		//before encoding
-
-		Document doc = xt.getDocumentNode();
-		Node node = doc.getElementsByTagName("shop").item(0);
-		Element el = (Element)node;
-
-		System.out.println("=== Before encoding ===");
-		System.out.println(el.getAttribute("name"));
-		System.out.println(el.getAttribute("street"));
-		System.out.println(el.getAttribute("zip"));
-
-		//after encoding
-		xt.encodeDresdenXMLToUTF8();
-
-		xt.loadXML(Config.DRESDEN_ENCODED);
-		doc = xt.getDocumentNode();
-		node = doc.getElementsByTagName("shop").item(0);
-		el = (Element)node;
-
-		System.out.println("=== After encoding ===");
-		System.out.println(el.getAttribute("name"));
-		System.out.println(el.getAttribute("street"));
-		System.out.println(el.getAttribute("zip"));	
-	}
-	
-	/* not yet
-	public Map<String,String> getNodeContentMap(Node node){
-		Map<String,String> res = new HashMap<String, String>();
-		this.visitChildElementNodesDFS(node, null);
-		return res;
-	}
+	/**
+	 * To get the first child TextNode from the node
+	 * if not exists, null will be returned.
+	 * @param node node
+	 * @return first TextNode
 	 */
-	
-	public void analyseDirectChildNodes(String xmlPath, String parentNodeName) {
-		XmlTool xt = new XmlTool();
-		xt.loadXML(xmlPath);
-		Map<String,Integer> nodeCount = new HashMap<String, Integer>();
-		Map<String,Integer> textContentCount = new HashMap<String, Integer>();
-		xt.filterElementNodesDFS(xt.getDocumentNode(), (Node n) -> {
-			return n.getNodeName().equals(parentNodeName);
-		}).forEach( node -> {
-			xt.getDirectChildElementNodes(node).forEach(nd -> {
-
-				nodeCount.compute(nd.getNodeName(), (k,v) -> v==null? 1 : v + 1);
-
-				if(xt.hasTextContent(nd)) {
-					textContentCount.compute(nd.getNodeName(), (k,v) -> v==null? 1 : v + 1);
-				}
-				
-			});
-		});
-		System.out.println("= = = analyse <"+parentNodeName+"> = = =");
-		System.out.println(">> Node count");
-		nodeCount.forEach((k,v)->{
-			System.out.println("<"+k + ">: " +v+" times");
-			xt.analyseAttributesInNode(k);
-			System.out.println();
-		});
-		System.out.println();
-		System.out.println(">> Node Text contents count");
-		textContentCount.forEach((k,v)->System.out.println("<"+k + ">:" +v+" times"));
-		
-		
-	}
-	
 	public Node getFirstTextNodeOf(Node node) {
 		NodeList nl = node.getChildNodes();
 		Node res = null;
@@ -651,14 +641,17 @@ public class XmlTool {
 					return res = nl.item(i);
 				}
 			}
-			
 		}
 		return res;
 	}
 	
+	/**
+	 * To get the first text value of the node.
+	 * @param node node
+	 * @return the first text value of the node.
+	 */
 	public String getFirstTextNodeValue(Node node) {
 		Node textNode = this.getFirstTextNodeOf(node);
-//		return this.getFirstTextNodeOf(node).getTextContent().trim();
 		if(textNode == null) {
 			return "";
 		} else {
@@ -666,13 +659,5 @@ public class XmlTool {
 		}
 	}
 	
-	public static void main(String[] args) {
-		
-		XmlTool xt = new XmlTool();
-		xt.encodeDresdenXMLToUTF8();
-		xt.encodeCategoriesXMLToUTF8();
-		
 
-		
-	}
 }

@@ -17,13 +17,34 @@ import XmlTools.XmlTool;
 import main.Config;
 
 
-class DiffItem {
-	public String item_id;
-	public List<Integer> diff_main_cats = new ArrayList<Integer>();
-	
-}
 
-public class Test {
+
+/**
+ * temporary Class for category test. 
+ *
+ */
+public class TestCategory {
+	
+	class Item {
+		public String item_id;
+		public int cat_id;
+		public int main_cat_id;
+		public String main_cat_Name;
+	}
+
+	class Category {
+		public int category_id;
+		public String categoryName;
+		public int level;
+		List<Category> subCategoryList = new ArrayList<>();
+		List<Item> itemList = new ArrayList<Item>();
+	}
+
+	class DiffItem {
+		public String item_id;
+		public List<Integer> diff_main_cats = new ArrayList<Integer>();
+		
+	}
 	
 	XmlTool xt = new XmlTool(Config.CATEGORY_ENCODED);
 	Node categoriesNode = xt.getDocumentNode().getFirstChild().getNextSibling();
@@ -77,20 +98,13 @@ public class Test {
 		return list.get(list.size()-1);
 	}
 	
-	public <T> void addIfNotExists(List<T> list, T item) {
+	public void addIfNotExists(List<String> list, String item) {
 		boolean exists = false;
 		for (int i = 0; i < list.size(); i++) {
-			if(item instanceof String) {
-				if(((String)item).equals(list.get(i))) {
-					exists = true;
-					break;
-				}
-			} 
-//			else if(list.get(i) == item) {
-				// why not???
-//				exists = true;
-//				break;
-//			}
+			if(((String)item).equals(list.get(i))) {
+				exists = true;
+				break;
+			}
 		}
 		if(!exists) {
 			list.add(item);
@@ -208,10 +222,10 @@ public class Test {
 				//add to categoryList
 				if(node.getNodeType() == Node.ELEMENT_NODE && node.getNodeName().equals("category")) {
 					String catName = xt.getFirstTextNodeValue(node);
-					Test.count++;
+					TestCategory.count++;
 					
 					category = new Category();
-					category.category_id = Test.count;
+					category.category_id = TestCategory.count;
 					category.categoryName = catName;
 					category.level = level;
 					categoryList.add(category);	
@@ -296,7 +310,7 @@ public class Test {
 		XmlTool xt = new XmlTool();
 		xt.encodeCategoriesXMLToUTF8();
 
-		Test t = new Test();
+		TestCategory t = new TestCategory();
 		t.init();
 		
 		Map<String,List<String>> resMap = new HashMap<String, List<String>>();

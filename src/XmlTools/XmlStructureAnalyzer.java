@@ -13,26 +13,29 @@ import main.Config;
 import org.w3c.dom.Node;
 import org.w3c.dom.NamedNodeMap;
 
-class NodeCount {
+
+//temporary class for XML analysis
+public class XmlStructureAnalyzer {
 	
-	Map<Integer, Integer> levelCountMap = new HashMap<>();
-	Map<String, Integer> attributeCountMap = new HashMap<>();
-	
-	String nodeName;
-	public NodeCount(String nodeName) {
-		super();
-		this.nodeName = nodeName;
-	}
-	void increaseLevelCount(int level) {
-		if( !levelCountMap.containsKey(level)) {
-			levelCountMap.put(level, 1);
-		} else {
-			levelCountMap.put(level, levelCountMap.get(level) + 1);
+	class NodeCount {
+		
+		Map<Integer, Integer> levelCountMap = new HashMap<>();
+		Map<String, Integer> attributeCountMap = new HashMap<>();
+		
+		String nodeName;
+		public NodeCount(String nodeName) {
+			super();
+			this.nodeName = nodeName;
+		}
+		void increaseLevelCount(int level) {
+			if( !levelCountMap.containsKey(level)) {
+				levelCountMap.put(level, 1);
+			} else {
+				levelCountMap.put(level, levelCountMap.get(level) + 1);
+			}
 		}
 	}
-}
-
-public class XmlStructureAnalyzer {
+	
 	Document doc;
 	HashMap<String, NodeCount> counts = new HashMap<>();
 	private int count;
@@ -120,16 +123,6 @@ public class XmlStructureAnalyzer {
 		xsa.printCounts();
 		System.out.println(xsa.count);
 		
-		/*
-		NodeList nl = xsa.doc.getElementsByTagName("item");
-		for (int i = 0; i < nl.getLength(); i++) {
-				if(nl.item(i).hasAttributes()) {
-					//System.out.println(true);
-					System.out.println(nl.item(i).getNodeName());
-				}
-		}
-		 */
-
 
 	}
 }

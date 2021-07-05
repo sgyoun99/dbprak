@@ -1,4 +1,4 @@
-package XmlTools;
+package test;
 
 import java.io.File;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -8,7 +8,11 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 
-public class XMLParsingSample {
+/**
+ * Temporary class for XML Parser test.
+ *
+ */
+public class TestXMLParsing {
 
 	public static void main(String[] args) {
 	      try {
