@@ -1,13 +1,15 @@
-1. set classpath
-    at the project directory(dbprak)
+1. set all user name and password for Postgres to "postgres"
+
+2. set classpath
+    at the project directory(=dbprak)
     dbprak$ export CLASSPATH=$PWD/jar/postgresql-42.2.18.jar:.
 
-2. compile
+3. compile
     dbprak/src$ javac -d ../bin ../src/*/*.java
     or
     dbprak/bin$ javac -d ../bin ../src/*/*.java
     or
     dbprak$ javac -d bin src/*/*.java
 
-3. run 
+4. run 
     dbprak/bin$ java main.Main
