@@ -26,4 +26,6 @@ END;
 $$;
 
 --test
-SELECT get_main_cat_id(sub_category_id), over_category_id, sub_category_id FROM sub_category WHERE sub_category_id = 100
+SELECT get_main_cat_id(sub_category_id), over_category_id, sub_category_id 
+FROM sub_category 
+WHERE sub_category_id = 1000
