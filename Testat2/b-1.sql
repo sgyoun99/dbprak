@@ -12,5 +12,5 @@ BEGIN
 	   OR item.item_id = OLD.item_id;
 	RETURN NEW;
 END;
-$$
+$$;
 
