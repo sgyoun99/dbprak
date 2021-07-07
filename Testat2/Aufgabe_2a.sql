@@ -35,7 +35,8 @@
 	has_offer AS (SELECT DISTINCT(item_id) FROM item_shop WHERE availability='true')
 
 	SELECT * FROM item
-	WHERE item_id NOT IN (SELECT item_id FROM has_offer;
+	WHERE item_id NOT IN (SELECT item_id FROM has_offer)
+	ORDER BY item_id;
 
 
 
@@ -56,14 +57,16 @@
 
 	SELECT * from item
 	WHERE item_id in (SELECT item_id FROM rating_one)
-	AND item_id in (SELECT item_id FROM rating_five);
+	AND item_id in (SELECT item_id FROM rating_five)
+	ORDER BY item_id;
 
 
 
 --Aufgabe 6
 	--Variante1
 		SELECT item_id, rating FROM item
-		WHERE rating = 0.0;
+		WHERE rating = 0.0
+		ORDER BY item_id;
 
 	--Variante2
 		WITH
@@ -103,7 +106,7 @@
 
 --Aufgabe 9
 	SELECT AVG(title_count)::numeric(5,2) AS avg_title_count
-	FROM (SELECT COUNT(title) AS title_count FROM title GROUP BY item_id) title_count
+	FROM (SELECT COUNT(title) AS title_count FROM title GROUP BY item_id) title_count;
 
 
 
