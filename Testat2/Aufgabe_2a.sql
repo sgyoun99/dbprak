@@ -63,16 +63,8 @@
 
 
 --Aufgabe 6
-	--Variante1
-		SELECT COUNT(item_id) FROM item
-		WHERE rating = 0.0;
-
-	--Variante2
-		WITHA
-		has_review AS (SELECT DISTINCT item_id FROM review)
-
-		SELECT COUNT(*) FROM item
-		WHERE item_id NOT IN (SELECT * FROM has_review);
+	SELECT COUNT(item_id) FROM item
+	WHERE rating = 0.0;
 
 
 
@@ -220,45 +212,11 @@
 
 
 --Aufgabe 11
-	--Variante1
-		SELECT item_id, count(Distinct shop_id) AS number_of_shops FROM item_shop
-		GROUP BY item_id
-		HAVING count(Distinct shop_id) = (SELECT count(*) FROM shop);
+	SELECT item_id, count(Distinct shop_id) AS number_of_shops FROM item_shop
+	GROUP BY item_id
+	HAVING count(Distinct shop_id) = (SELECT count(*) FROM shop);
 
-	--Variante2
-		-- checks if the item is offered in the shop
-			CREATE OR REPLACE FUNCTION is_item_in_shop (param_item_id TEXT, param_shop_id INTEGER)
-			RETURNS BOOLEAN
-			language plpgsql
-			AS 
-			$$
-			DECLARE is_in_shop BOOLEAN;
-			BEGIN
-
-			SELECT CASE WHEN param_item_id 
-							IN (SELECT item_id FROM item_shop 
-								WHERE item_id = param_item_id 
-								AND shop_id = param_shop_id
-								) THEN TRUE 
-						ELSE FALSE 
-						END INTO is_in_shop;
-
-			RETURN is_in_shop;
-			END;
-			$$;
-			
-		--result
-			WITH
-			all_shop_id AS (
-				SELECT DISTINCT shop_id FROM shop),
-			items_in_all_shop AS (
-				SELECT * FROM item
-				WHERE TRUE = ALL(SELECT is_item_in_shop(item.item_id, all_shop_id.shop_id) FROM all_shop_id)
-				ORDER BY item_id)
-				
-			SELECT * FROM items_in_all_shop;
-
-
+	
 
 --Aufgabe 12
 	WITH
