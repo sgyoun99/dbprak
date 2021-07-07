@@ -279,4 +279,4 @@
 		FROM cheap_items ci INNER JOIN item_shop ON (ci.item_id = item_shop.item_id AND ci.min_price = item_shop.price)
 		WHERE item_shop.shop_id = (SELECT shop_id FROM shop WHERE shop.shop_name = 'Leipzig'))
 
-	SELECT ((SELECT COUNT(*) * 100 FROM cheap_items_in_leipzig) / (SELECT COUNT(*) FROM items_in_all_shop)::FLOAT)::NUMERIC(10,2)
+	SELECT ((SELECT COUNT(*) * 100 FROM cheap_items_in_leipzig) / (SELECT COUNT(*) FROM items_in_all_shop)::FLOAT)::NUMERIC(10,2) AS percentage;
