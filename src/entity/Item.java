@@ -1,3 +1,8 @@
+/**
+ * Class needed to read item-data from file
+ * and write to DB table "item"
+ * @version 03.06.2021
+ */
 package entity;
 
 import java.util.function.*;
@@ -34,51 +39,39 @@ public class Item {
 	public String getItem_id() {
 		return item_id;
 	}
-
 	public void setItem_id(String item_id) {
 		this.item_id = item_id;
 	}
-
 	public String getTitle() {
 		return title;
 	}
-
 	public void setTitle(String title) {
 		this.title = title;
 	}
-
 	public Double getRating() {
 		return rating;
 	}
-
 	public void setRating(Double rating) {
 		this.rating = rating;
 	}
-
 	public Integer getSalesranking() {
 		return salesranking;
 	}
-
 	public void setSalesranking(int salesranking) {
 		this.salesranking = salesranking;
 	}
-
 	public String getImage() {
 		return image;
 	}
-
 	public void setImage(String image) {
 		this.image = image;
 	}
-
 	public Pgroup getProductgroup() {
 		return productgroup;
 	}
-
 	public void setProductgroup(Pgroup productgroup) {
 		this.productgroup = productgroup;
-	}
-	
+	}	
 	public void setProductgroup(String pgroup) {
 		if(pgroup.equals("Music")) {
 			this.productgroup = Pgroup.valueOf("Music_CD");
@@ -87,13 +80,15 @@ public class Item {
 		}
 	}
 
+	/**
+	 * check data from file for validity
+	 */
 	public static Predicate<String> pred_item_id = item_id -> item_id != null && item_id.length() > 0;
 	public static Predicate<String> pred_title = title -> title != null && title.length() != 0;
 	public static Predicate<Double> pred_rating = rating -> rating >= 0 && rating <= 5;
 	public static Predicate<Integer> pred_salesranking = ranking -> ranking >= 0;
 	public static Predicate<String> pred_image = img -> true; // null allowed
-	public static Predicate<String> pred_pgroup = pgroup -> Pgroup.isValueOfPgroup(pgroup);
-	
+	public static Predicate<String> pred_pgroup = pgroup -> Pgroup.isValueOfPgroup(pgroup);	
 
 	public void test(Item item) throws XmlValidationFailException {
 		try {
@@ -130,6 +125,10 @@ public class Item {
 		}
 	}
 	
+	/**
+	 * method to read item-data from file and write to DB table "item"
+	 * extra method needed because of different file structure
+	 */
 	public void dresden() {
 		String location = "Item(dresden)";
 		System.out.println(">> Item Dresden ...");
@@ -175,7 +174,7 @@ public class Item {
 					ps.setString(1, item.getItem_id());
 					ps.setString(2, item.getTitle());
 //					ps.setDouble(3, item.getRating());
-					ps.setDouble(3, 0); // temporary
+					ps.setDouble(3, 0); // temporary, later changed if there are any reviews to base an updated rating on
 					ps.setInt(4, item.getSalesranking());
 					ps.setString(5, item.getImage());
 					ps.setString(6, item.getProductgroup().toString());
@@ -210,6 +209,10 @@ public class Item {
 		});
 	}
 	
+	/**
+	 * read item-data from file and write to DB table "item"
+	 * extra method needed because of different file structure
+	 */
 	public void leipzig() {
 		String location = "Item(leipzig)";
 		System.out.println(">> Item Leipzig ...");
@@ -248,7 +251,7 @@ public class Item {
 					ps.setString(1, item.getItem_id());
 					ps.setString(2, item.getTitle());
 					//ps.setDouble(3, item.getRating());
-					ps.setDouble(3, 0); // temporary
+					ps.setDouble(3, 0); // temporary, later changed if there are any reviews to base an updated rating on
 					ps.setInt(4, item.getSalesranking());
 					ps.setString(5, item.getImage());
 					ps.setString(6, item.getProductgroup().toString());
@@ -291,6 +294,9 @@ public class Item {
 		//to-do
 	}
 
+	/**
+	 * not currently used for main-program
+	 */
 	public static void main(String[] args) throws Exception {
 		
 		DropTables.dropTables();

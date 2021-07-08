@@ -1,3 +1,8 @@
+/**
+ * classed needed to read all music_cd related data from file
+ * and write to DB in the associated tables
+ * @version 03.06.2021
+ */
 package entity;
 
 import java.sql.Date;
@@ -46,8 +51,7 @@ public class Music_CD {
 	}
 	public void setRelease_date(Date release_date) {
 		this.release_date = release_date;
-	}
-	
+	}	
 	public void setRelease_date(String release_date) throws XmlInvalidValueException{
 		if(release_date != null) {
 			try {
@@ -60,6 +64,9 @@ public class Music_CD {
 		}
 	}
 	
+	/**
+	 * check whether read-in data is valid
+	 */
 	public static Predicate<String> pred_title = title -> title != null && title.length() > 0; // Not Null
 	public static Predicate<List<String>> pred_music_artist = artistList -> artistList != null || (artistList != null && artistList.size() > 0); //Not Null
 	public static Predicate<Date> pred_release_date = date -> true; //will be tested in the setter
@@ -67,7 +74,7 @@ public class Music_CD {
 	public void testMusic_CD(Music_CD music_cd, List<String> artists) throws XmlValidationFailException, XmlNullNodeException {
 		try {
 			if(!Item.pred_item_id.test(music_cd.getItem_id())) {
-				XmlInvalidValueException e = new XmlInvalidValueException("item_id Error (id does not exist): "+music_cd.getItem_id());
+				XmlInvalidValueException e = new XmlInvalidValueException("item_id Error (length not 10): \""+music_cd.getItem_id()+"\""); 
 				e.setAttrName("item_id");
 				throw e;
 			}
@@ -89,7 +96,10 @@ public class Music_CD {
 		
 	}
 	
-
+	/**
+	 * read music_cd-data from file dresden.xml and write to DB tables
+	 * extra method required because of differente file structures
+	 */
 	public void musicCdDresden() {
 		String location = "Music_CD(Dresden)";
 		XmlTool xt = new XmlTool();
@@ -135,7 +145,7 @@ public class Music_CD {
 				music_cd.setRelease_date(xt.getTextContentOfLeafNode(releasedate));
 				music_cd.setArtist(artistNameList.get(0));//to set artist attribute NOT NULL
 				
-				//Insert(Order important)
+				//Insert into DB (Order important)
 				this.insertArtist(location, item_id, artistNameList, musicItemNode);
 				this.insertLabel(location, item_id, labelNameList, musicItemNode);
 				this.insertMusic_CD(location, item_id, music_cd, musicItemNode);
@@ -164,6 +174,10 @@ public class Music_CD {
 		});
 	}	
 	
+	/**
+	 * read music-cd-data from file leipzig.xml and write to DB
+	 * extra method required because of different file structures
+	 */
 	public void musicCdLeipzig() {
 		String location = "Music_CD(Leipzig)";
 		XmlTool xt = new XmlTool();
@@ -191,7 +205,6 @@ public class Music_CD {
 
 			try {
 				//xml
-
 				List<Node> artistNodes = xt.getNodesByNameDFS(musicItemNode, "artist");
 				artistNodes.forEach(artistNode -> {
 					try {
@@ -226,7 +239,7 @@ public class Music_CD {
 				music_cd.setRelease_date(xt.getTextContentOfLeafNode(releasedate));
 				music_cd.setArtist(artistNameList.get(0));//to set artist attribute NOT NULL
 				
-				//Insert(Order important)
+				//Insert into DB (Order important)
 				this.insertArtist(location, item_id, artistNameList, musicItemNode);
 				this.insertLabel(location, item_id, labelNameList, musicItemNode);
 				this.insertMusic_CD(location, item_id, music_cd, musicItemNode);
@@ -255,6 +268,13 @@ public class Music_CD {
 		});
 	}
 	
+	/**
+	 * method to write artist-data to DB table "artist"
+	 * @param location
+	 * @param item_id
+	 * @param artistNameList
+	 * @param musicItemNode
+	 */
 	private void insertArtist(String location, String item_id, List<String> artistNameList, Node musicItemNode) {
 		String locationSurfix = ".artist";
 		String attrName = "artist";
@@ -311,6 +331,14 @@ public class Music_CD {
 			ErrorLogger.write(location+locationSurfix, item_id, ErrType.SQL, attrName, ex, xt.getNodeContentDFS(musicItemNode));
 		}
 	}
+
+	/**
+	 * method to write label_data to DB table "label"
+	 * @param location
+	 * @param item_id
+	 * @param labelNameList
+	 * @param musicItemNode
+	 */
 	private void insertLabel(String location, String item_id, List<String> labelNameList, Node musicItemNode) {
 		String locationSurfix = ".label";
 		String attrName = "label";
@@ -358,6 +386,14 @@ public class Music_CD {
 			ErrorLogger.write(location+locationSurfix, item_id, ErrType.SQL, attrName, e, xt.getNodeContentDFS(musicItemNode));
 		}	
 	}
+
+	/**
+	 * method to write music_cd-data to DB table "music_cd"
+	 * @param location
+	 * @param item_id
+	 * @param music_cd
+	 * @param musicItemNode
+	 */
 	private void insertMusic_CD(String location, String item_id, Music_CD music_cd, Node musicItemNode) {
 		XmlTool xt = new XmlTool();
 		try {
@@ -400,6 +436,13 @@ public class Music_CD {
 		}
 	}
 
+	/**
+	 * method to write artist/music_cd-data to DB table "music_cd_artist"
+	 * @param location
+	 * @param item_id
+	 * @param artistNameList
+	 * @param musicItemNode
+	 */
 	private void insertMusic_CD_Artist(String location, String item_id, List<String> artistNameList, Node musicItemNode) {
 		String locationSurfix = ".artist";
 		String attrName = "artist";
@@ -459,6 +502,13 @@ public class Music_CD {
 		}
 	}	
 	
+	/**
+	 * method to write label/music_cd-data to DB table "music_cd_label"
+	 * @param location
+	 * @param item_id
+	 * @param labelNameList
+	 * @param musicItemNode
+	 */
 	private void insertMusic_CD_Label(String location, String item_id, List<String> labelNameList, Node musicItemNode) {
 		String locationSurfix = ".label";
 		String attrName = "label";
@@ -508,6 +558,14 @@ public class Music_CD {
 		}	
 	}
 	
+	/**
+	 * method to write title-data to DB table "title"
+	 * @param location
+	 * @param item_id
+	 * @param titleNameList
+	 * @param music_cd
+	 * @param musicItemNode
+	 */
 	private void insertTitle(String location, String item_id, List<String> titleNameList, Music_CD music_cd, Node musicItemNode) {
 		String locationSurfix = ".title";
 		String attrName = "title";
@@ -558,17 +616,15 @@ public class Music_CD {
 	
 	
 	
-
-	
 	
 	public void handleDuplicatedPK() {
 		System.out.println("need to make handleDuplicatedPK()");
 	}
 	
-	
-	
-	
-	
+		
+	/**
+	 * not used for main_program
+	 */
 	public static void main(String[] args) {
 		try {
 		DropTables.dropTable("Errors");

@@ -1,3 +1,8 @@
+/**
+ * Classes needed to read item-shop-data from file and write to DB
+ * table item_shop
+ * @version 03.06.2021
+ */
 package entity;
 
 import java.sql.PreparedStatement;
@@ -83,7 +88,9 @@ public class Item_Shop {
 	}
 	
 	
-	
+	/**
+	 * check read-in data is valid
+	 */
 	public static Predicate<Double> pred_price = price -> price >= 0 && price<9999999 ;
 	public static Predicate<String> pred_currency = curr -> Arrays.asList("EUR","").contains(curr);
 	public static BiPredicate<Double,Boolean> pred_avaliablity = (price, avail) -> {
@@ -98,8 +105,6 @@ public class Item_Shop {
 	}; 
 	public Predicate<String> pred_condition = cond -> Arrays.asList("new","","second-hand").contains(cond);
 	
-	
-
 	public void test(Item_Shop item_shop) throws XmlValidationFailException {
 		try {
 			if(!Item.pred_item_id.test(item_shop.getItem_id())) {
@@ -132,7 +137,10 @@ public class Item_Shop {
 		}
 	}
 	
-	//finished
+	/**
+	 * read data from shop dresden and write to DB table "item_shop"
+	 * extra method required because of differences in file structure
+	 */
 	public void dresden() {
 		String location = "Item_Shop(Dresden)";
 		System.out.println(">> Item_Shop Dresden ...");
@@ -219,6 +227,10 @@ public class Item_Shop {
 		});
 	}
 	
+	/**
+	 * read data from file and insert into DB table "item_shop"
+	 * extra method required because of differences in file structure
+	 */
 	public void leipzig() {
 		String location = "Item_Shop(Leipzig)";
 		System.out.println(">> Item_Shop Leipzig ...");
@@ -306,7 +318,9 @@ public class Item_Shop {
 	}
 	
 	
-	
+	/**
+	 * not in use for main-program
+	 */
 	public static void main(String[] args) throws Exception {
 		DropTables.dropTable(CreateTables.Errors);
 		CreateTables.createTable(CreateTables.Errors);

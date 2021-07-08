@@ -1,3 +1,9 @@
+/**
+ * Classes needed to read for Books all data from file
+ * and write it in the associated tables
+ * @version 03.07.2021
+ */
+
 package entity;
 
 import java.sql.Date;
@@ -67,47 +73,30 @@ public class Book {
 		this.location = location;
 	}
 
-
-
 	public Book() {
 	}
-
-
 
 	public String getItem_id() {
 		return item_id;
 	}
-
-
 	public void setItem_id(String item_id) {
 		this.item_id = item_id;
 	}
-
-
 	public String getAuthor() {
 		return author;
 	}
-
-
 	public void setAuthor(String author) {
 		this.author = author;
 	}
-
-
 	public String getPublisher() {
 		return publisher;
 	}
-
-
 	public void setPublisher(String publisher) {
 		this.publisher = publisher;
 	}
-
-
 	public Date getPublication_date() {
 		return publication_date;
 	}
-
 	public void setPublication_date(String publication_date) throws XmlInvalidValueException{
 		if(publication_date != null) {
 			try {
@@ -119,12 +108,9 @@ public class Book {
 			}
 		}
 	}
-
 	public String getIsbn() {
 		return isbn;
 	}
-
-
 	public void setIsbn(String isbn) {
 		this.isbn = isbn;
 	}
@@ -142,7 +128,9 @@ public class Book {
 		return this.pages;
 	}
 	
-	
+	/**
+	 * check if read-in book-data is valid
+	 */
 	public static Predicate<Short> pred_pages = pages -> pages == null || (pages >= 0 && pages < Short.MAX_VALUE); // ?
 	public static Predicate<String> pred_isbn = date -> date == null || date != null && (date.length()==10 || date.length() ==13); //null allowed
 	public static Predicate<Date> pred_publicationdate = date -> true; //will be tested in the setter
@@ -150,7 +138,7 @@ public class Book {
 	public void testBook(Book book) throws XmlValidationFailException, XmlNullNodeException {
 		try {
 			if(!Item.pred_item_id.test(book.getItem_id())) {
-				XmlInvalidValueException e = new XmlInvalidValueException("item_id Error (id does not exist): "+book.getItem_id());
+				XmlInvalidValueException e = new XmlInvalidValueException("item_id Error (length not 10): \""+book.getItem_id()+"\""); 
 				e.setAttrName("item_id");
 				throw e;
 			}
@@ -177,6 +165,7 @@ public class Book {
 		
 	}
 	
+	//check if publisher exists (author always true => no check)
 	public static Predicate<String> pred_author = author -> true; //allow
 	public static Predicate<String> pred_publisher = publisher -> publisher != null;
 	public void testAuthor(Author author) throws XmlValidationFailException {
@@ -202,7 +191,9 @@ public class Book {
 		}
 	}
 	
-
+	/**
+	 * reads book-data from file and writes it to DB table "book"
+	 */
 	public void book() {
 		String location = "Book(" + this.location + ")";
 		System.out.println(">> Book " + this.location + " ...");
@@ -285,7 +276,9 @@ public class Book {
 	}	
 	
 	
-	
+	/**
+	 * read author-data from file and write it to DB tables "author", "book_author"
+	 */
 	public void author() {
 		String location = "author(" + this.location + ")";
 		String attrName = "author";
@@ -363,7 +356,9 @@ public class Book {
 		);
 	}	
 	
-
+	/**
+	 * read publisher-data from file and write it to DB tables "publisher", "book_publisher"
+	 */
 	public void publisher() {
 		String location = "publisher(" + this.location + ")";
 		String attrName = "publisher";
@@ -441,7 +436,9 @@ public class Book {
 		);
 	}	
 	
-
+	/**
+	 * not in use for main-program
+	 */
 	public static void main(String[] args) throws Exception {
 		DropTables.dropTable("Errors");
 		CreateTables.createTable("Errors");

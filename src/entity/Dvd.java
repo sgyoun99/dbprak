@@ -1,3 +1,8 @@
+/**
+ * Classes needed to read the DVD-related data from file and
+ * write it in the associated tables in DB
+ * @version 03.06.2021
+ */
 package entity;
 
 import java.sql.PreparedStatement;
@@ -76,22 +81,18 @@ public class Dvd {
 		this.location = location;
 	}
 
-	public Dvd() {
-		
+	public Dvd() {		
 	}
 
 	public String getItem_id() {
 		return item_id;
 	}
-
 	public void setItem_id(String item_id) {
 		this.item_id = item_id;
 	}
-
 	public String getFormat() {
 		return format;
 	}
-
 	public void setFormat(String format) {
 		if(format == null) {
 			this.format = "";
@@ -99,7 +100,6 @@ public class Dvd {
 			this.format = format;
 		}
 	}
-
 	public Short getRunningtime() {
 		if(runningtime == null) {
 			return 0;
@@ -107,7 +107,6 @@ public class Dvd {
 			return runningtime;
 		}
 	}
-
 	public void setRunningtime(String runningtime) {
 		if(runningtime.length() == 0 || runningtime == null) {
 			this.runningtime = 0;
@@ -118,7 +117,6 @@ public class Dvd {
 	public void setRunningtime(Short runningtime) {
 		this.runningtime = runningtime;
 	}
-
 	public String getRegioncode() {
 		if(regioncode == null) {
 //			return 0;
@@ -128,12 +126,13 @@ public class Dvd {
 			return regioncode;
 		}
 	}
-
 	public void setRegioncode(String regioncode) {
 			this.regioncode = regioncode;
 	}
 	
-	
+	/**
+	 * check that if runningtime exists it is of valid size
+	 */
 	public static Predicate<String> pred_format = format -> true; //allow null
 	public static Predicate<Short> pred_runningtime = runningtime -> runningtime == null || (runningtime >= 0 && runningtime < Short.MAX_VALUE); //allow null
 	public static Predicate<String> pred_regioncode = regioncode -> true; //allow null
@@ -141,7 +140,7 @@ public class Dvd {
 	public void testDvd(Dvd dvd) throws XmlValidationFailException {
 		try {
 			if(!Item.pred_item_id.test(dvd.getItem_id())) {
-				XmlInvalidValueException e = new XmlInvalidValueException("item_id Error (id does not exist): "+dvd.getItem_id());
+				XmlInvalidValueException e = new XmlInvalidValueException("item_id Error (length not 10): \""+dvd.getItem_id()+"\""); 
 				e.setAttrName("item_id");
 				throw e;
 			}
@@ -165,6 +164,9 @@ public class Dvd {
 		}
 	}
 	
+	/**
+	 * check that actors, creators and directors actually exist
+	 */
 	public static Predicate<String> pred_actor = actor -> actor != null;
 	public static Predicate<String> pred_creator = creator -> creator != null;
 	public static Predicate<String> pred_director = director -> director != null;
@@ -190,7 +192,9 @@ public class Dvd {
 		}
 	}
 	
-
+	/**
+	 * to read dvd-data from file and write in DB table "dvd"
+	 */
 	public void dvd() {
 		String location = "DVD(" + this.location + ")";
 		System.out.println(">> DVD " + this.location + " ...");
@@ -284,7 +288,9 @@ public class Dvd {
 	}	
 	
 	
-	
+	/**
+	 * read actor-data from file and write to DB tables "actor", "dvd_actor"
+	 */
 	public void actor() {
 		String location = this.location + ".actor";
 		String attrName = "actor";
@@ -379,7 +385,9 @@ public class Dvd {
 		});
 	}	
 	
-
+	/**
+	 * read creator-data from file and write to DB tables "creator", "dvd_creator"
+	 */
 	public void creator() {
 		String location = this.location + ".creator";
 		String attrName = "creator";
@@ -477,7 +485,9 @@ public class Dvd {
 		});
 	}	
 	
-
+	/**
+	 * read director-data from file and write to tables "director", "dvd_director"
+	 */
 	public void director() {
 		String location = this.location + ".director";
 		String attrName = "director";
@@ -575,7 +585,9 @@ public class Dvd {
 		});
 	}	
 	
-	
+	/**
+	 * not used for main-programm
+	 */
 	public static void main(String[] args) throws Exception {
 		DropTables.dropTable("Errors");
 		CreateTables.createTable("Errors");

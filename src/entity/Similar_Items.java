@@ -1,3 +1,8 @@
+/**
+ * Class needed to read similar_item-data from file 
+ * and write to DB table "similar_items"
+ * @version 03.06.2021
+ */
 package entity;
 
 import java.sql.PreparedStatement;
@@ -33,6 +38,7 @@ public class Similar_Items {
 		this.sim_item_id = sim_item_id;
 	}
 	
+	//check for valid length of item_id; not currently in use
 	public void test() throws XmlValidationFailException{
 		try {
 			if(!Item.pred_item_id.test(getItem_id())) {throw new XmlInvalidValueException("item_id Error (length not 10): "+getItem_id()); }
@@ -42,7 +48,10 @@ public class Similar_Items {
 		}
 	}
 	
-	
+	/**
+	 * read data about similar_items from file dresden.xml and write to DB tabel "similar_items"
+	 * extra method needed because of differences in file structure
+	 */
 	public void dresden() {
 		String location = "Similar_Items(Dresden)";
 		System.out.println(">> Similar_Items Dresden ...");
@@ -69,9 +78,9 @@ public class Similar_Items {
 
 				if(!getItem_id().equals("") && !getSim_item_id().equals("")) {
 			//test
-					test();
+					//test();
 					
-			//insert
+			//insert into DB
 					JDBCTool.executeUpdate((con, st) ->	{
 						String sql = "INSERT INTO SIMILAR_ITEMS "
 								+ "(item_id, similar_item_id) "
@@ -90,9 +99,9 @@ public class Similar_Items {
 			} catch (XmlNoAttributeException e) {
 				e.setLocation(location);
 				ErrorLogger.write(e, xt.getNodeContentDFS(node));
-			} catch (XmlValidationFailException e) {
+			/*} catch (XmlValidationFailException e) {
 				e.setLocation(location);
-				ErrorLogger.write(e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(e, xt.getNodeContentDFS(node));*/
 			} catch (SQLException e) {
 				if(!e.getMessage().contains("duplicate key value")) {
 					ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(node));
@@ -104,6 +113,10 @@ public class Similar_Items {
 		}));
 	}
 
+	/**
+	 * read data about similar_items from file leipzig.xml and write to DB tabel "similar_items"
+	 * extra method needed because of differences in file structure
+	 */
 	public void leipzig() {
 		String location = "Similar_Items(Leipzig)";
 		System.out.println(">> Similar_Items Leipzig ...");
@@ -130,7 +143,7 @@ public class Similar_Items {
 
 				if(!getItem_id().equals("") && !getSim_item_id().equals("")) {
 			//test
-					test();
+					//test();
 					
 			//insert
 					JDBCTool.executeUpdate((con, st) ->	{
@@ -151,9 +164,9 @@ public class Similar_Items {
 			} catch (XmlNoAttributeException e) {
 				e.setLocation(location);
 				ErrorLogger.write(e, xt.getNodeContentDFS(node));
-			} catch (XmlValidationFailException e) {
+			/*} catch (XmlValidationFailException e) {
 				e.setLocation(location);
-				ErrorLogger.write(e, xt.getNodeContentDFS(node));
+				ErrorLogger.write(e, xt.getNodeContentDFS(node));*/
 			} catch (SQLException e) {
 				if(!e.getMessage().contains("duplicate key value")) {
 					ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(node));
@@ -165,6 +178,7 @@ public class Similar_Items {
 		}));
 	}
 	
+	//not used for main-program
 	public static void main(String[] args) throws Exception {
 		DropTables.dropTable("Errors");
 		CreateTables.createTable("Errors");
