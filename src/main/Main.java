@@ -90,8 +90,8 @@ public class Main {
 			review.addRatings();
 			
 			//Category
-			Cat cat = new Cat();
-			cat.readCat();
+			Category cat = new Category();
+			cat.readCategory();
  
 		
 		} catch (RuntimeException e) {
