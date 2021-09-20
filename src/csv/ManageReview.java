@@ -156,8 +156,10 @@ public class ManageReview{
                 try {
                     tx = session.beginTransaction();
                     Item item = (Item)session.get(Item.class, set.getKey()); 
-                    item.setRating(set.getValue());
-                    session.update(item); 
+                    if(item!=null){
+                        item.setRating(set.getValue());
+                        session.update(item); 
+                    }
                     tx.commit();
                 } catch (HibernateException e) {
                     if (tx!=null) tx.rollback();
