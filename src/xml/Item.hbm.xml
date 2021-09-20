@@ -27,14 +27,14 @@
          <one-to-many class = "entity.Item_Shop"/>
       </set>
 
-      <set name = "sim_items" cascade="all">
+      <set name = "sim_items" table="similar_items" cascade="all">
          <key column = "item_id"/>
-         <one-to-many class = "entity.Similar_Items"/>
+         <many-to-many column="sim_item_id" class = "entity.Item"/>
       </set>
 
-      <set name = "sim_sim_items" cascade="all">
+      <set name = "items" table="similar_items" cascade="all">
          <key column = "sim_item_id"/>
-         <one-to-many class = "entity.Similar_Items"/>
+         <many-to-many column="item_id" class = "entity.Item"/>
       </set>
 
       <set name = "books" cascade="all">
@@ -103,18 +103,7 @@
       
    </class>
 
-   <class name = "entity.Similar_Items" table = "SIMILAR_ITEMS">
-      
-      <meta attribute = "class-description">
-         This class contains the shop details. 
-      </meta>      
-
-      <composite-id>
-         <key-property name = "item_id" column = "item_id" type = "string"/>
-         <key-property name = "sim_item_id" column = "sim_item_id" type = "string" />
-      </composite-id>      
-      
-   </class>
+   
 
 
 
