@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 public class Customer implements Serializable{
     //private int customer_id;
-    private String name;
+    private String customer_name;
     private String street;
     private int nr;
     private int zip;
@@ -14,8 +14,8 @@ public class Customer implements Serializable{
     
 
     public Customer() {}
-    public Customer(String name, String street, int nr, int zip, String city, String account_number) {
-        this.name = name;
+    public Customer(String customer_name, String street, int nr, int zip, String city, String account_number) {
+        this.customer_name = customer_name;
         this.street = street;
         this.nr = nr;
         this.zip = zip;
@@ -29,11 +29,11 @@ public class Customer implements Serializable{
     public int getCustomer_id() {
         return this.customer_id;
     }*/
-    public void setName(String name) {
-        this.name = name;
+    public void setCustomer_name(String customer_name) {
+        this.customer_name = customer_name;
     }
-    public String getName() {
-        return this.name;
+    public String getCustomer_name() {
+        return this.customer_name;
     }
     public void setStreet(String street) {
         this.street = street;
@@ -72,6 +72,6 @@ public class Customer implements Serializable{
 
     @Override
     public String toString(){
-        return this.name;
+        return this.customer_name;
     }
 }

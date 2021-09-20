@@ -62,7 +62,9 @@ public class ManageReview{
             try {
                 tx = session.beginTransaction();
                 Customer customer = new Customer(csvFile.getFile().get(i)[4], "Street"+i, i, 11111, i+"city", "Account"+i);			
-                session.save(customer); 			
+//              session.save(customer); 			
+                session.saveOrUpdate(customer); 			
+                
                 tx.commit();
             } catch (HibernateException e) {
                 if (tx!=null) {

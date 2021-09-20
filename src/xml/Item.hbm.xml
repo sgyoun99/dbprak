@@ -111,7 +111,7 @@
 
       <composite-id>
          <key-property name = "item_id" column = "item_id" type = "string"/>
-         <key-property name = "sim_item_id" column = "similar_item_id" type = "string" />
+         <key-property name = "sim_item_id" column = "sim_item_id" type = "string" />
       </composite-id>      
       
    </class>

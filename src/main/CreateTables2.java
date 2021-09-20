@@ -38,7 +38,7 @@ public class CreateTables2 {
 			Class.forName("org.postgresql.Driver");
 
 			
-			String url = "jdbc:postgresql://localhost/postgres?user=postgres&password=postgres&ssl=false";
+			String url = Config.JDBC_POSTGRES_URL;
 			Connection conn = DriverManager.getConnection(url);
 			
 			

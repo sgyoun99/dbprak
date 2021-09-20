@@ -10,7 +10,7 @@ import java.util.Set;
 public class Review{
     private int review_id;
     private String item_id;
-    private String customer;
+    private String customer_name;
     private Date review_date;
     private String summary;
     private String content;
@@ -19,9 +19,9 @@ public class Review{
     private Set customers;
 
     public Review() {}
-    public Review(String item_id, String customer, Date review_date, String summary, String content, int rating) {
+    public Review(String item_id, String customer_name, Date review_date, String summary, String content, int rating) {
         this.item_id = item_id;
-        this.customer = customer;
+        this.customer_name = customer_name;
         this.review_date = review_date;
         this.summary = summary;
         this.content = content;
@@ -40,11 +40,11 @@ public class Review{
 	public void setItem_id(String item_id) {
 		this.item_id = item_id;
 	}
-    public String getCustomer() {
-		return this.customer;
+    public String getCustomer_name() {
+		return this.customer_name;
 	}
-	public void setCustomer(String customer) {
-		this.customer = customer;
+	public void setCustomer_name(String customer_name) {
+		this.customer_name = customer_name;
 	}
     public Date getReview_date() {
 		return review_date;

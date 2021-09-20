@@ -17,14 +17,14 @@
       </id>
         
       <property name = "item_id" column = "item_id" type = "string"/>
-      <property name = "customer" column = "customer" type = "string"/>
+      <property name = "customer_name" column = "customer_name" type = "string"/>
       <property name = "review_date" column = "review_date" type = "date"/>
       <property name = "summary" column = "summary" type = "string"/>
       <property name = "content" column = "content" type = "string"/>
       <property name = "rating" column = "rating" type = "int"/>     
 
       <set name = "customers"  cascade="all">
-         <key column = "review_id"/>
+         <key column = "customer_name"/>
          <one-to-many class = "csv.Customer"/>
       </set>
            
@@ -37,7 +37,7 @@
          This class contains the customer details. 
       </meta>
 
-      <id name = "name" column = "name" type = "string"/>
+      <id name = "customer_name" column = "customer_name" type = "string"/>
 
       <property name = "street" column = "street" type = "string"/>
       <property name = "nr" column = "nr" type = "int"/>
