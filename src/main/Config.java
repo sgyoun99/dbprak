@@ -5,7 +5,8 @@ package main;
  *
  */
 public class Config {
-	public final static String JDBC_POSTGRES_URL = "jdbc:postgresql://localhost/postgres?user=postgres&password=postgres&ssl=false";
+//	public final static String JDBC_POSTGRES_URL = "jdbc:postgresql://localhost/postgres?user=postgres&password=postgres&ssl=false";
+	public final static String JDBC_POSTGRES_URL = "jdbc:postgresql://localhost/postgres2?user=postgres&password=postgres&ssl=false";
 	public final static String BIN_LOCATION = Config.class.getResource("").getPath();
 	public final static String DATA_DIRECTORY = BIN_LOCATION+"/../../data";
 	public final static String UTF8_SURFIX = "__to__UTF-8.xml";
