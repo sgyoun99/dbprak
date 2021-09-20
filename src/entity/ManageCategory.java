@@ -95,7 +95,7 @@ public class ManageCategory {
 	 * function that manages reading and inserting category, sub_category, item_category
 	 */
 	public void manageCategories(SessionFactory factory) {
-		readCategory(factory);
+		readCategory();
 		insertCategory(factory, categoryList);
 		addOverCategories(factory, categoryList);
 		addItems(factory, itemList);
@@ -150,19 +150,21 @@ public class ManageCategory {
 				Transaction tx = null;
 			
 				try {
-				tx = session.beginTransaction();
-					Category cat = new Category(categoryList.get(i).getOwnId(), categoryList.get(i).getName());
-					HashSet<Category> catSet = new HashSet<Category>();
-					Category parentCat = session.get(Category.class, categoryList.get(i).getParent());
-					catSet.add(parentCat);
-					cat.setOver_categories(catSet);			
-					session.update(cat); 			 
-				tx.commit();
+					tx = session.beginTransaction();
+						Category cat = new Category(categoryList.get(i).getOwnId(), categoryList.get(i).getName());
+						HashSet<Category> catSet = new HashSet<Category>();
+						Category parentCat = session.get(Category.class, categoryList.get(i).getParent());
+						if(parentCat!=null){
+							catSet.add(parentCat);
+							cat.setOver_categories(catSet);			
+							session.update(cat); 
+						}			 
+					tx.commit();
 				} catch (HibernateException e) {
-				if (tx!=null) tx.rollback();
-				System.out.println("HibernateException for adding Sub_Categories o: " + categoryList.get(i).getParent() + " s: " + categoryList.get(i).getOwnId());
+					if (tx!=null) tx.rollback();
+					System.out.println("HibernateException for adding Sub_Categories o: " + categoryList.get(i).getParent() + " s: " + categoryList.get(i).getOwnId());
 				} finally {
-				session.close(); 
+					session.close(); 
 				}
 			}
 		}
@@ -182,12 +184,16 @@ public class ManageCategory {
 			
 				try {
 					tx = session.beginTransaction();
-					Category cat = session.get(Category.class, Integer.valueOf(item[0]));		//würde bei Änderung entfalllen
-					HashSet<Item> itemSet = new HashSet<Item>();
-					Item catItem = session.get(Item.class, item[1]);
-					itemSet.add(catItem);
-					cat.setItems(itemSet);			
-					session.update(cat); 			 
+					Category cat = session.get(Category.class, Integer.valueOf(item[0]));
+					if(cat!=null){
+						HashSet<Item> itemSet = new HashSet<Item>();
+						Item catItem = session.get(Item.class, item[1]);
+						if(catItem!=null){
+							itemSet.add(catItem);
+							cat.setItems(itemSet);			
+							session.update(cat); 
+						}	
+					}		 
 					tx.commit();
 				} catch (HibernateException e) {
 					if (tx!=null) tx.rollback();
@@ -207,7 +213,7 @@ public class ManageCategory {
 	 * then add them to categoryList with their mainCategory
 	 * if there are items attached to a category, add categoryID and itemID as String[] to itemList
 	 */
-	public void readCategory(SessionFactory factory) {
+	public void readCategory() {
 		System.out.println(">> Category ...");
 
 		Node root;
