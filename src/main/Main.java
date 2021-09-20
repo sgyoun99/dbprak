@@ -42,8 +42,6 @@ public class Main {
 			
 			ErrorLogger.willLogSQL_DUPLICATE = false;
 
-			//drop and create tables
-			//DropTables.dropTables();
 
 			// die sind momentan hier drin, damit sie compiliert werden
 			Item i = new Item();
@@ -88,48 +86,22 @@ public class Main {
 			//DVD
 			ManageDvd md = new ManageDvd();
 			md.manageDvds(factory);
-/*			Dvd dvd = new Dvd(Config.LEIPZIG, "Leipzig");
-			dvd.dvd();
-			dvd.actor();
-			dvd.creator();
-			dvd.director();
-			dvd = new Dvd(Config.DRESDEN_ENCODED, "Dresden");
-			dvd.dvd();
-			dvd.actor();
-			dvd.creator();
-			dvd.director();*/
 			
 			//Book
 			ManageBook mb = new ManageBook();
 			mb.manageBooks(factory);
-			/*Book book = new Book(Config.LEIPZIG, "Leipzig");
-			book.book();
-			book.author();
-			book.publisher();
-			book = new Book(Config.DRESDEN_ENCODED, "Dresden");
-			book.book();
-			book.author();
-			book.publisher();*/
 
 			//Music_CD
 			ManageMusic_CD mc = new ManageMusic_CD();
 			mc.manageCDs(factory);
-/*			Music_CD music_cd = new Music_CD();
-			music_cd.musicCdLeipzig();
-			music_cd.musicCdDresden();*/
 			
 			//Review
 			ManageReview mr = new ManageReview();
 			mr.manageReviews(factory);
-/*			Review review = new Review();
-			review.writeReviewInDB();
-			review.addRatings();*/
 			
 			//Category
 			ManageCategory mcat = new ManageCategory();
 			mcat.manageCategories(factory);
-			/*Category cat = new Category();
-			cat.readCategory();*/
  
 		
 		} catch (RuntimeException e) {
@@ -154,7 +126,5 @@ public class Main {
 
 
 		factory.close();
-		//show all table count.
-		//CreateTables.countAllTables();
 	}
 }

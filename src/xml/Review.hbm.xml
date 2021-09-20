@@ -19,8 +19,8 @@
       <property name = "item_id" column = "item_id" type = "string"/>
       <property name = "customer_name" column = "customer_name" type = "string"/>
       <property name = "review_date" column = "review_date" type = "date"/>
-      <property name = "summary" column = "summary" type = "string"/>
-      <property name = "content" column = "content" type = "string"/>
+      <property name = "summary" column = "summary" type = "string" length="5000"/>
+      <property name = "content" column = "content" type = "string" length="5000"/>
       <property name = "rating" column = "rating" type = "int"/>     
 
       <set name = "customers"  cascade="all">

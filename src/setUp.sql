@@ -49,4 +49,11 @@ CREATE TABLE customer(customer_name TEXT NOT NULL UNIQUE, street text NOT NULL, 
 
 /*CREATE TABLE errors(error_id SERIAL PRIMARY KEY, location TEXT, errtype ErrType, exception TEXT, error_message TEXT, contents TEXT);*/
 CREATE TABLE errors(error_id SERIAL PRIMARY KEY, location TEXT, item_id TEXT, attribute TEXT, errtype ErrType, exception TEXT, error_message TEXT, contents TEXT);
+
+
+
+
+
+
+
 		 

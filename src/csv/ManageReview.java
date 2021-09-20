@@ -96,7 +96,9 @@ public class ManageReview{
                 Review review = new Review(csvFile.getFile().get(i)[0], csvFile.getFile().get(i)[4], Date.valueOf(csvFile.getFile().get(i)[3]), csvFile.getFile().get(i)[5], csvFile.getFile().get(i)[6], Integer.valueOf(csvFile.getFile().get(i)[1]));			
                 session.save(review); 			
                 tx.commit();
-            } catch (HibernateException e) {
+//            } catch (HibernateException e) {
+                //TODO change HibernateExceptions to ???
+            } catch (Exception e) {
                 if (tx!=null) {
                     tx.rollback();
                 }
