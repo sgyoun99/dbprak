@@ -1,0 +1,73 @@
+<?xml version = "1.0" encoding = "utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+"-//Hibernate/Hibernate Mapping DTD//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"> 
+
+<hibernate-mapping>
+   <class name = "entity.Music_CD" table = "MUSIC_CD">
+      
+      <meta attribute = "class-description">
+         This class contains the music cd details. 
+      </meta>
+      
+      <id name = "item_id" type = "string" column = "item_id"/>
+        
+      <property name = "artist" column = "artist" type = "string"/>
+      <property name = "release_date" column = "release_date" type = "date"/>
+
+      <set name = "artists" table = "music_cd_artist" cascade="all">
+         <key column = "item_id"/>
+         <many-to-many column = "artist" class = "entity.Artist"/>
+      </set>
+
+      <set name = "labels" table = "music_cd_label" cascade="all">
+         <key column = "item_id"/>
+         <many-to-many column = "label" class = "entity.Label"/>
+      </set>
+
+      <set name = "titles"  cascade="all">
+         <key column = "item_id"/>
+         <one-to-many class = "entity.Title"/>
+      </set>    
+           
+   </class>
+
+   <class name = "entity.Artist" table = "ARTIST">
+      
+      <meta attribute = "class-description">
+         This class contains the artist details. 
+      </meta>
+      
+      <id name = "artist" type = "string" column = "artist"/>
+                   
+   </class>
+
+   <class name = "entity.Label" table = "LABEL">
+      
+      <meta attribute = "class-description">
+         This class contains the label details. 
+      </meta>
+      
+      <id name = "label" type = "string" column = "label"/>
+                   
+   </class>
+
+   <class name = "entity.Title" table = "TITLE">
+      
+      <meta attribute = "class-description">
+         This class contains the title details. 
+      </meta>      
+
+      <composite-id>
+         <key-property name = "item_id" column = "item_id" type = "string"/>
+         <key-property name = "title" column = "title" type = "string" />
+      </composite-id>      
+                   
+   </class>
+
+
+   
+
+
+
+</hibernate-mapping>  

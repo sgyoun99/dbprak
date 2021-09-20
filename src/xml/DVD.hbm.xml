@@ -1,0 +1,71 @@
+<?xml version = "1.0" encoding = "utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+"-//Hibernate/Hibernate Mapping DTD//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"> 
+
+<hibernate-mapping>
+   <class name = "entity.Dvd" table = "DVD">
+      
+      <meta attribute = "class-description">
+         This class contains the dvd details. 
+      </meta>
+      
+      <id name = "item_id" type = "string" column = "item_id"/>
+        
+      <property name = "format" column = "format" type = "string"/>
+      <property name = "runningtime" column = "runningtime" type = "short"/>
+      <property name = "regioncode" column = "regioncode" type = "string"/>
+
+      <set name = "actors" table = "dvd_actor" cascade="all">
+         <key column = "item_id"/>
+         <many-to-many column = "actor" class = "entity.Actor"/>
+      </set>
+
+      <set name = "creators" table = "dvd_creator" cascade="all">
+         <key column = "item_id"/>
+         <many-to-many column = "creator" class = "entity.Creator"/>
+      </set>
+
+      <set name = "directors" table = "dvd_director" cascade="all">
+         <key column = "item_id"/>
+         <many-to-many column = "director" class = "entity.Director"/>
+      </set>    
+           
+   </class>
+
+   <class name = "entity.Actor" table = "ACTOR">
+      
+      <meta attribute = "class-description">
+         This class contains the actor details. 
+      </meta>
+      
+      <id name = "actor" type = "string" column = "actor"/>
+                   
+   </class>
+
+   <class name = "entity.Creator" table = "CREATOR">
+      
+      <meta attribute = "class-description">
+         This class contains the creator details. 
+      </meta>
+      
+      <id name = "creator" type = "string" column = "creator"/>
+                   
+   </class>
+
+   <class name = "entity.Director" table = "DIRECTOR">
+      
+      <meta attribute = "class-description">
+         This class contains the director details. 
+      </meta>
+      
+      <id name = "director" type = "string" column = "director"/>
+                   
+   </class>
+
+
+   
+
+
+
+</hibernate-mapping>  

@@ -1,0 +1,39 @@
+<?xml version = "1.0" encoding = "utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+"-//Hibernate/Hibernate Mapping DTD//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"> 
+
+<hibernate-mapping>
+   <class name = "entity.Category" table = "CATEGORY">
+      
+      <meta attribute = "class-description">
+         This class contains the category details. 
+      </meta>
+      
+      <id name = "category_id" type = "int" column = "category_id"/>
+        
+      <property name = "name" column = "name" type = "string"/>
+      
+      <set name = "sub_categories" table = "sub_category" cascade="all">     
+         <key column = "over_category_id"/>
+         <many-to-many column = "sub_category_id" class = "entity.Category"/>
+      </set>
+
+      <set name = "over_categories" table = "sub_category" cascade="all">      
+         <key column = "sub_category_id"/>
+         <many-to-many column = "over_category_id" class = "entity.Category"/>
+      </set>
+
+      <set name = "items" table = "item_category" cascade="all">      
+         <key column = "category_id"/>
+         <many-to-many column = "item_id" class = "entity.Item"/>
+      </set>
+      
+           
+   </class>
+
+
+
+
+
+</hibernate-mapping>  

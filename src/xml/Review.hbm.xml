@@ -1,0 +1,52 @@
+<?xml version = "1.0" encoding = "utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+"-//Hibernate/Hibernate Mapping DTD//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"> 
+
+<hibernate-mapping>
+   <class name = "csv.Review" table = "REVIEW">
+      
+      <meta attribute = "class-description">
+         This class contains the review details. 
+      </meta>
+      
+      <id name = "review_id" unsaved-value="null">
+         <generator class="sequence">
+            <param name="sequence_name">review_review_id_seq</param>
+         </generator>
+      </id>
+        
+      <property name = "item_id" column = "item_id" type = "string"/>
+      <property name = "customer" column = "customer" type = "string"/>
+      <property name = "review_date" column = "review_date" type = "date"/>
+      <property name = "summary" column = "summary" type = "string"/>
+      <property name = "content" column = "content" type = "string"/>
+      <property name = "rating" column = "rating" type = "int"/>     
+
+      <set name = "customers"  cascade="all">
+         <key column = "review_id"/>
+         <one-to-many class = "csv.Customer"/>
+      </set>
+           
+   </class>
+
+
+   <class name = "csv.Customer" table = "CUSTOMER">
+
+   <meta attribute = "class-description">
+         This class contains the customer details. 
+      </meta>
+
+      <id name = "name" column = "name" type = "string"/>
+
+      <property name = "street" column = "street" type = "string"/>
+      <property name = "nr" column = "nr" type = "int"/>
+      <property name = "zip" column = "zip" type = "int"/>
+      <property name = "city" column = "city" type = "string"/>
+      <property name = "account_number" column = "account_number" type = "string"/><!--Unique setzen!-->
+
+   </class>
+
+
+
+</hibernate-mapping>  

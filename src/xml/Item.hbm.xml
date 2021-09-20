@@ -1,0 +1,121 @@
+<?xml version = "1.0" encoding = "utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+"-//Hibernate/Hibernate Mapping DTD//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"> 
+
+<hibernate-mapping>
+   <class name = "entity.Item" table = "ITEM">
+      
+      <meta attribute = "class-description">
+         This class contains the item details. 
+      </meta>
+      
+      <id name = "item_id" type = "string" column = "item_id"/>
+        
+      <property name = "title" column = "title" type = "string"/>
+      <property name = "rating" column = "rating" type = "double"/>
+      <property name = "salesranking" column = "salesranking" type = "int"/>
+      <property name = "image" column = "image" type = "string"/>
+      <property name = "productgroup" column = "productgroup">
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">main.Pgroup</param>
+            </type>
+      </property>
+
+      <set name = "shop_items" cascade="all">
+         <key column = "item_id"/>
+         <one-to-many class = "entity.Item_Shop"/>
+      </set>
+
+      <set name = "sim_items" cascade="all">
+         <key column = "item_id"/>
+         <one-to-many class = "entity.Similar_Items"/>
+      </set>
+
+      <set name = "sim_sim_items" cascade="all">
+         <key column = "sim_item_id"/>
+         <one-to-many class = "entity.Similar_Items"/>
+      </set>
+
+      <set name = "books" cascade="all">
+         <key column = "item_id"/>
+         <one-to-many class = "entity.Book"/>
+      </set>
+
+      <set name = "cds" cascade="all">
+         <key column = "item_id"/>
+         <one-to-many class = "entity.Music_CD"/>
+      </set>
+
+      <set name = "dvds" cascade="all">
+         <key column = "item_id"/>
+         <one-to-many class = "entity.Dvd"/>
+      </set>
+
+      <set name = "reviews" cascade="all">
+         <key column = "item_id"/>
+         <one-to-many class = "csv.Review"/>
+      </set>
+      
+           
+   </class>
+
+
+   <class name = "entity.Shop" table = "SHOP">
+      
+      <meta attribute = "class-description">
+         This class contains the shop details. 
+      </meta>
+      
+      <id name = "shop_id" unsaved-value="null">
+         <generator class="sequence">
+            <param name="sequence_name">shop_shop_id_seq</param>
+         </generator>
+      </id>
+        
+      <property name = "shop_name" column = "shop_name" type = "string"/>
+      <property name = "street" column = "street" type = "string"/>
+      <property name = "zip" column = "zip" type = "string"/>  
+
+      <set name = "shop_items" cascade="all">
+         <key column = "shop_id"/>
+         <one-to-many class = "entity.Item_Shop"/>
+      </set>
+      
+   </class>
+   
+
+   <class name = "entity.Item_Shop" table = "ITEM_SHOP">
+      
+      <meta attribute = "class-description">
+         This class contains the item_shop details. 
+      </meta>      
+
+      <composite-id>
+         <key-property name = "item_id" column = "item_id" type = "string"/>
+         <key-property name = "shop_id" column = "shop_id" type = "int" />
+         <key-property name = "condition" column = "condition" type = "string"/>
+      </composite-id>
+
+      <property name = "currency" column = "currency" type = "string"/>  
+      <property name = "price" column = "price" type = "double"/>
+      <property name = "availabiliti" column = "availabiliti" type = "boolean"/>      
+      
+   </class>
+
+   <class name = "entity.Similar_Items" table = "SIMILAR_ITEMS">
+      
+      <meta attribute = "class-description">
+         This class contains the shop details. 
+      </meta>      
+
+      <composite-id>
+         <key-property name = "item_id" column = "item_id" type = "string"/>
+         <key-property name = "sim_item_id" column = "similar_item_id" type = "string" />
+      </composite-id>      
+      
+   </class>
+
+
+
+</hibernate-mapping>  

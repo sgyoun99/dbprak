@@ -21,6 +21,8 @@ public class DropTables {
 			Connection con = JDBCTool.getConnection();
 			Statement st = con.createStatement();
 			
+			dropTable("Mat View diff_main_cat", "DROP MATERIALIZED VIEW IF EXISTS diff_main_cat;", st);
+
 			int len = CreateTables.tableOrder.size();
 			//drop table in reverse order.
 			for (int i = 0; i < len; i++) {
@@ -57,7 +59,7 @@ public class DropTables {
     public static void dropEnum(String enumName, Statement st){
         try{
 				st.executeUpdate("DROP TYPE " + enumName+ ";");
-				System.out.println("Enum "+enumName + " is droped.");
+				System.out.println("Enum "+enumName + " is dropped.");
 			}
 			catch (SQLException e){
 				System.out.println(e);
@@ -73,7 +75,7 @@ public class DropTables {
 	public static void dropTable(String tableName, String sqlStr, Statement st){
 		try{
 				st.executeUpdate(sqlStr);
-				System.out.println("Table "+tableName+" is droped.");
+				System.out.println("Table "+tableName+" is dropped.");
 			}
 			catch (SQLException e){
 				System.out.println(e);

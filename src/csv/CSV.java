@@ -16,8 +16,7 @@ public class CSV{
 
     private ArrayList<String[]> csvFile = new ArrayList<String[]>();
 
-    public CSV(){
-    }
+    public CSV() {}
 
     public void addToCSV(String[] str){
         csvFile.add(str);

@@ -5,6 +5,12 @@ import XmlTools.XmlTool;
 import entity.*;
 import csv.*;
 
+import org.hibernate.HibernateException; 
+import org.hibernate.Session; 
+import org.hibernate.Transaction;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+
 import java.util.Date;
 
 /**
@@ -12,22 +18,53 @@ import java.util.Date;
  *
  */
 public class Main {
+
+	private static SessionFactory factory; 
+
 	/**
 	 * main method for project.
 	 * @param args args are not used.
 	 */
 	public static void main(String[] args) {
+ 
 
 		Date dateAnf = new Date();
 		//long secAnf = dateAnf.getTime();
+
+		try {
+			factory = new Configuration().configure().buildSessionFactory();
+		} catch (Throwable ex) { 
+			System.err.println("Failed to create sessionFactory object." + ex);
+			throw new ExceptionInInitializerError(ex); 
+		}
 		
 		try {
 			
 			ErrorLogger.willLogSQL_DUPLICATE = false;
 
 			//drop and create tables
-			DropTables.dropTables();
-			CreateTables.createTables();
+			//DropTables.dropTables();
+
+			// die sind momentan hier drin, damit sie compiliert werden
+			Item i = new Item();
+			Shop s = new Shop();
+			Item_Shop is = new Item_Shop();
+			Similar_Items si = new Similar_Items();
+			Book b = new Book();
+			Author a = new Author();
+			Publisher p = new Publisher();
+			Actor ac = new Actor();
+			Creator c = new Creator();
+			Director d = new Director();
+			Dvd dvd = new Dvd();
+			Label l = new Label();
+			Artist ar = new Artist();
+			Title t = new Title();
+			Music_CD cd = new Music_CD();
+			Category cat = new Category();
+			Review r = new Review();
+			Customer cus = new Customer();
+
 			
 			//Encoding to UTF-8
 			XmlTool xt = new XmlTool();
@@ -35,30 +72,23 @@ public class Main {
 			xt.encodeCategoriesXMLToUTF8();
 			 
 			//Shop
-			Shop shop = new Shop(Config.DRESDEN_ENCODED);
-			shop.readShop();
-			shop.insertShop();
-			shop = new Shop(Config.LEIPZIG);
-			shop.readShop();
-			shop.insertShop();
-			shop.selectShop();
+			ManageShop ms = new ManageShop();
+			ms.manageShops(factory);
 			
-			//Item
-			Item item = new Item();
-			item.dresden();
-			item.leipzig();
-			
-			Item_Shop item_shop = new Item_Shop();
-			item_shop.dresden();
-			item_shop.leipzig();
+			//Item									//TODO: similiar Items
+			ManageItem mi = new ManageItem();
+			mi.readIn(factory);
 
-			//Similar Items
-			Similar_Items simItems = new Similar_Items();
-			simItems.dresden();
-			simItems.leipzig();
+			ManageItem_Shop mis = new ManageItem_Shop();
+			mis.manageShopItems(factory);
+			//ManageAuthor ma = new ManageAuthor();
+			//ma.manageAuthor(factory);
+
 			
 			//DVD
-			Dvd dvd = new Dvd(Config.LEIPZIG, "Leipzig");
+			ManageDvd md = new ManageDvd();
+			md.manageDvds(factory);
+/*			Dvd dvd = new Dvd(Config.LEIPZIG, "Leipzig");
 			dvd.dvd();
 			dvd.actor();
 			dvd.creator();
@@ -67,31 +97,39 @@ public class Main {
 			dvd.dvd();
 			dvd.actor();
 			dvd.creator();
-			dvd.director();
+			dvd.director();*/
 			
 			//Book
-			Book book = new Book(Config.LEIPZIG, "Leipzig");
+			ManageBook mb = new ManageBook();
+			mb.manageBooks(factory);
+			/*Book book = new Book(Config.LEIPZIG, "Leipzig");
 			book.book();
 			book.author();
 			book.publisher();
 			book = new Book(Config.DRESDEN_ENCODED, "Dresden");
 			book.book();
 			book.author();
-			book.publisher();
+			book.publisher();*/
 
 			//Music_CD
-			Music_CD music_cd = new Music_CD();
+			ManageMusic_CD mc = new ManageMusic_CD();
+			mc.manageCDs(factory);
+/*			Music_CD music_cd = new Music_CD();
 			music_cd.musicCdLeipzig();
-			music_cd.musicCdDresden();
+			music_cd.musicCdDresden();*/
 			
 			//Review
-			Review review = new Review();
+			ManageReview mr = new ManageReview();
+			mr.manageReviews(factory);
+/*			Review review = new Review();
 			review.writeReviewInDB();
-			review.addRatings();
+			review.addRatings();*/
 			
 			//Category
-			Category cat = new Category();
-			cat.readCategory();
+			ManageCategory mcat = new ManageCategory();
+			mcat.manageCategories(factory);
+			/*Category cat = new Category();
+			cat.readCategory();*/
  
 		
 		} catch (RuntimeException e) {
@@ -109,11 +147,14 @@ public class Main {
 		System.out.println("= = = Main.main() complete = = =");
 		
 		Date dateEnde = new Date();
-		System.out.println("Dauer:\t" + ((dateEnde.getTime()-dateAnf.getTime()) / 60000) + " min" + ( ( (dateEnde.getTime()-dateAnf.getTime() ) % 60000) % 1000) + " s");
+		System.out.println("Dauer:\t" + ((dateEnde.getTime()-dateAnf.getTime()) / 60000) + " min" + ( ( (dateEnde.getTime()-dateAnf.getTime() ) % 60000) / 1000) + " s");
 		System.out.println("Start:\t" + dateAnf.toString());
 		System.out.println("Ende:\t" + dateEnde.toString());
 		
+
+
+		factory.close();
 		//show all table count.
-		CreateTables.countAllTables();
+		//CreateTables.countAllTables();
 	}
 }
