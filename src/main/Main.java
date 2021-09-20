@@ -47,7 +47,6 @@ public class Main {
 			Item i = new Item();
 			Shop s = new Shop();
 			Item_Shop is = new Item_Shop();
-			Similar_Items si = new Similar_Items();
 			Book b = new Book();
 			Author a = new Author();
 			Publisher p = new Publisher();
