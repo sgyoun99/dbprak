@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.ArrayList;
 
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import org.hibernate.HibernateException; 
 import org.hibernate.Session; 
@@ -91,6 +92,7 @@ public class ManageItem {
 		
 		try {
 			tx = session.beginTransaction();
+			item.setRating(0.0);
 			session.save(item); 
 			tx.commit();
 		} catch (HibernateException e) {
@@ -296,6 +298,19 @@ public class ManageItem {
 
 					if(!item_id.equals("") && !sim_item_id.equals("")) {
 						item_simItem_map.computeIfAbsent(item_id,itemVar->new ArrayList<String>()).add(sim_item_id);
+					}
+				}else {
+					String item_id = "";
+					String sim_item_id = "";
+					item_id = xt.getAttributeValue(similars.getParentNode(), "asin");
+					NodeList nodeList = node.getChildNodes();
+					for(int i=0; i<nodeList.getLength(); i++) {
+						if(nodeList.item(i).getNodeName().equals("asin")){
+							sim_item_id = nodeList.item(i).getTextContent().trim();
+						}
+						if(!item_id.equals("") && !sim_item_id.equals("")) {
+							item_simItem_map.computeIfAbsent(item_id,itemVar->new ArrayList<String>()).add(sim_item_id);
+						}
 					}
 				}
 				
