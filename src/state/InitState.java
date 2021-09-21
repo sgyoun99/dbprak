@@ -2,15 +2,10 @@ package state;
 
 import org.hibernate.SessionFactory;
 
+import main.App;
 import main.DataLoader;
 
 public class InitState implements State {
-
-	private SessionFactory factory; 
-
-	public InitState(SessionFactory factory) {
-		this.factory = factory;
-	}
 
 	@Override
 	public String[] validInputArray() {
@@ -19,9 +14,8 @@ public class InitState implements State {
 	}
 
 	@Override
-	public State executeCommand() {
+	public void executeCommand() {
 		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -32,14 +26,14 @@ public class InitState implements State {
 
 	@Override
 	public void runState() {
-		DataLoader dataLoader = new DataLoader(factory);
-		dataLoader.load();
-		
+		printStateMessage();
+		new DataLoader(App.sessionFactory).load();
+		runNextState();
 	}
 
 	@Override
 	public void printStateMessage() {
-		// TODO Auto-generated method stub
+		System.out.println("Initiallizing Database...");
 		
 	}
 
@@ -49,16 +43,5 @@ public class InitState implements State {
 		
 	}
 
-	@Override
-	public State nextState() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void checkSession() {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

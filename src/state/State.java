@@ -7,11 +7,11 @@ public interface State extends CommandLineInterface {
 
 	public void runState();
 	
-	public void checkSession();
-
 	public void printStateMessage();
 
-	public State nextState();
+	public default void runNextState() {
+		new HomeState().runState();
+	};
 	
 	public default void restartState() {
 		runState();

@@ -72,7 +72,9 @@ public class DataLoader {
 			//Shop
 			ManageShop ms = new ManageShop();
 			ms.manageShops(factory);
-			
+
+// temporary comment out
+/*
 			//Item									//TODO: similiar Items
 			ManageItem mi = new ManageItem();
 			mi.readIn(factory);
@@ -103,12 +105,13 @@ public class DataLoader {
 			ManageCategory mcat = new ManageCategory();
 			mcat.manageCategories(factory);
  
+ */
 		
 		} catch (RuntimeException e) {
 			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("= = = Main.main() failed = = =");
+//			System.out.println("= = = Main.main() failed = = =");
 			System.out.println("= = = Data Loading has failed = = =");
 
 			Date dateEnde = new Date();

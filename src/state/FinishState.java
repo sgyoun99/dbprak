@@ -3,15 +3,10 @@ package state;
 import org.hibernate.SessionFactory;
 
 import frontend.HomeState;
+import main.App;
 
 public class FinishState implements State {
 	
-	private SessionFactory factory; 
-
-	public FinishState(SessionFactory factory) {
-		this.factory = factory;
-	}
-
 	@Override
 	public void printInputRequestMessage() {
 		// TODO Auto-generated method stub
@@ -25,9 +20,9 @@ public class FinishState implements State {
 	}
 
 	@Override
-	public State executeCommand() {
-		// TODO Auto-generated method stub
-		return null;
+	public void executeCommand() {
+		App.sessionFactory.close();
+		App.sessionFactory = null;
 	}
 
 	@Override
@@ -38,24 +33,16 @@ public class FinishState implements State {
 
 	@Override
 	public void runState() {
-		factory.close();
+		printStateMessage();
+		executeCommand();
+		runNextState();
 	}
 
 	@Override
 	public void printStateMessage() {
-		// TODO Auto-generated method stub
+		System.out.println("Closing Session...");
 		
 	}
 
-	@Override
-	public State nextState() {
-		return new HomeState();
-	}
-
-	@Override
-	public void checkSession() {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

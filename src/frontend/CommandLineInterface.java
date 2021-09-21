@@ -24,7 +24,7 @@ public interface CommandLineInterface {
 		System.out.println(invalidInput + " is not valid command.");
 	}
 
-	public State executeCommand();
+	public void executeCommand();
 
 	public void responseResult();
 	

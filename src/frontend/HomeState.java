@@ -7,7 +7,7 @@ import state.State;
 public class HomeState implements State {
 	
 	Scanner sc = new Scanner(System.in);
-	RequestCommand command = new RequestCommand();
+	Command command = new Command();
 
 	@Override
 	public void printStateMessage() {
@@ -35,62 +35,59 @@ public class HomeState implements State {
 	
 	@Override
 	public void runState() {
-		while(true) {
-			printStateMessage();
-			printInputRequestMessage();
-			String inputString = "";
-			inputString = sc.nextLine();
+		printStateMessage();
+		printInputRequestMessage();
+		String inputString = "";
+		inputString = sc.nextLine();
 
-			switch (inputString) {
-			// TODO
-			// terminal clear command?
-			case "1":
-				command.init();
-				break;
-			case "2":
-				command.finish();
-				break;
-			case "3":
-				command.getProduct();
-				break;
-			case "4":
-				command.getProducts("");
-				break;
-			case "5":
-				command.getCategoryTree();
-				break;
-			case "6":
-				command.getProductsByCategoryPath();
-				break;
-			case "7":
-				command.getTopProducts();
-				break;
-			case "8":
-				command.getSimilarCheaperProduct();
-				break;
-			case "9":
-				command.addNewReview();
-				break;
-			case "10":
-				command.getTrolls();
-				break;
-			case "11":
-				command.getOffers();
-				break;
-			default:
-				printErrorMessage(inputString);
-				break;
-			}
-
-
+		switch (inputString) {
+		// TODO
+		// terminal clear command?
+		case "1":
+			command.init();
+			break;
+		case "2":
+			command.finish();
+			break;
+		case "3":
+			command.getProduct();
+			break;
+		case "4":
+			command.getProducts(null);
+			break;
+		case "5":
+			command.getCategoryTree();
+			break;
+		case "6":
+			command.getProductsByCategoryPath();
+			break;
+		case "7":
+			command.getTopProducts();
+			break;
+		case "8":
+			command.getSimilarCheaperProduct();
+			break;
+		case "9":
+			command.addNewReview();
+			break;
+		case "10":
+			command.getTrolls();
+			break;
+		case "11":
+			command.getOffers();
+			break;
+		default:
+			printErrorMessage(inputString);
+			this.runState();
+			break;
 		}
+
 	}
 
 
 	@Override
-	public State executeCommand() {
+	public void executeCommand() {
 		// TODO Auto-generated method stub
-		return null;
 	}
 
 
@@ -111,17 +108,6 @@ public class HomeState implements State {
 	}
 
 
-	@Override
-	public State nextState() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
-
-	@Override
-	public void checkSession() {
-		// TODO Auto-generated method stub
-		
-	}
 
 }

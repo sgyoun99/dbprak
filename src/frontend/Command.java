@@ -3,33 +3,37 @@ package frontend;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import main.App;
 import state.FinishState;
 import state.InitState;
 import state.State;
 
-public class RequestCommand implements ExecutableCommand {
+public class Command implements ExecutableCommand {
 	
-	private static SessionFactory factory; 
 
 	public void init() {;
 		System.out.println("init()");
-		try {
-			factory = new Configuration().configure().buildSessionFactory();
-		} catch (Throwable ex) { 
-			System.err.println("Failed to create sessionFactory object." + ex);
-			throw new ExceptionInInitializerError(ex); 
-		}		
-		State initState = new InitState(factory);
-		initState.runState();
+		if(App.sessionFactory == null) {
+			try {
+				App.sessionFactory = new Configuration().configure().buildSessionFactory();
+			} catch (Throwable ex) { 
+				System.err.println("Failed to create sessionFactory object." + ex);
+				throw new ExceptionInInitializerError(ex); 
+			}		
+			new InitState().runState();
+		} else {
+			System.out.println("App is aleady initiallized.");
+			new HomeState().runState();
+		}
 	}
 
 	public void finish() {
 		System.out.println("finish()");
-		if(factory != null && factory.isOpen()) {
-			State finishState = new FinishState(factory);
-			finishState.runState();
+		if(App.sessionFactory != null && App.sessionFactory.isOpen()) {
+			new FinishState().runState();
 		} else {
 			System.out.println("init first please!");
+			new HomeState().runState();
 		}
 	};
 
