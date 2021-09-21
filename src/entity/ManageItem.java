@@ -9,6 +9,10 @@ import java.util.function.*;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.ArrayList;
 
 import org.w3c.dom.Node;
 
@@ -38,7 +42,8 @@ public class ManageItem {
 
       	dresden(factory);
 		leipzig(factory);
-		
+		getSimItem(factory, Config.DRESDEN_ENCODED, "Dresden");
+		getSimItem(factory, Config.LEIPZIG, "Leipzig");
 		System.out.println("\033[1;34m    *\033[35m*\033[33m*\033[32m* \033[91mItems finished \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
 
 	}
@@ -232,28 +237,92 @@ public class ManageItem {
 		});
 	}
 	
-	/*public void handleDuplicatedPKDresden(Item item) {
-		//to-do
-	}
-
-	public void handleDuplicatedPKLeipzig(Item item) {
-		//to-do
-	}*/
-
 	/**
-	 * not currently used for main-program
+	 * add Sim_items to DB
+	 * nicht in batches sonst Abbruch bei Hiberate Fehler
 	 */
-	public static void main(String[] args) throws Exception {
-		
-		/*DropTables.dropTables();
-		CreateTables.createTables();
-		
-		Item item = new Item();
-		item.dresden();
-		item.leipzig();*/
-		
+	private void addSimItems(SessionFactory factory, HashMap<String,ArrayList<String>> simItemMap) {
+		for(Map.Entry<String, ArrayList<String>> set : simItemMap.entrySet()) {
+			Session session = factory.openSession();
+			Transaction tx = null;
+			
+			try {
+				tx = session.beginTransaction();
+				Item item = (Item)session.get(Item.class, set.getKey()); 
+				if(item != null) {
+					HashSet<Item> simItems = new HashSet<Item>();
+					for(String simItemId : set.getValue()) {					
+						Item simItem = (Item)session.get(Item.class, simItemId);
+						if(simItem != null) {
+							simItems.add(simItem);
+						}
+					}
+					if(simItems.size()!= 0){
+						item.setSim_items(simItems);
+						session.update(item); 
+					}
+				}
+				tx.commit();
+			} catch (HibernateException e) {
+				if (tx!=null) {
+					tx.rollback();
+				}
+				System.out.println("HibernateException for " + set.getKey()); 
+			} finally {
+				session.close(); 
+			}
+		}
 	}
-	/*
-	 */
+
+
+	private void getSimItem(SessionFactory factory, String xmlPath, String location) {	
+		HashMap<String,ArrayList<String>> item_simItem_map = new HashMap<String,ArrayList<String>>();
+		System.out.println(">> Similar_Items " + location + " ...");
+		XmlTool xt = new XmlTool(xmlPath);
+		xt.filterElementNodesDFS(xt.getDocumentNode(), node -> {
+			return node.getNodeName().equals("similars") && !xt.isLeafElementNode(node);
+		}
+		).forEach(similars -> xt.visitChildElementNodesDFS(similars, (node, level) -> {
+			try {
+				
+				//xml data
+				if(node.getNodeName().equals("item")) {
+					Node parentItemNode = similars.getParentNode();
+
+					String item_id = "";
+					String sim_item_id = "";
+					item_id = xt.getAttributeValue(parentItemNode, "asin");
+					sim_item_id = xt.getAttributeValue(node, "asin");
+
+					if(!item_id.equals("") && !sim_item_id.equals("")) {
+						item_simItem_map.computeIfAbsent(item_id,itemVar->new ArrayList<String>()).add(sim_item_id);
+					}
+				}
+				
+			} catch (IllegalArgumentException e) {
+				ErrorLogger.write(location, ErrType.PROGRAM , e, xt.getNodeContentDFS(node));
+			} catch (XmlNoAttributeException e) {
+				e.setLocation(location);
+				ErrorLogger.write(e, xt.getNodeContentDFS(node));
+			}/* catch (XmlValidationFailException e) {
+				e.setLocation(location);
+				ErrorLogger.write(e, xt.getNodeContentDFS(node));
+			} catch (SQLException e) {
+				if(!e.getMessage().contains("duplicate key value")) {
+					ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(node));
+				}
+			}*/ catch (Exception e) {
+				ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(node));
+			}	
+
+		}));
+
+		//test?
+		
+		//insert into DB
+		addSimItems(factory, item_simItem_map);
+	
+	}
+	
 	
 }

@@ -20,7 +20,7 @@ public class Item {
 
 	private Set shop_items;
 	private Set sim_items;
-	private Set sim_sim_items;
+	private Set items;
 
 	private Set books;
 	private Set cds;
@@ -100,11 +100,11 @@ public class Item {
 	public void setSim_items(Set sim_items) {
 		this.sim_items = sim_items;
 	}
-	public Set getSim_sim_items() {
-		return this.sim_sim_items;
+	public Set getItems() {
+		return this.items;
 	}
-	public void setSim_sim_items(Set sim_sim_items) {
-		this.sim_sim_items = sim_sim_items;
+	public void setItems(Set items) {
+		this.items = items;
 	}
 
 	public Set getBooks() {
