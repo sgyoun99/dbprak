@@ -17,26 +17,27 @@ import java.util.Date;
  * Main class for project.
  *
  */
-public class Main {
+//public class Main {
+public class DataLoader {
 
-	private static SessionFactory factory; 
+	private SessionFactory factory; 
+
+	public DataLoader(SessionFactory factory) {
+		this.factory = factory;
+	}
 
 	/**
 	 * main method for project.
 	 * @param args args are not used.
 	 */
-	public static void main(String[] args) {
+//	public static void main(String[] args) {
+	public void load() {
  
 
 		Date dateAnf = new Date();
 		//long secAnf = dateAnf.getTime();
 
-		try {
-			factory = new Configuration().configure().buildSessionFactory();
-		} catch (Throwable ex) { 
-			System.err.println("Failed to create sessionFactory object." + ex);
-			throw new ExceptionInInitializerError(ex); 
-		}
+
 		
 		try {
 			
@@ -109,6 +110,7 @@ public class Main {
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("= = = Main.main() failed = = =");
+			System.out.println("= = = Data Loading has failed = = =");
 
 			Date dateEnde = new Date();
 			System.out.println("Dauer: " + (dateEnde.getTime()-dateAnf.getTime()) + " ms");
@@ -116,7 +118,8 @@ public class Main {
 			System.out.println("Ende:\t" + dateEnde.toString());
 		}
 		
-		System.out.println("= = = Main.main() complete = = =");
+//		System.out.println("= = = Main.main() complete = = =");
+		System.out.println("= = = Data Loading complete = = =");
 		
 		Date dateEnde = new Date();
 		System.out.println("Dauer:\t" + ((dateEnde.getTime()-dateAnf.getTime()) / 60000) + " min" + ( ( (dateEnde.getTime()-dateAnf.getTime() ) % 60000) / 1000) + " s");
@@ -125,6 +128,5 @@ public class Main {
 		
 
 
-		factory.close();
 	}
 }
