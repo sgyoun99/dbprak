@@ -11,6 +11,7 @@ public class HomeState implements State {
 
 	@Override
 	public void printStateMessage() {
+		System.out.println();
 		System.out.println("***********************************");
 		System.out.println("* List of available commands      *");
 		System.out.println("***********************************");
@@ -101,6 +102,7 @@ public class HomeState implements State {
 	@Override
 	public void printInputRequestMessage() {
 //		sc.nextLine(); // clear input stream?
+		System.out.println();
 		System.out.println("***********************************");
 		System.out.println("* Please enter only one number.   *");
 		System.out.println("***********************************");
@@ -108,6 +110,9 @@ public class HomeState implements State {
 	}
 
 
-
+	@Override
+	public void runNextState() {
+		this.runState();
+	}
 
 }

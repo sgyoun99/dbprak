@@ -1,7 +1,8 @@
 package state;
 
-import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 
+import frontend.HomeState;
 import main.App;
 import main.DataLoader;
 
@@ -15,7 +16,19 @@ public class InitState implements State {
 
 	@Override
 	public void executeCommand() {
-		// TODO Auto-generated method stub
+		if(App.sessionFactory == null) {
+			try {
+				App.sessionFactory = new Configuration().configure().buildSessionFactory();
+				new DataLoader(App.sessionFactory).load();
+			} catch (Throwable ex) { 
+				System.err.println("Failed to create sessionFactory object." + ex);
+				throw new ExceptionInInitializerError(ex); 
+			} finally {
+			}
+		} else {
+			System.out.println("App is aleady initiallized!");
+		}
+		runNextState();
 	}
 
 	@Override
@@ -24,12 +37,6 @@ public class InitState implements State {
 		
 	}
 
-	@Override
-	public void runState() {
-		printStateMessage();
-		new DataLoader(App.sessionFactory).load();
-		runNextState();
-	}
 
 	@Override
 	public void printStateMessage() {
@@ -41,6 +48,11 @@ public class InitState implements State {
 	public void printInputRequestMessage() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void runNextState() {
+		new HomeState().runState();
 	}
 
 

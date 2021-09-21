@@ -73,8 +73,6 @@ public class DataLoader {
 			ManageShop ms = new ManageShop();
 			ms.manageShops(factory);
 
-// temporary comment out
-/*
 			//Item									//TODO: similiar Items
 			ManageItem mi = new ManageItem();
 			mi.readIn(factory);
@@ -105,7 +103,6 @@ public class DataLoader {
 			ManageCategory mcat = new ManageCategory();
 			mcat.manageCategories(factory);
  
- */
 		
 		} catch (RuntimeException e) {
 			e.printStackTrace();

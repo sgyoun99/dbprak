@@ -1,7 +1,5 @@
 package state;
 
-import org.hibernate.SessionFactory;
-
 import frontend.HomeState;
 import main.App;
 
@@ -21,8 +19,13 @@ public class FinishState implements State {
 
 	@Override
 	public void executeCommand() {
-		App.sessionFactory.close();
-		App.sessionFactory = null;
+		if(App.sessionFactory != null && App.sessionFactory.isOpen()) {
+			App.sessionFactory.close();
+			App.sessionFactory = null;
+		} else {
+			System.out.println("init first please!");
+		}
+		runNextState();
 	}
 
 	@Override
@@ -31,17 +34,16 @@ public class FinishState implements State {
 		
 	}
 
-	@Override
-	public void runState() {
-		printStateMessage();
-		executeCommand();
-		runNextState();
-	}
 
 	@Override
 	public void printStateMessage() {
 		System.out.println("Closing Session...");
 		
+	}
+
+	@Override
+	public void runNextState() {
+		new HomeState().runState();
 	}
 
 

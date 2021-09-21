@@ -5,20 +5,13 @@ import frontend.HomeState;
 
 public interface State extends CommandLineInterface {
 
-	public void runState();
+	public default void runState() {
+		printStateMessage();
+		executeCommand();
+	};
 	
 	public void printStateMessage();
 
-	public default void runNextState() {
-		new HomeState().runState();
-	};
+	public void runNextState();
 	
-	public default void restartState() {
-		runState();
-	};
-
-	public default void moveToHomeState() {
-		HomeState homeState = new HomeState();
-		homeState.runState();
-	}
 }
