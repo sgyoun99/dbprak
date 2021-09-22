@@ -454,7 +454,7 @@ public class Testtat {
     /**
      * jetzt wird was eingekauft!
      */
-/*    public void purchaseItem(SessionFactory factory, String item_id, String customer_name, int shop_id) {
+    public void purchaseItem(SessionFactory factory, String item_id, String customer_name, int shop_id) {
         Session session = factory.openSession();
 		Transaction tx = null;
 
@@ -477,7 +477,7 @@ public class Testtat {
         } finally {
             session.close();
         }
-    }*/
+    }
 
 
 
