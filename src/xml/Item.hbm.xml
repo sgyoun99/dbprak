@@ -57,6 +57,11 @@
          <one-to-many class = "csv.Review"/>
       </set>
       
+      <set name = "purchases" cascade="all">
+         <key column = "item_id"/>
+         <one-to-many class = "entity.Purchase"/>
+      </set>
+      
            
    </class>
 
