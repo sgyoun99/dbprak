@@ -14,6 +14,7 @@ public class Customer implements Serializable{
     private String account_number;
     
     private Set reviews;
+    private Set purchases;
     
 	public Customer() {}
     public Customer(String customer_name, String street, int nr, int zip, String city, String account_number) {
@@ -70,11 +71,17 @@ public class Customer implements Serializable{
 
 
     public Set getReviews() {
-		return reviews;
-	}
-	public void setReviews(Set reviews) {
-		this.reviews = reviews;
-	}
+	 return reviews;
+    }
+    public void setReviews(Set reviews) {
+	this.reviews = reviews;
+    }
+    public void setPurchases(Set purchases) {
+        this.purchases = purchases;
+    }
+    public Set getPurchases() {
+        return this.purchases;
+    }
 
 
 
