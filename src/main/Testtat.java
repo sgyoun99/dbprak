@@ -7,7 +7,12 @@ import csv.*;
 import java.sql.Date;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Stack;
+import java.util.Arrays;
+
+import java.time.LocalDate;
 
 import org.hibernate.HibernateException; 
 import org.hibernate.Session; 
@@ -30,6 +35,10 @@ public class Testtat {
         test.getProducts(factory, "Sherlock");
         test.getProducts(factory, "Sherlick");
         test.getProducts(factory, "g");
+
+        test.getProductsByCategoryPath(factory, 3);
+        test.getProductsByCategoryPath(factory, 0);
+        test.getProductsByCategoryPath(factory, 17);
 
         test.addNewReview(factory, "B000026NO5", "baerchen76", "COOL", "WOW WAS THIS COOL!", 3);
         test.addNewReview(factory, "B000026NO5", "baerchen77", "COOL", "WOW WAS THIS COOL!", 2);
@@ -60,13 +69,57 @@ public class Testtat {
             tx = session.beginTransaction();
             Item searchItem = (Item) session.get(Item.class, item_id);
             if(searchItem!=null) {
+                String additionalDetails = "";
+                switch(searchItem.getProductgroup()) {
+                    case Book:
+                        List<?> authorList = session.createQuery("SELECT B.author FROM Book A JOIN A.authors B WHERE A.item_id = '" + item_id + "'").list();
+                        List<?> pubList = session.createQuery("SELECT B.publisher FROM Book A JOIN A.publishers B WHERE A.item_id = '" + item_id + "'").list();
+                        Book book = (Book) session.get(Book.class, item_id);
+                        for(int i=0; i<authorList.size(); i++) {
+                            additionalDetails += "Author: " + authorList.get(i) + "\n";
+                        }
+                        for(int i=0; i<pubList.size(); i++) {
+                            additionalDetails += "Publisher: " + pubList.get(i) + "\n";
+                        }
+                        additionalDetails += "Pages: " + book.getPages() + "\nPublication Date: " + book.getPublication_date().toString() + "\nISBN: " + book.getIsbn() + "\n";
+                        break;
+                    case Music_CD:
+                        List<?> artistList = session.createQuery("SELECT B.artist FROM Music_CD A JOIN A.artists B WHERE A.item_id = '" + item_id + "'").list();
+                        additionalDetails += "ReleaseDate: " + ((Date) session.createQuery("SELECT A.release_date FROM Music_CD A WHERE A.item_id = '" + item_id + "'").uniqueResult()).toString() + "\n"; 
+                        List<?> titleList = session.createQuery("SELECT A.title FROM Title A WHERE A.item_id = '" + item_id + "'").list();                                               
+                        for(int i=0; i<artistList.size(); i++) {
+                            additionalDetails += "Artist: " + artistList.get(i) + "\n";
+                        }
+                        for(int i=0; i<titleList.size(); i++) {
+                            additionalDetails += "Titel " + (i+1) + ": " + titleList.get(i) + "\n";
+                        }                        
+                        break;
+                    case DVD:
+                        Dvd dvd = (Dvd) session.get(Dvd.class, item_id);
+                        List<?> creatorList = session.createQuery("SELECT B.creator FROM Dvd A JOIN A.creators B WHERE A.item_id = '" + item_id + "'").list();
+                        List<?> actorsList = session.createQuery("SELECT B.actor FROM Dvd A JOIN A.actors B WHERE A.item_id = '" + item_id + "'").list();
+                        List<?> directorList = session.createQuery("SELECT B.director FROM Dvd A JOIN A.directors B WHERE A.item_id = '" + item_id + "'").list();
+                        for(int i=0; i<actorsList.size(); i++) {
+                            additionalDetails += "Actor: " + actorsList.get(i) + "\n";
+                        }
+                        for(int i=0; i<directorList.size(); i++) {
+                            additionalDetails += "Director: " + directorList.get(i) + "\n";
+                        }
+                        for(int i=0; i<creatorList.size(); i++) {
+                            additionalDetails += "Creator: " + creatorList.get(i) + "\n";
+                        }
+                        additionalDetails += "Format: " + dvd.getFormat() + "\nRegiocode: " + dvd.getRegioncode() + "\nRunnigtime: " + dvd.getRunningtime() + "\n";
+                        break;
+                    default:
+                        break;
+                }
                 String rating = (searchItem.getRating()==0.0) ? "not rated" : searchItem.getRating()+"";
                 System.out.println( "\nItem: " + searchItem.getItem_id() + 
                                     "\nTitle: " + searchItem.getTitle() + 
                                     "\nRating: " + rating + 
                                     "\nSalesrank: " + searchItem.getSalesranking() + 
                                     "\nImage: " + searchItem.getImage() + 
-                                    "\nProductgroup" + searchItem.getProductgroup() + "\n");
+                                    "\nProductgroup: " + searchItem.getProductgroup() + "\n" + additionalDetails);
             } else {
                 System.out.println("\nWe are sorry, but Item " + item_id + " does not exist in our Database. Please check your input and contact our Helpcenter.\n");
             }
@@ -162,28 +215,26 @@ public class Testtat {
         try{
             tx = session.beginTransaction();
             if( ((Item) session.get(Item.class, item_id))==null){
-                System.out.println("\nWe are sory but it seems that " + item_id + " is not listet in our database. Please check your input and contact our Helpcenter\n");
+                System.out.println("\nWe are sorry but it seems that " + item_id + " is not listet in our database. Please check your input and contact our Helpcenter\n");
             } else {
                 String shopQueryString = "SELECT S.shop_id, S.shop_name FROM Shop S";
                 List<?> shopList = session.createQuery(shopQueryString).list();
 
-                String queryString = "FROM Item_Shop I WHERE I.item_id = :param_item_id";
+                String queryString = "FROM Item_Shop I WHERE I.item_id = :param_item_id AND I.availabiliti = true";
                 Query query = session.createQuery(queryString);
                 query.setParameter("param_item_id", item_id);
                 List offerList = query.list();
 
                 String shopName = "";
                 for(Iterator iterator = offerList.iterator(); iterator.hasNext();) {
-                    Item_Shop is = (Item_Shop) iterator.next();
-                    if(is.getAvailabiliti()==true){
-                        for(int i=0; i<shopList.size(); i++) {
-                            Object[] row = (Object[]) shopList.get(i);
-                            if((Integer) row[0] == is.getShop_id()) {
-                                shopName = (String) row[1];
-                            }
+                    Item_Shop is = (Item_Shop) iterator.next();                   
+                    for(int i=0; i<shopList.size(); i++) {
+                        Object[] row = (Object[]) shopList.get(i);
+                        if((Integer) row[0] == is.getShop_id()) {
+                            shopName = (String) row[1];
                         }
-                        System.out.println("You can find " + is.getItem_id() + " in our Shop in " + shopName + " for " + is.getPrice() + is.getCurrency() + " in " + is.getCondition() + " condition\n");
                     }
+                    System.out.println("You can find " + is.getItem_id() + " in our Shop in " + shopName + " for " + is.getPrice() + is.getCurrency() + " in " + is.getCondition() + " condition\n");                 
                 }
                 if(shopName.equals("")){
                     System.out.println("We are sorry but it seems there are currently no offers for " + item_id + " in our shops\n");
@@ -213,7 +264,7 @@ public class Testtat {
             topProductQuery.setMaxResults(limit);            
             List<?> topProductList = topProductQuery.list();
 
-            System.out.println("Our TOP" + limit + " Products are:\nItemID\t\tTitle\t\t\t\t\t\tRating\tSalesrank");
+            System.out.println("Our TOP " + limit + " Products are:\nItemID\t\tTitle\t\t\t\t\t\tRating\tSalesrank");
 			for(int i=0; i<topProductList.size(); i++) {
                 Object[] row = (Object[]) topProductList.get(i);
                 System.out.println((String) row[0] + "\t" + ((String) row[1] + "                                        ").substring(0,40) + "\t" + (Double) row[2] + "\t" +  (Integer) row[3]);
@@ -240,24 +291,16 @@ public class Testtat {
             if(((Item) session.get(Item.class, item_id))==null) {
                 System.out.println("\nWe are sorry, but Item " + item_id + " does not exist in our Database. Please check your input and contact our Helpcenter.\n");
             } else {
-                Boolean cheaperExists = false;
                 System.out.println(); 
 
-                //get Price of original item
-                String priceQuery = "SELECT MIN(O.price) FROM Item_Shop O WHERE O.item_id='" + item_id + "'";  
-                Double priceOrigin = (Double) session.createQuery(priceQuery).uniqueResult();
-
-                //get all similar items
-                String simQuery = "SELECT I.sim_items FROM Item I WHERE I.item_id='" + item_id + "'";  
-                List<?> simList = session.createQuery(simQuery).list();
-                for(int i=0; i<simList.size(); i++) {    
-                    Item simItem = (Item) simList.get(i);
-                    String cheapPriceQuery = "SELECT B.price FROM Item_Shop B WHERE B.item_id = '" + simItem.getItem_id() + "'";
-                    Double priceSim = (Double) session.createQuery(cheapPriceQuery).uniqueResult();   
-                    if(priceSim<priceOrigin && priceSim!=0){ 
-                        cheaperExists = true;
-                        System.out.println("There is a cheaper option for " + item_id + ": " + simItem.getItem_id() + " for " + priceSim); 
-                    }            
+                String s = "SELECT B.item_id FROM Item A JOIN A.sim_items B WHERE A.item_id = '" + item_id + "' AND " +
+                            "(SELECT C.price FROM Item_Shop C WHERE C.item_id = B.item_id AND C.price <> 0.0) < " +
+                            "(SELECT MIN(D.price) FROM Item_Shop D WHERE D.item_id = '" + item_id + "')";
+                List<?> simList = session.createQuery(s).list();
+                Boolean cheaperExists = (simList.size()>0) ? true : false;
+                for(int i=0; i<simList.size(); i++) {  
+                    System.out.print("There is a cheaper option for " + item_id + ": "); 
+                    getOffers(factory, (String) simList.get(i));                               
                 }
                 if(!cheaperExists) {
                     System.out.println("We are sorry, it seems that there is no cheaper option for: " + item_id);
@@ -272,7 +315,6 @@ public class Testtat {
             session.close();
         }
     }
-
 
     /**
      * get all reviewers where average rating is below limit
@@ -303,5 +345,142 @@ public class Testtat {
         }
     }
 
+    /**
+     * get all products associated with the given category
+     */
+    public void getProductsByCategoryPath(SessionFactory factory, int startCat) {
+		Session session = factory.openSession();
+		Transaction tx = null;
+
+        try{
+            tx = session.beginTransaction();
+            Category cat = (Category) session.get(Category.class, startCat);
+            if(cat!=null) {
+                Stack<Integer> catStack = new Stack<Integer>();
+                ArrayList<Integer> catList = new ArrayList<>(Arrays.asList(startCat));
+                catStack.push(startCat);
+                while(!catStack.empty()) {
+                    Integer catItemId = catStack.pop();
+                    String catQueryString = "SELECT B.category_id FROM Category A Join A.sub_categories B WHERE A.category_id = " + catItemId; 
+                    List<?> catQList = session.createQuery(catQueryString).list();
+                    for(int i=0; i<catQList.size(); i++) {
+                            catList.add(((Integer) catQList.get(i)));
+                            catStack.push(((Integer) catQList.get(i)));              
+                    }
+                }
+                String s = catList.isEmpty() ? "We are sorry but there are no items associated with category: " + startCat : "The following items are associated with category: " + startCat;
+                System.out.println(s);
+                while(!catList.isEmpty()) {
+                    int categoryId = catList.get(0);
+                    catList.remove(0);
+                    String itemQuery = "SELECT B.name, A.item_id FROM Category B Join B.items A WHERE B.category_id = " + categoryId;
+                    List<?> itemList = session.createQuery(itemQuery).list();
+                    for(int i=0; i<itemList.size(); i++) {
+                        Object[] row = (Object[]) itemList.get(i);
+                        System.out.println((String) row[1]  + ": (" + categoryId + " - " + (String) row[0] + ")");
+                    }
+                }
+            } else {
+                System.out.println("We are sorry but Category " + startCat + " does not exist in our database");
+            }
+            System.out.println();
+            tx.commit();
+        }catch (HibernateException e) {
+            if (tx!=null) tx.rollback();
+            e.printStackTrace();
+            System.out.println("Ooops! Something went wrong while getting trolls ... ^^' ");
+        } finally {
+            session.close();
+        }
+    }
+
+
+    private void rekCat(SessionFactory factory, int cat_id) {
+        Session session = factory.openSession();
+		Transaction tx = null;
+
+        try{
+            tx = session.beginTransaction();
+            String subCatQuery = "SELECT A.category_id FROM Category B JOIN B.sub_categories A WHERE B.category_id = " + cat_id;
+            List<Integer> subCatList = session.createQuery(subCatQuery).list();
+            if(!subCatList.isEmpty()) {
+                System.out.print(" " + cat_id + " [ ");
+                for(Integer subCat : subCatList) {
+                    rekCat(factory, subCat);
+                }
+                System.out.print(" ] ");
+            } else {
+                System.out.print(" " + cat_id + " ");
+            }            
+            tx.commit();
+        }catch (HibernateException e) {
+            if (tx!=null) tx.rollback();
+            System.out.println("Ooops! Something went wrong while getting the CategoryTree ... ^^' ");
+        } finally {
+            session.close();
+        }
+    }
+
+    public void getCategoryTree(SessionFactory factory) {
+        Session session = factory.openSession();
+		Transaction tx = null;
+
+        try{
+            tx = session.beginTransaction();
+			String overCatQuery = "SELECT B.category_id FROM Category A JOIN A.over_categories B WHERE B.category_id NOT IN (SELECT C.category_id FROM Category D JOIN D.sub_categories C)";      
+            List<Integer> overCatList = session.createQuery(overCatQuery).list();
+
+            if(!overCatList.isEmpty()) {
+                for(Integer cat : overCatList) {
+                    String subCatQuery = "SELECT A.category_id FROM Category B JOIN B.sub_categories A WHERE B.category_id = " + cat;
+                    List<Integer> subCatList = session.createQuery(subCatQuery).list();
+                    System.out.print(cat + " [ ");
+                    for(Integer subCat : subCatList) {
+                        rekCat(factory, subCat);
+                    }
+                    System.out.println(" ] ");
+                }
+            } 
+            System.out.println();
+            tx.commit();
+        }catch (HibernateException e) {
+            if (tx!=null) tx.rollback();
+            System.out.println("Ooops! Something went wrong while getting the CategoryTree ... ^^' ");
+        } finally {
+            session.close();
+        }
+    }
+
+    /**
+     * jetzt wird was eingekauft!
+     */
+/*    public void purchaseItem(SessionFactory factory, String item_id, String customer_name, int shop_id) {
+        Session session = factory.openSession();
+		Transaction tx = null;
+
+        try{
+            tx = session.beginTransaction();
+            Item boughtItem = (Item) session.get(Item.class, item_id);
+            Customer buyingCustomer = (Customer) session.get(Customer.class, customer_name);
+            if(boughtItem!=null && buyingCustomer!=null) {
+                Purchase newPurchase = new Purchase(customer_name, item_id, shop_id, (new Date(System.currentTimeMillis())));
+                session.save(newPurchase);
+                System.out.println("Congratulations, "+ customer_name + "! You successfully bought " + item_id + "!");
+            } else {
+                System.out.println("We are sorry, but you are either not one of our customers or this item does not exist.");
+            }			
+            System.out.println();
+            tx.commit();
+        }catch (HibernateException e) {
+            if (tx!=null) tx.rollback();
+            System.out.println("Ooops! Something went wrong while purchasing an item ... ^^' ");
+        } finally {
+            session.close();
+        }
+    }*/
+
+
+
 }
 
+    
