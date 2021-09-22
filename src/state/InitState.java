@@ -41,7 +41,7 @@ public class InitState implements State {
 		default:
 			this.isStandardConifig = false;
 			this.hibernateFileLocation = "src/" + this.inputString;
-			if(!isValidInput(hibernateFileLocation)) {
+			if(!isValidInput()) {
 				System.out.println("File does not exist.");
 				runState();
 			} else {
@@ -118,8 +118,8 @@ public class InitState implements State {
 
 
 	@Override
-	public boolean isValidInput(String inputString) {
-		File file = new File(inputString);
+	public boolean isValidInput() {
+		File file = new File(this.hibernateFileLocation);
 		return file.exists();
 	}
 

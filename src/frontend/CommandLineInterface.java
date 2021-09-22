@@ -5,7 +5,7 @@ public interface CommandLineInterface {
 	
 	public void requestInput();
 
-	public boolean isValidInput(String inputString);
+	public boolean isValidInput();
 
 	public void executeCommand();
 

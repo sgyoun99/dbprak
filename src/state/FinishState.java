@@ -52,7 +52,7 @@ public class FinishState implements State {
 	}
 
 	@Override
-	public boolean isValidInput(String inputString) {
+	public boolean isValidInput() {
 		// TODO Auto-generated method stub
 		return false;
 	}

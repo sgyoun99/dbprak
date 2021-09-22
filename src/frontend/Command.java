@@ -15,6 +15,7 @@ public class Command implements ExecutableCommand {
 
 	public void getProduct() {
 		System.out.println("getProduct()");
+		new ProductState().runState();
 		
 	}
 	public void getProducts(String pattern) {
