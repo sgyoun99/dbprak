@@ -1,31 +1,36 @@
 package state;
 
-import frontend.HomeState;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+
 import main.App;
 
 public class FinishState implements State {
 	
 	@Override
-	public void printInputRequestMessage() {
+	public void runState() {
+		printStateMessage();
+		executeCommand();
+		runNextState();
+	}
+
+	@Override
+	public void requestInput() {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
-	public String[] validInputArray() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public void executeCommand() {
 		if(App.sessionFactory != null && App.sessionFactory.isOpen()) {
 			App.sessionFactory.close();
 			App.sessionFactory = null;
+			//TODO do we need to destroy it manually? or sessionFactory would destroy it when it is closed?
+			StandardServiceRegistryBuilder.destroy(App.registry);
+			System.out.println("Database is now finished.");
 		} else {
-			System.out.println("init first please!");
+			System.out.println("Database is not in use.");
 		}
-		runNextState();
 	}
 
 	@Override
@@ -37,7 +42,7 @@ public class FinishState implements State {
 
 	@Override
 	public void printStateMessage() {
-		System.out.println("Closing Session...");
+		System.out.println("[Finishing]");
 		
 	}
 
@@ -45,6 +50,13 @@ public class FinishState implements State {
 	public void runNextState() {
 		new HomeState().runState();
 	}
+
+	@Override
+	public boolean isValidInput(String inputString) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 
 
 }

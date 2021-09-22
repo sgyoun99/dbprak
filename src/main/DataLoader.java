@@ -4,13 +4,7 @@ package main;
 import XmlTools.XmlTool;
 import entity.*;
 import csv.*;
-
-import org.hibernate.HibernateException; 
-import org.hibernate.Session; 
-import org.hibernate.Transaction;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-
 import java.util.Date;
 
 /**
@@ -45,6 +39,7 @@ public class DataLoader {
 
 
 			// die sind momentan hier drin, damit sie compiliert werden
+			/*
 			Item i = new Item();
 			Shop s = new Shop();
 			Item_Shop is = new Item_Shop();
@@ -62,7 +57,7 @@ public class DataLoader {
 			Category cat = new Category();
 			Review r = new Review();
 			Customer cus = new Customer();
-
+			 */
 			
 			//Encoding to UTF-8
 			XmlTool xt = new XmlTool();
@@ -73,6 +68,9 @@ public class DataLoader {
 			ManageShop ms = new ManageShop();
 			ms.manageShops(factory);
 
+//tmp comment out
+/*
+*/
 			//Item									//TODO: similiar Items
 			ManageItem mi = new ManageItem();
 			mi.readIn(factory);

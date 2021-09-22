@@ -4,7 +4,30 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"> 
 
 <hibernate-mapping>
-   <class name = "entity.Book" table = "BOOK">
+   
+   <class name = "entity.Author" table = "AUTHOR">
+      
+      <meta attribute = "class-description">
+         This class contains the author details. 
+      </meta>
+      
+      <id name = "author" type = "string" column = "author"/>
+
+                   
+   </class>
+
+   <class name = "entity.Publisher" table = "PUBLISHER">
+      
+      <meta attribute = "class-description">
+         This class contains the publisher details. 
+      </meta>
+      
+      <id name = "publisher" type = "string" column = "publisher"/>
+
+                   
+   </class>
+
+	<class name = "entity.Book" table = "BOOK">
       
       <meta attribute = "class-description">
          This class contains the book details. 
@@ -28,29 +51,6 @@
     
            
    </class>
-
-   <class name = "entity.Author" table = "AUTHOR">
-      
-      <meta attribute = "class-description">
-         This class contains the author details. 
-      </meta>
-      
-      <id name = "author" type = "string" column = "author"/>
-
-                   
-   </class>
-
-   <class name = "entity.Publisher" table = "PUBLISHER">
-      
-      <meta attribute = "class-description">
-         This class contains the publisher details. 
-      </meta>
-      
-      <id name = "publisher" type = "string" column = "publisher"/>
-
-                   
-   </class>
-
 
    
 

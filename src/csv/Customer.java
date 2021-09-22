@@ -2,6 +2,7 @@
 package csv;
 
 import java.io.Serializable;
+import java.util.Set;
 
 public class Customer implements Serializable{
     //private int customer_id;
@@ -12,8 +13,9 @@ public class Customer implements Serializable{
     private String city;
     private String account_number;
     
-
-    public Customer() {}
+    private Set reviews;
+    
+	public Customer() {}
     public Customer(String customer_name, String street, int nr, int zip, String city, String account_number) {
         this.customer_name = customer_name;
         this.street = street;
@@ -67,6 +69,12 @@ public class Customer implements Serializable{
     }
 
 
+    public Set getReviews() {
+		return reviews;
+	}
+	public void setReviews(Set reviews) {
+		this.reviews = reviews;
+	}
 
 
 

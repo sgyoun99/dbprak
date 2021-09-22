@@ -4,6 +4,7 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"> 
 
 <hibernate-mapping>
+
    <class name = "csv.Review" table = "REVIEW">
       
       <meta attribute = "class-description">
@@ -23,11 +24,12 @@
       <property name = "content" column = "content" type = "string" length="5000"/>
       <property name = "rating" column = "rating" type = "int"/>     
 
+<!--
       <set name = "customers"  cascade="all">
          <key column = "customer_name"/>
          <one-to-many class = "csv.Customer"/>
       </set>
-           
+-->           
    </class>
 
 
@@ -44,6 +46,12 @@
       <property name = "zip" column = "zip" type = "int"/>
       <property name = "city" column = "city" type = "string"/>
       <property name = "account_number" column = "account_number" type = "string"/><!--Unique setzen!-->
+
+<!-- error fixing... -->
+      <set name = "reviews"  cascade="all">
+         <key column = "customer_name"/>
+         <one-to-many class = "csv.Review"/>
+      </set>
 
    </class>
 

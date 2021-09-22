@@ -1,6 +1,5 @@
 package frontend;
 
-import state.*;
 
 public interface ExecutableCommand {
 
