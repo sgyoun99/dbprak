@@ -27,6 +27,7 @@ public class Item {
 	private Set dvds;
 
 	private Set reviews;
+	private Set purchases;
 
 
 
@@ -131,6 +132,12 @@ public class Item {
 	public void setReviews(Set reviews) {
 		this.reviews = reviews;
 	}
+	public void setPurchases(Set purchases) {
+        	this.purchases = purchases;
+    	}
+    	public Set getPurchases() {
+        	return this.purchases;
+    	}
 
 	
 
