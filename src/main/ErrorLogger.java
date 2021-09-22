@@ -7,8 +7,16 @@ import exception.SQLKeyDuplicatedException;
 import exception.XmlDataException;
 
 import entity.*;
+import entity.Error;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+
 import java.sql.Connection;
 
 /**
@@ -39,24 +47,17 @@ public class ErrorLogger {
 			//System standard out print
 			System.out.print(">> ErrorLogger::" + e.getErrType() + "::");
 			System.out.println(errorContent.split("\n")[0]);
+			
+			Error error = new Error();
+			error.setLocation(e.getLocation());
+			error.setItem_id(e.getItem_id());
+			error.setAttribute(e.getAttrName());
+			error.setErrtype(e.getErrType());
+			error.setException(e.getClass().getSimpleName());
+			error.setError_message(e.getMessage());
+			error.setContents(errorContent.split("\n")[0]);
+			addError(error);
 
-			try {
-				JDBCTool.executeUpdate((conn, st) -> {
-					PreparedStatement ps = conn.prepareStatement(ErrorLogger.sql);
-					ps.setString(1, e.getLocation());
-					ps.setString(2, e.getItem_id());
-					ps.setString(3, e.getAttrName());
-					ps.setString(4, e.getErrType().toString());
-					ps.setString(5, e.getClass().getSimpleName());
-					ps.setString(6, e.getMessage());
-					ps.setString(7, errorContent);
-					ps.execute();
-					ps.close();
-				});
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				throw new RuntimeException(ex);
-			}	
 		}
 	}
 
@@ -91,88 +92,37 @@ public class ErrorLogger {
 			System.out.print(">> ErrorLogger::" + errType + "::");
 			System.out.println(errorContent.split("\n")[0]);
 
-			try {
-				JDBCTool.executeUpdate((conn, st) -> {
-					PreparedStatement ps = conn.prepareStatement(ErrorLogger.sql);
-					ps.setString(1, location);
-					ps.setString(2, item_id);
-					ps.setString(3, attrName);
-					ps.setString(4, errType.toString());
-					ps.setString(5, e.getClass().getSimpleName());
-					ps.setString(6, e.getMessage());
-					ps.setString(7, errorContent);
-					ps.execute();
-					ps.close();
-				});
-			} catch (Exception ex) {
-				ex.printStackTrace();
-				//TODO
-				throw new RuntimeException("test");
-			}
+			Error error = new Error();
+			error.setLocation(location);
+			error.setItem_id(item_id);
+			error.setAttribute(attrName);
+			error.setErrtype(errType);
+			error.setException(e.getClass().getSimpleName());
+			error.setError_message(e.getMessage());
+			error.setContents(errorContent.split("\n")[0]);
+			addError(error);
+
 		}
 	}
 	
-	 /**
-	  * To write a log in the DB. Used when the Exception is key duplication exception.
-	  * @param e SQLKeyDuplicatedException
-	  * @param errorContent
-	  */
-	public static void write(SQLKeyDuplicatedException e, String errorContent) {
-		if( !willLogSQL_DUPLICATE && e.getErrType().equals(ErrType.SQL_DUPLICATE)) {
-			//not logging
-		} else {
-			
-			//System standard out print
-			System.out.print(">> ErrorLogger::" + e.getErrType() + "::");
-			System.out.println(errorContent.split("\n")[0]);
 
-			try {
-				JDBCTool.executeUpdate((conn, st) -> {
-					PreparedStatement ps = conn.prepareStatement(ErrorLogger.sql);
-					ps.setString(1, e.getLocation());
-					ps.setString(2, e.getItem_id());
-					ps.setString(3, e.getAttrName());
-					ps.setString(4, e.getErrType().toString());
-					ps.setString(5, e.getClass().getSimpleName());
-					ps.setString(6, e.getMessage());
-					ps.setString(7, errorContent);
-					ps.execute();
-					ps.close();
-				});
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}	
-		}
+	private static void addError(Error error) {
+		Session session = App.sessionFactory.openSession();
+		Transaction tx = null;
 		
+		try {
+			tx = session.beginTransaction();
+			session.save(error); 
+			tx.commit();
+		} catch (HibernateException e) {
+			if (tx!=null) {
+				tx.rollback();
+			}
+			System.out.println("HibernateException for ErrorLogger" + error.getException()); 
+		} finally {
+			session.close(); 
+		}
 	}
-
-	public static void checkDuplicate(Book book){
-		try{
-            Connection con = JDBCTool.getConnection();
-            con.setAutoCommit(false);
-			PreparedStatement ps = con.prepareStatement("Select pages, publication_date, isbn FROM book where item_id = ?");
-			ps.setString(1, book.getItem_id());
-            ResultSet rs = ps.executeQuery();
-         
-            while(rs.next()){
-                if(! (rs.getShort("pages") == book.getPages())){
-					System.out.println("wrong page count on item " + book.getItem_id());
-				}
-				if (rs.getDate("publication_date").compareTo(book.getPublication_date()) != 0){
-					System.out.println("wrong date on item " + book.getItem_id());
-				}
-				if (!(rs.getString("isbn").equals(book.getIsbn()))){
-					System.out.println("wrong isbn on item " + book.getItem_id());
-				}
-            }
-            con.close();
-        
-        }catch(SQLException e){
-            System.out.println("Exception in ErrorLogger");
-        }
-	}
-
-
 
 }
 

@@ -35,6 +35,7 @@
       <mapping resource = "./xml/DVD.hbm.xml"/>
       <mapping resource = "./xml/Music_CD.hbm.xml"/>
       <mapping resource = "./xml/Review.hbm.xml"/>
+      <mapping resource = "./xml/Error.hbm.xml"/>
         
         
 		

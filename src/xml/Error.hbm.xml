@@ -1,0 +1,35 @@
+<?xml version = "1.0" encoding = "utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+"-//Hibernate/Hibernate Mapping DTD//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"> 
+
+<hibernate-mapping>
+
+   <class name = "entity.Error" table = "Errors">
+      
+      <meta attribute = "class-description">
+         This class contains the error details. 
+      </meta>
+      
+      <id name = "error_id" unsaved-value="null">
+         <generator class="sequence">
+            <param name="sequence_name">errors_error_id_seq</param>
+         </generator>
+      </id>
+        
+      <property name = "location" column = "location" type = "string"/>
+      <property name = "item_id" column = "item_id" type = "string"/>
+      <property name = "attribute" column = "attribute" type = "string"/>
+      <property name = "errtype" column = "errtype">
+            <type name="org.hibernate.type.EnumType">
+                <param name="enumClass">main.ErrType</param>
+            </type>
+      </property>
+      <property name = "exception" column = "exception" type = "string"/>
+      <property name = "error_message" column = "error_message" type = "string" length="10000"/>
+      <property name = "contents" column = "contents" type = "string" length="10000"/>
+
+   </class>
+
+
+</hibernate-mapping>  
