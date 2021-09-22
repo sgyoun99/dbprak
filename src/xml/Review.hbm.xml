@@ -53,6 +53,31 @@
          <one-to-many class = "csv.Review"/>
       </set>
 
+   <set name = "purchases" cascade="all">
+         <key column = "customer_name"/>
+         <one-to-many class = "entity.Purchase"/>
+      </set>
+      
+   </class>
+
+
+   <class name = "entity.Purchase" table = "PURCHASE">
+
+      <meta attribute = "class-description">
+         This class contains the purchase details. 
+      </meta>
+
+      <id name = "purchase_id" unsaved-value="null">
+         <generator class="sequence">
+            <param name="sequence_name">purchase_purchase_id_seq</param>
+         </generator>
+      </id>
+
+      <property name = "customer_name" column = "customer_name" type = "string"/>
+      <property name = "item_id" column = "item_id" type = "string"/>
+      <property name = "shop_id" column = "shop_id" type = "int"/>
+      <property name = "order_date" column = "order_date" type = "date"/>
+   
    </class>
 
 
