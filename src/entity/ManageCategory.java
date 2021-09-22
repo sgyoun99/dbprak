@@ -178,29 +178,27 @@ public class ManageCategory {
 	 * ACHTUNG: Fehler, wenn das item nicht existiert! Abfangen
 	 */
 	public void addItems(SessionFactory factory, ArrayList<String[]> itemList){
-		for(String[] item : itemList) {
-				Session session = factory.openSession();
-				Transaction tx = null;
-			
-				try {
-					tx = session.beginTransaction();
-					Category cat = session.get(Category.class, Integer.valueOf(item[0]));
-					if(cat!=null){
-						HashSet<Item> itemSet = new HashSet<Item>();
-						Item catItem = session.get(Item.class, item[1]);
-						if(catItem!=null){
-							itemSet.add(catItem);
-							cat.setItems(itemSet);			
-							session.update(cat); 
-						}	
-					}		 
-					tx.commit();
-				} catch (HibernateException e) {
-					if (tx!=null) tx.rollback();
-					System.out.println("HibernateException for adding Item_Categories " + item[0] + " " + item[1]);
-				} finally {
-					session.close(); 
-				}
+		for(String[] item : itemListFunc) {
+			Session session = factory.openSession();
+			Transaction tx = null;
+		
+			try {
+				tx = session.beginTransaction();
+				Category cat = session.get(Category.class, Integer.valueOf(item[0]));
+				if(cat!=null){
+					Item catItem = session.get(Item.class, item[1]);
+					if(catItem!=null){
+						cat.getItems().add(catItem); 			
+						session.update(cat);
+					}	
+				}		 
+				tx.commit();
+			} catch (HibernateException e) {
+				if (tx!=null) tx.rollback();
+				System.out.println("HibernateException for adding Item_Categories " + item[0] + " " + item[1]);
+			} finally {
+				session.close(); 
+			}
 			
 		}
 	}
