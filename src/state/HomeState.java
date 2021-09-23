@@ -14,12 +14,12 @@ public class HomeState implements State {
 
 	@Override
 	public void printStateMessage() {
-		System.out.print("[Home]\t\t\t\t\t");
-		System.out.print("(DB: ");
+		System.out.print("[Home]\t\t\t\t");
+		System.out.print("\033[35m(DB: ");
 		System.out.print(App.isDbInitiallized ? "on" : "off");
 		System.out.print(" / Media: ");
 		System.out.print(App.isMediaLoaded ? "loaded" : "not_loaded");
-		System.out.println(")");
+		System.out.println(")\033[0m");
 	}
 	
 	
