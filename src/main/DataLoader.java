@@ -71,6 +71,7 @@ public class DataLoader {
 //tmp comment out
 /*
 */
+
 			//Item									//TODO: similiar Items
 			ManageItem mi = new ManageItem();
 			mi.readIn(factory);
@@ -92,7 +93,6 @@ public class DataLoader {
 			//Music_CD
 			ManageMusic_CD mc = new ManageMusic_CD();
 			mc.manageCDs(factory);
-			
 			//Review
 			ManageReview mr = new ManageReview();
 			mr.manageReviews(factory);
@@ -100,6 +100,8 @@ public class DataLoader {
 			//Category
 			ManageCategory mcat = new ManageCategory();
 			mcat.manageCategories(factory);
+/*
+ */
  
 		
 		} catch (RuntimeException e) {

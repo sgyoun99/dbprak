@@ -25,7 +25,7 @@
 
       <property name="show_sql">false</property><!--um wegen sql statements zu gucken-->
       
-      <property name="hibernate.hbm2ddl.auto">create</property>
+      <property name="hibernate.hbm2ddl.auto">create-drop</property>
         
       
       

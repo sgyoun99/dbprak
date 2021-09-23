@@ -3,6 +3,8 @@ package state;
 import java.util.Scanner;
 
 import frontend.Command;
+import main.App;
+import main.DataLoader;
 
 public class HomeState implements State {
 	
@@ -12,7 +14,12 @@ public class HomeState implements State {
 
 	@Override
 	public void printStateMessage() {
-		System.out.println("[Home]");
+		System.out.print("[Home]\t\t\t\t\t");
+		System.out.print("(DB: ");
+		System.out.print(App.isDbInitiallized ? "on" : "off");
+		System.out.print(" / Media: ");
+		System.out.print(App.isMediaLoaded ? "loaded" : "not_loaded");
+		System.out.println(")");
 	}
 	
 	
@@ -21,7 +28,23 @@ public class HomeState implements State {
 	public void runState() {
 		printStateMessage();
 		requestInput();
-		executeCommand();
+		if( !App.isDbInitiallized || !App.isMediaLoaded ) {
+			switch (inputString) {
+			case "1":
+			case "2":
+			case "3":
+			case "q":
+				executeCommand();
+				break;
+			default:
+				System.out.println("Please init and load first.");
+				new HomeState().runState();
+				break;
+			}
+		} else {
+			// already done init and load
+			executeCommand();
+		}
 	}
 
 
@@ -33,33 +56,37 @@ public class HomeState implements State {
 			command.init();
 			break;
 		case "2":
-			command.finish();
+			this.loadMedia();
+			runState();
 			break;
 		case "3":
-			command.getProduct();
+			command.finish();
 			break;
 		case "4":
-			command.getProducts(null);
+			command.getProduct();
 			break;
 		case "5":
-			command.getCategoryTree();
+			command.getProducts(null);
 			break;
 		case "6":
-			command.getProductsByCategoryPath();
+			command.getCategoryTree();
 			break;
 		case "7":
-			command.getTopProducts();
+			command.getProductsByCategoryPath();
 			break;
 		case "8":
-			command.getSimilarCheaperProduct();
+			command.getTopProducts();
 			break;
 		case "9":
-			command.addNewReview();
+			command.getSimilarCheaperProduct();
 			break;
 		case "10":
-			command.getTrolls();
+			command.addNewReview();
 			break;
 		case "11":
+			command.getTrolls();
+			break;
+		case "12":
 			command.getOffers();
 			break;
 		case "q":
@@ -69,7 +96,7 @@ public class HomeState implements State {
 			break;
 		default:
 			System.out.println("\"" + inputString + "\" is invalid input.");
-			this.runState();
+			new HomeState().runState();
 			break;
 		}
 	}
@@ -85,27 +112,30 @@ public class HomeState implements State {
 	@Override
 	public void requestInput() {
 		System.out.println("*** Available commands ***");
-		System.out.println(" 1: init");
-		System.out.println(" 2: finish");
-		System.out.println(" 3: getProduct");
-		System.out.println(" 4: getProducts");
-		System.out.println(" 5: getCategoryTree");
-		System.out.println(" 6: getProductsByCategoryPath");
-		System.out.println(" 7: getTopProducts");
-		System.out.println(" 8: getSimilarCheaperProduct");
-		System.out.println(" 9: addNewReview");
-		System.out.println("10: getTrolls");
-		System.out.println("11: getOffers");
+		System.out.println(" 1: init Database");
+		System.out.println(" 2: load Media XML to DB");
+		System.out.println(" 3: finish Database connection");
+		System.out.println(" 4: getProduct");
+		System.out.println(" 5: getProducts");
+		System.out.println(" 6: getCategoryTree");
+		System.out.println(" 7: getProductsByCategoryPath");
+		System.out.println(" 8: getTopProducts");
+		System.out.println(" 9: getSimilarCheaperProduct");
+		System.out.println("10: addNewReview");
+		System.out.println("11: getTrolls");
+		System.out.println("12: getOffers");
 		System.out.println(" q: quit Program");
 		System.out.print(  ">>");
 
 		this.inputString = sc.nextLine();
+		
+
 	}
 
 
 	@Override
 	public void runNextState() {
-		this.runState();
+		new HomeState().runState();
 	}
 
 
@@ -114,6 +144,20 @@ public class HomeState implements State {
 	public boolean isValidInput() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	private void loadMedia() {
+		if(App.isDbInitiallized) {
+			if(App.isMediaLoaded) {
+				System.out.println("Media data is already loaded.");
+			} else {
+				new DataLoader(App.sessionFactory).load();
+				App.isMediaLoaded = true;
+			}			
+		} else {
+			System.out.println("Database is not initiallized.");
+		}
+
 	}
 
 }

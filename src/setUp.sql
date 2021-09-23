@@ -1,10 +1,11 @@
-drop table if exists errors;
-drop table if exists review, customer;
-drop table if exists music_cd_artist, music_cd_label, title, music_cd, artist, label;
-drop table if exists dvd_actor, dvd_creator, dvd_director, dvd, actor, creator, director;
-drop table if exists book_publisher, book_author, book, publisher, author;
-drop table if exists item_category, sub_category, category;
-drop table if exists similar_items, item_shop, shop, item;
+drop table if exists errors cascade;
+drop table if exists review, customer, purchase cascade;
+drop table if exists music_cd_artist, music_cd_label, title, music_cd, artist, label cascade;
+drop table if exists dvd_actor, dvd_creator, dvd_director, dvd, actor, creator, director cascade;
+drop table if exists book_publisher, book_author, book, publisher, author cascade;
+drop table if exists item_category, sub_category, category cascade;
+drop table if exists similar_items, item_shop, shop, item cascade;
+
 drop type if exists errtype;
 
 /*CREATE TYPE pgroup AS ENUM('Book', 'Music_CD', 'DVD');*/

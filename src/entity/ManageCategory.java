@@ -178,7 +178,7 @@ public class ManageCategory {
 	 * ACHTUNG: Fehler, wenn das item nicht existiert! Abfangen
 	 */
 	public void addItems(SessionFactory factory, ArrayList<String[]> itemList){
-		for(String[] item : itemListFunc) {
+		for(String[] item : itemList) {
 			Session session = factory.openSession();
 			Transaction tx = null;
 		
