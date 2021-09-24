@@ -28,10 +28,10 @@ public class InitState implements State {
 	public void executeCommand() {
 		
 		switch (this.inputString) {
-		case "1":
+		case "home":
 			new HomeState().runState();
 			break;
-		case "2":
+		case "1":
 			if(App.isDbInitiallized) {
 				System.out.println("Database connection is already made.");
 				new HomeState().runState();
@@ -43,7 +43,7 @@ public class InitState implements State {
 				runNextState();
 			}
 			break;
-		case "3":
+		case "2":
 			if(App.isDbInitiallized) {
 				System.out.println("Database connection is already made.");
 				new HomeState().runState();
@@ -97,9 +97,9 @@ public class InitState implements State {
 	@Override
 	public void requestInput() {
 		System.out.println("*** Available commands ***");
-		System.out.println("1: To Home");
-		System.out.println("2: Use hibernate.cfg.xml (create mode)");
-		System.out.println("3: To specify hibernate cfg xml under src/");
+		System.out.println("home: To Home");
+		System.out.println("1: Use hibernate.cfg.xml (create mode)");
+		System.out.println("2: To specify hibernate cfg xml under src/");
 		System.out.println("testmode: To use exsiting DB with hibernate_update.cfg.xml");
 		System.out.print(">>");
 

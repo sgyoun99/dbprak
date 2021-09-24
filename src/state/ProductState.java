@@ -29,6 +29,7 @@ public class ProductState implements State {
 		if(isValidInput()) {
 			item_id = this.inputString;
 			new Testtat().getProduct(App.sessionFactory, item_id);
+			runNextState();
 		} else {
 			System.out.println("Invalid input.");
 			runState();
@@ -46,7 +47,6 @@ public class ProductState implements State {
 		printStateMessage();
 		requestInput();
 		executeCommand();
-		runNextState();
 	}
 
 	@Override
