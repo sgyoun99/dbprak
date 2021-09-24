@@ -79,11 +79,10 @@ public class HomeState implements State {
 //			command.getSimilarCheaperProduct();
 			break;
 		case "10":
-//			command.addNewReview();
 			new AddReviewState().runState();
 			break;
 		case "11":
-//			command.getTrolls();
+			new GetTrollsState().runState();
 			break;
 		case "12":
 //			command.getOffers();
