@@ -4,8 +4,6 @@ import java.util.Scanner;
 
 import main.App;
 import main.DataLoader;
-import main.SimilarCheaperProductState;
-import main.TopProductsState;
 
 public class HomeState implements State {
 	
