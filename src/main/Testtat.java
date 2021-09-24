@@ -16,6 +16,7 @@ import javax.management.InvalidAttributeValueException;
 import javax.persistence.NoResultException;
 
 import java.util.Arrays;
+import java.util.Scanner;
 
 import java.time.LocalDate;
 
@@ -363,46 +364,70 @@ public class Testtat implements ExecutableCommand {
     /**
      * get all products associated with the given category
      */
-    public void getProductsByCategoryPath(SessionFactory factory, int startCat) {
+    public void getProductsByCategoryPath(SessionFactory factory) {
 		Session session = factory.openSession();
 		Transaction tx = null;
 
         try{
             tx = session.beginTransaction();
-            Category cat = (Category) session.get(Category.class, startCat);
-            if(cat!=null) {
-                Stack<Integer> catStack = new Stack<Integer>();
-                ArrayList<Integer> catList = new ArrayList<>(Arrays.asList(startCat));
-                catStack.push(startCat);
-                while(!catStack.empty()) {
-                    Integer catItemId = catStack.pop();
-                    String catQueryString = "SELECT B.category_id FROM Category A Join A.sub_categories B WHERE A.category_id = " + catItemId; 
-                    List<?> catQList = session.createQuery(catQueryString).list();
-                    for(int i=0; i<catQList.size(); i++) {
-                            catList.add(((Integer) catQList.get(i)));
-                            catStack.push(((Integer) catQList.get(i)));              
-                    }
-                }
-                String s = catList.isEmpty() ? "We are sorry but there are no items associated with category: " + startCat : "The following items are associated with category: " + startCat;
-                System.out.println(s);
-                while(!catList.isEmpty()) {
-                    int categoryId = catList.get(0);
-                    catList.remove(0);
-                    String itemQuery = "SELECT B.name, A.item_id FROM Category B Join B.items A WHERE B.category_id = " + categoryId;
-                    List<?> itemList = session.createQuery(itemQuery).list();
-                    for(int i=0; i<itemList.size(); i++) {
-                        Object[] row = (Object[]) itemList.get(i);
-                        System.out.println((String) row[1]  + ": (" + categoryId + " - " + (String) row[0] + ")");
-                    }
-                }
-            } else {
-                System.out.println("We are sorry but Category " + startCat + " does not exist in our database");
+            Boolean fin = false;
+            String rootCatQuery = "SELECT DISTINCT B.category_id, B.name FROM Category A JOIN A.over_categories B WHERE B.category_id NOT IN (SELECT C.category_id FROM Category D JOIN D.sub_categories C)";      
+            List<?> rootCatList = session.createQuery(rootCatQuery).list();
+            for(int i=0; i<rootCatList.size(); i++) {
+                Object[] row = (Object[]) rootCatList.get(i);
+                System.out.println((Integer) row[0]  + "\t" + (String) row[1]);
             }
-            System.out.println();
+            Scanner scan = new Scanner(System.in);
+            int cat_id = scan.nextInt();
+            while(!fin){
+                System.out.println();
+                String catQueryString = "SELECT B.category_id, B.name FROM Category A Join A.sub_categories B WHERE A.category_id = " + cat_id;
+                List<?> catQList = session.createQuery(catQueryString).list();
+                for(int i=0; i<catQList.size(); i++) {
+                    Object[] row = (Object[]) catQList.get(i);
+                    System.out.println((Integer) row[0]  + "\t" + (String) row[1]);
+                }
+                System.out.println("Stay with " + cat_id + "?");
+                int answer = scan.nextInt();
+                if(answer == cat_id) {
+                    fin = true;
+                } else {
+                    cat_id = answer;
+                }
+            }
+
+            Stack<Integer> catStack = new Stack<Integer>();
+            ArrayList<Integer> catList = new ArrayList<>(Arrays.asList(cat_id));
+            catStack.push(cat_id);
+            while(!catStack.empty()) {
+                Integer catItemId = catStack.pop();
+                String catQueryString = "SELECT B.category_id FROM Category A Join A.sub_categories B WHERE A.category_id = " + catItemId; 
+                List<?> catQList = session.createQuery(catQueryString).list();
+                for(int i=0; i<catQList.size(); i++) {
+                        catList.add(((Integer) catQList.get(i)));
+                        catStack.push(((Integer) catQList.get(i)));              
+                }
+            }            
+            System.out.println("\nThe following items are associated with category: " + cat_id);
+            Boolean thereareItems = false;
+            while(!catList.isEmpty()) {
+                int categoryId = catList.get(0);
+                catList.remove(0);
+                String itemQuery = "SELECT B.name, A.item_id FROM Category B Join B.items A WHERE B.category_id = " + categoryId;
+                List<?> itemList = session.createQuery(itemQuery).list();
+                for(int i=0; i<itemList.size(); i++) {
+                    thereareItems = true;
+                    Object[] row = (Object[]) itemList.get(i);
+                    System.out.println((String) row[1]  + ": (" + categoryId + " - " + (String) row[0] + ")");
+                }
+            }
+            
+            String s = thereareItems ? "\n" : "We are sorry but there are no items associated with category: " + cat_id + "\n";
+
+            System.out.println(s);
             tx.commit();
         }catch (HibernateException e) {
             if (tx!=null) tx.rollback();
-            e.printStackTrace();
             System.out.println("Ooops! Something went wrong while getting trolls ... ^^' ");
         } finally {
             session.close();
@@ -436,31 +461,37 @@ public class Testtat implements ExecutableCommand {
         }
     }
 
-    public void getCategoryTree(SessionFactory factory) {
+    public void getCategoryTree(SessionFactory factory, int catId) {
         Session session = factory.openSession();
-		Transaction tx = null;
+        Transaction tx = null;
 
         try{
             tx = session.beginTransaction();
-			String overCatQuery = "SELECT B.category_id FROM Category A JOIN A.over_categories B WHERE B.category_id NOT IN (SELECT C.category_id FROM Category D JOIN D.sub_categories C)";      
-            List<Integer> overCatList = session.createQuery(overCatQuery).list();
+            String startCatQuery = "SELECT name FROM Category WHERE category_id = " + catId;
+            String catName = (String) session.createQuery(startCatQuery).uniqueResult();
 
-            if(!overCatList.isEmpty()) {
-                for(Integer cat : overCatList) {
-                    String subCatQuery = "SELECT A.category_id FROM Category B JOIN B.sub_categories A WHERE B.category_id = " + cat;
-                    List<Integer> subCatList = session.createQuery(subCatQuery).list();
-                    System.out.print(cat + " [ ");
-                    for(Integer subCat : subCatList) {
-                        rekCat(factory, subCat);
+            if(catName!=null) {
+                System.out.print(catId + "\t" + catName);
+                Boolean fin = false;
+
+                while(!fin) {
+                    String catQuery = "SELECT B.category_id, B.name FROM Category A JOIN A.over_categories B WHERE A.category_id = " + catId;
+                    Object[] answer = (Object[]) session.createQuery(catQuery).uniqueResult();
+                    if(answer!=null) {
+                        System.out.print("\n" + (int) answer[0] + "\t" + (String) answer[1]);
+                        catId = (int) answer[0];
+                    } else {
+                        System.out.println("\t(root)\n");
+                        fin = true;
                     }
-                    System.out.println(" ] ");
                 }
-            } 
-            System.out.println();
+            } else {
+                System.out.println("We are sorry but this category does not exist in our database\n");
+            }    
             tx.commit();
         }catch (HibernateException e) {
             if (tx!=null) tx.rollback();
-            System.out.println("Ooops! Something went wrong while getting the CategoryTree ... ^^' ");
+            System.out.println("Ooops! Something went wrong while getting the CategoryTree ... ^^' \n");
         } finally {
             session.close();
         }
