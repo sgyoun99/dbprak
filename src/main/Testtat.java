@@ -52,6 +52,7 @@ public class Testtat implements ExecutableCommand {
         test.getOffers(factory, "B00066KWNS");
         test.getOffers(factory, "3405156211");
         test.getOffers(factory, "B000026N65");
+        test.getOffers(factory, "B00005AT2N"); // in 2 shops with different price
 
         test.getTopProducts(factory, 15);
 

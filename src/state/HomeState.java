@@ -87,7 +87,7 @@ public class HomeState implements State {
 			new GetTrollsState().runState();
 			break;
 		case "12":
-//			command.getOffers();
+			new GetOffersState().runState();
 			break;
 		case "q":
 			//end program
