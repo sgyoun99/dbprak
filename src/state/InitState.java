@@ -8,7 +8,6 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 import main.App;
 import main.Config;
-import main.DataLoader;
 
 public class InitState implements State {
 

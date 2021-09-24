@@ -1,6 +1,7 @@
 package main;
 
 import entity.*;
+import frontend.ExecutableCommand;
 import csv.*;
 
 
@@ -10,6 +11,10 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Stack;
+
+import javax.management.InvalidAttributeValueException;
+import javax.persistence.NoResultException;
+
 import java.util.Arrays;
 
 import java.time.LocalDate;
@@ -23,7 +28,7 @@ import org.hibernate.Query;
 
 
 
-public class Testtat {
+public class Testtat implements ExecutableCommand {
 
 
     /*TestDaten:
@@ -136,8 +141,10 @@ public class Testtat {
      * get all Products that match the titlepattern
      */
     public void getProducts(SessionFactory factory, String pattern) {
-        if(pattern.length() < 5){
-            System.out.println("\nThe pattern has to include at least 5 characters.\n");
+//        if(pattern.length() < 5){
+        if(pattern.length() < 4){
+//            System.out.println("\nThe pattern has to include at least 5 characters.\n");
+            System.out.println("\nThe pattern has to include at least 4 characters.\n");
 
         } else {
             Session session = factory.openSession();
@@ -145,7 +152,8 @@ public class Testtat {
 
             try{
                 tx = session.beginTransaction();
-                String queryString = "FROM Item I WHERE I.title LIKE '%" + pattern + "%'";
+              //String queryString = "FROM Item I WHERE I.title LIKE '%" + pattern + "%'";
+                String queryString = "FROM Item I WHERE lower(I.title) LIKE '%" + pattern.toLowerCase() + "%'";
                 List<?> productsList = session.createQuery(queryString).list();            
                 if(!productsList.isEmpty()) {
                     System.out.println("\nThe following items include the pattern '" + pattern + "':");
@@ -170,7 +178,9 @@ public class Testtat {
     /**
      * add new Reviews to the DB
      */
-    public void addNewReview(SessionFactory factory, String item_id, String customer, String summary, String content, int rating) {
+    public void addNewReview(SessionFactory factory, String item_id, String customer, String summary, String content, int rating)
+		throws NoResultException {
+
         Session session = factory.openSession();
 		Transaction tx = null;
 
@@ -180,13 +190,15 @@ public class Testtat {
             //ensures that this is either a valid customer or an anonymous review
             Customer reviewCustomer = (Customer) session.get(Customer.class, customer);
             if(reviewCustomer==null) {  
-                customer = "guest";
+//                customer = "guest";
+            	throw new NoResultException("Customer " + customer + " does not exists.");
             } 
 
             Item reviewItem = (Item) session.get(Item.class, item_id);
             if(reviewItem==null) {
                 System.out.println("We are sorry but we can not add your Review for item " + item_id + "\nIt seems that this item is not listet in our database. If you are sure that this is the correct item_id please contact our Helpcenter.\n");
                 //Fehlermeldung weil kein existentes Item in DB
+            	throw new NoResultException("Product ID " + item_id + " does not exists.");
             }else{
                 Date review_date = new Date(System.currentTimeMillis());
                 Review review = new Review(item_id, customer, review_date, summary, content, rating);			
@@ -194,6 +206,8 @@ public class Testtat {
                 System.out.println("New Review added\nfor " + item_id + " by " + customer + "\nrating: " + rating + "\n" + summary + "\n" + content + "\n");
             }
             tx.commit();
+        } catch (NoResultException e) {
+        	throw e;
         } catch (Exception e) {
             if (tx!=null) {
                 tx.rollback();
@@ -478,6 +492,18 @@ public class Testtat {
             session.close();
         }
     }
+
+	@Override
+	public void init() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void finish() {
+		// TODO Auto-generated method stub
+		
+	}
 
 
 

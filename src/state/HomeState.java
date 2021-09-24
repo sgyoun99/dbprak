@@ -2,7 +2,6 @@ package state;
 
 import java.util.Scanner;
 
-import frontend.Command;
 import main.App;
 import main.DataLoader;
 
@@ -10,7 +9,6 @@ public class HomeState implements State {
 	
 	private Scanner sc = new Scanner(System.in);
 	private String inputString = "";
-	private Command command = new Command();
 
 	@Override
 	public void printStateMessage() {
@@ -53,41 +51,42 @@ public class HomeState implements State {
 
 		switch (inputString) {
 		case "1":
-			command.init();
+			new InitState().runState();
 			break;
 		case "2":
 			this.loadMedia();
 			runState();
 			break;
 		case "3":
-			command.finish();
+			new FinishState().runState();
 			break;
 		case "4":
-			command.getProduct();
+			new ProductState().runState();
 			break;
 		case "5":
-			command.getProducts(null);
+			new ProductsState().runState();
 			break;
 		case "6":
-			command.getCategoryTree();
+//			command.getCategoryTree();
 			break;
 		case "7":
-			command.getProductsByCategoryPath();
+//			command.getProductsByCategoryPath();
 			break;
 		case "8":
-			command.getTopProducts();
+//			command.getTopProducts();
 			break;
 		case "9":
-			command.getSimilarCheaperProduct();
+//			command.getSimilarCheaperProduct();
 			break;
 		case "10":
-			command.addNewReview();
+//			command.addNewReview();
+			new AddReviewState().runState();
 			break;
 		case "11":
-			command.getTrolls();
+//			command.getTrolls();
 			break;
 		case "12":
-			command.getOffers();
+//			command.getOffers();
 			break;
 		case "q":
 			//end program
@@ -112,11 +111,11 @@ public class HomeState implements State {
 	@Override
 	public void requestInput() {
 		System.out.println("*** Available commands ***");
-		System.out.println(" 1: init Database");
-		System.out.println(" 2: load Media XML to DB");
-		System.out.println(" 3: finish Database connection");
-		System.out.println(" 4: getProduct");
-		System.out.println(" 5: getProducts");
+		System.out.println(" 1: init. Start Database");
+		System.out.println(" 2: load Media. Load XML to DB");
+		System.out.println(" 3: finish. Close Database connection");
+		System.out.println(" 4: getProduct. Show information by Product ID");
+		System.out.println(" 5: getProducts. Search Products by title");
 		System.out.println(" 6: getCategoryTree");
 		System.out.println(" 7: getProductsByCategoryPath");
 		System.out.println(" 8: getTopProducts");
@@ -151,8 +150,13 @@ public class HomeState implements State {
 			if(App.isMediaLoaded) {
 				System.out.println("Media data is already loaded.");
 			} else {
-				new DataLoader(App.sessionFactory).load();
-				App.isMediaLoaded = true;
+				try {
+					new DataLoader(App.sessionFactory).load();
+					App.isMediaLoaded = true;
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.out.println("Loading Media data has failed.");
+				}
 			}			
 		} else {
 			System.out.println("Database is not initiallized.");

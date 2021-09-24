@@ -1,5 +1,6 @@
 package frontend;
 
+import org.hibernate.SessionFactory;
 
 public interface ExecutableCommand {
 
@@ -7,23 +8,23 @@ public interface ExecutableCommand {
 
 	public void finish();
 
-	public void getProduct();
+	public void getProduct(SessionFactory factory, String item_id);
 
-	public void getProducts(String pattern);
+	public void getProducts(SessionFactory factory, String pattern);
 
-	public void getCategoryTree();
+	public void getCategoryTree(SessionFactory factory);
 	
-	public void getProductsByCategoryPath();
+	public void getProductsByCategoryPath(SessionFactory factory, int startCat);
 	
-	public void getTopProducts();
+	public void getTopProducts(SessionFactory factory, int limit);
 	
-	public void getSimilarCheaperProduct();
+	public void getSimilarCheaperProduct(SessionFactory factory, String item_id);
 	
-	public void addNewReview();
+	public void addNewReview(SessionFactory factory, String item_id, String customer, String summary, String content, int rating);
 	
-	public void getTrolls();
+	public void getTrolls(SessionFactory factory, int limit);
 	
-	public void getOffers();
+	public void getOffers(SessionFactory factory, String item_id);
 	
 
 }

@@ -26,7 +26,6 @@ public class FinishState implements State {
 			App.sessionFactory.close();
 			App.sessionFactory = null;
 			App.isDbInitiallized = false;
-			//TODO do we need to destroy it manually? or sessionFactory would destroy it when it is closed?
 			StandardServiceRegistryBuilder.destroy(App.registry);
 			System.out.println("Database is now finished.");
 		} else {

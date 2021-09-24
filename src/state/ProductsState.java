@@ -5,40 +5,34 @@ import java.util.Scanner;
 import main.App;
 import main.Testtat;
 
-public class ProductState implements State {
-	
+public class ProductsState implements State {
+
 	Scanner sc = new Scanner(System.in);
 	String inputString = "";
 
 	@Override
 	public void requestInput() {
-		System.out.println("Enter Product ID.");
+		System.out.println("Enter Product Title. ('' and '*' is allowed. It is case-sensitive)");
 		System.out.print(">>");
 		inputString = sc.nextLine();
-		
+
 	}
 
 	@Override
 	public boolean isValidInput() {
-		return this.inputString != null && this.inputString.length() > 0;
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override
 	public void executeCommand() {
-		String item_id = "";
-		if(isValidInput()) {
-			item_id = this.inputString;
-			new Testtat().getProduct(App.sessionFactory, item_id);
-		} else {
-			System.out.println("Invalid input.");
-			runState();
-		}
+		new Testtat().getProducts(App.sessionFactory, inputString);
 	}
 
 	@Override
 	public void responseResult() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -51,14 +45,13 @@ public class ProductState implements State {
 
 	@Override
 	public void printStateMessage() {
-		// TODO Auto-generated method stub
-		
+		System.out.println("[Search Products with title]");
+
 	}
 
 	@Override
 	public void runNextState() {
 		new HomeState().runState();
-		
 	}
-	
+
 }
