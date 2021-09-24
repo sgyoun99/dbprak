@@ -5,14 +5,14 @@ import java.util.Scanner;
 import state.HomeState;
 import state.State;
 
-public class SimilarCheaperProductState implements State {
+public class TopProductsState implements State {
 
 	Scanner sc = new Scanner(System.in);
 	String inputString = "";
 
 	@Override
 	public void requestInput() {
-		System.out.println("Enter Product ID.");
+		System.out.println("Enter a limit(number).");
 		System.out.print(">>");
 		inputString = sc.nextLine();
 		
@@ -20,15 +20,20 @@ public class SimilarCheaperProductState implements State {
 
 	@Override
 	public boolean isValidInput() {
-		return this.inputString != null && this.inputString.length() > 0;
+		int input;
+		try {
+			input = Integer.parseInt(inputString);
+		} catch (Exception e) {
+			return false;
+		}
+		return 0 < input && input < Integer.MAX_VALUE;
 	}
 
 	@Override
 	public void executeCommand() {
-		String item_id = "";
 		if(isValidInput()) {
-			item_id = this.inputString;
-			new Testtat().getSimilarCheaperProduct(App.sessionFactory, item_id);
+			int limit = Integer.parseInt(this.inputString);
+			new Testtat().getTopProducts(App.sessionFactory, limit);
 			runNextState();
 		} else {
 			System.out.println("Invalid input.");
@@ -51,14 +56,13 @@ public class SimilarCheaperProductState implements State {
 
 	@Override
 	public void printStateMessage() {
-		System.out.println("[Similar cheaper Products]");
+		System.out.println("[Top Products]");
 		
 	}
 
 	@Override
 	public void runNextState() {
 		new HomeState().runState();
-		
 	}
 
 }

@@ -5,6 +5,7 @@ import java.util.Scanner;
 import main.App;
 import main.DataLoader;
 import main.SimilarCheaperProductState;
+import main.TopProductsState;
 
 public class HomeState implements State {
 	
@@ -76,7 +77,7 @@ public class HomeState implements State {
 //			command.getProductsByCategoryPath();
 			break;
 		case "8":
-//			command.getTopProducts();
+			new TopProductsState().runState();
 			break;
 		case "9":
 			new SimilarCheaperProductState().runState();
