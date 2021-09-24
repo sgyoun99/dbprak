@@ -1,13 +1,12 @@
-package state;
+package main;
 
 import java.util.Scanner;
 
-import main.App;
-import main.Testtat;
+import state.HomeState;
+import state.State;
 
-public class GetOffersState implements State {
+public class SimilarCheaperProductState implements State {
 
-	
 	Scanner sc = new Scanner(System.in);
 	String inputString = "";
 
@@ -29,7 +28,7 @@ public class GetOffersState implements State {
 		String item_id = "";
 		if(isValidInput()) {
 			item_id = this.inputString;
-			new Testtat().getOffers(App.sessionFactory, item_id);
+			new Testtat().getSimilarCheaperProduct(App.sessionFactory, item_id);
 			runNextState();
 		} else {
 			System.out.println("Invalid input.");
@@ -52,7 +51,7 @@ public class GetOffersState implements State {
 
 	@Override
 	public void printStateMessage() {
-		System.out.println("[Offers]");
+		System.out.println("[Similar cheaper Items]");
 		
 	}
 
