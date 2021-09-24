@@ -14,7 +14,7 @@ public class GetTrollsState implements State {
 
 	@Override
 	public void requestInput() {
-		System.out.println("Enter Rating.");
+		System.out.println("Enter Rating. or 'home' to go back to [Home]");
 		System.out.print(">>");
 		inputString = sc.nextLine();
 

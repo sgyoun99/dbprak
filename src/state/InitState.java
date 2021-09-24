@@ -70,8 +70,12 @@ public class InitState implements State {
 			this.initDB();
 			App.isDbInitiallized = true;
 			App.isMediaLoaded = true;
+			System.out.print("\033[32m");
+			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 			System.out.println("@@@ Now initiallized hibernate with hibernate_update.cfg.xml   @@@");
-			System.out.println("@@@ DB should have been loaded before running testmode @@@");
+			System.out.println("@@@ DB should have been loaded before running testmode         @@@");
+			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+			System.out.print("\033[0m");
 			new HomeState().runState();
 			break;
 		default:
