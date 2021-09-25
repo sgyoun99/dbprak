@@ -22,4 +22,13 @@ public class Artist{
         return this.artist;
     }
     
+    @Override
+    public boolean equals(Object obj) {
+    	return this.artist.equals(((Artist)obj).getArtist());
+    }
+    
+    @Override
+    public int hashCode() {
+    	return this.artist.hashCode();
+    }
 }

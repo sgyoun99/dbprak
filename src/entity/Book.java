@@ -48,14 +48,20 @@ public class Book {
 		return publication_date;
 	}
 	public void setPublication_date(String publication_date) throws XmlInvalidValueException{
-		if(publication_date != null) {
-			try {
-				this.publication_date = Date.valueOf(publication_date);
-			} catch (IllegalArgumentException e) {
-				XmlInvalidValueException ex = new XmlInvalidValueException("date is not in the form yyyy-mm-dd");
-				ex.setAttrName("publication_date");
-				throw ex;
+		if(publication_date.equals("")) {
+			this.publication_date = null;
+		} else {
+			
+			if(publication_date != null) {
+				try {
+					this.publication_date = Date.valueOf(publication_date);
+				} catch (IllegalArgumentException e) {
+					XmlInvalidValueException ex = new XmlInvalidValueException("date is not in the form yyyy-mm-dd");
+					ex.setAttrName("publication_date");
+					throw ex;
+				}
 			}
+
 		}
 	}
 	public void setPublication_date(Date publication_date) {

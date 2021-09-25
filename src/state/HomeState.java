@@ -12,7 +12,7 @@ public class HomeState implements State {
 
 	@Override
 	public void printStateMessage() {
-		System.out.print("[Home]\t\t\t\t");
+		System.out.print("\n[Home]\t\t\t\t");
 		System.out.print("\033[35m");
 		System.out.print("(DB: ");
 		System.out.print(App.isDbInitiallized ? "on" : "off");

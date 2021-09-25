@@ -90,11 +90,25 @@ public class Testtat implements ExecutableCommand {
                         for(int i=0; i<pubList.size(); i++) {
                             additionalDetails += "Publisher: " + pubList.get(i) + "\n";
                         }
-                        additionalDetails += "Pages: " + book.getPages() + "\nPublication Date: " + book.getPublication_date().toString() + "\nISBN: " + book.getIsbn() + "\n";
+
+                        if(book != null) {
+							String pubDate;
+							if(book.getPublication_date() == null) {
+								pubDate = "-";
+							} else {
+								pubDate = book.getPublication_date().toString();
+							}
+							additionalDetails += "Pages: " + book.getPages() + "\nPublication Date: " + pubDate + "\nISBN: " + book.getIsbn() + "\n";
+                        }
                         break;
                     case Music_CD:
                         List<?> artistList = session.createQuery("SELECT B.artist FROM Music_CD A JOIN A.artists B WHERE A.item_id = '" + item_id + "'").list();
-                        additionalDetails += "ReleaseDate: " + ((Date) session.createQuery("SELECT A.release_date FROM Music_CD A WHERE A.item_id = '" + item_id + "'").uniqueResult()).toString() + "\n"; 
+                        String releaseDate = "-";
+                        Date date =  ((Date) session.createQuery("SELECT A.release_date FROM Music_CD A WHERE A.item_id = '" + item_id + "'").uniqueResult());
+                        if(date != null) {
+                        	releaseDate = date.toString();
+                        }
+                        additionalDetails += "ReleaseDate: " + releaseDate + "\n"; 
                         List<?> titleList = session.createQuery("SELECT A.title FROM Title A WHERE A.item_id = '" + item_id + "'").list();                                               
                         for(int i=0; i<artistList.size(); i++) {
                             additionalDetails += "Artist: " + artistList.get(i) + "\n";
@@ -136,6 +150,8 @@ public class Testtat implements ExecutableCommand {
         }catch (HibernateException e) {
             if (tx!=null) tx.rollback();
             System.out.println("Ooops! Something went wrong while getting the Product ... ^^' ");
+//        }catch (Exception e) {
+        	e.printStackTrace();
         } finally {
             session.close();
         }
@@ -489,7 +505,10 @@ public class Testtat implements ExecutableCommand {
                 for(int i=0; i<itemList.size(); i++) {
                     thereareItems = true;
                     Object[] row = (Object[]) itemList.get(i);
-                    System.out.println((String) row[1]  + ": (" + categoryId + " - " + (String) row[0] + ")");
+                    //TODO
+//                    System.out.println((String) row[1]  + ": (" + categoryId + " - " + (String) row[0] + ")");
+                    System.out.println("getProdcut::" + (String)row[1]);
+                    this.getProduct(factory, (String)row[1]);
                 }
             }
             

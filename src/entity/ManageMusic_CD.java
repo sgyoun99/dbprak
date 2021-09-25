@@ -66,17 +66,12 @@ public class ManageMusic_CD {
 	/**
 	 * check whether read-in data is valid
 	 */
-/*	public static Predicate<String> pred_title = title -> title != null && title.length() > 0; // Not Null
+	public static Predicate<String> pred_title = title -> title != null && title.length() > 0; // Not Null
 	public static Predicate<List<String>> pred_music_artist = artistList -> artistList != null || (artistList != null && artistList.size() > 0); //Not Null
 	public static Predicate<Date> pred_release_date = date -> true; //will be tested in the setter
 
 	public void testMusic_CD(Music_CD music_cd, List<String> artists) throws XmlValidationFailException, XmlNullNodeException {
 		try {
-			if(!Item.pred_item_id.test(music_cd.getItem_id())) {
-				XmlInvalidValueException e = new XmlInvalidValueException("item_id Error (length not 10): \""+music_cd.getItem_id()+"\""); 
-				e.setAttrName("item_id");
-				throw e;
-			}
 			if(!pred_music_artist.test(artists)) {
 				XmlInvalidValueException e = new XmlInvalidValueException("No artist found: "+ music_cd.getItem_id()); 
 				e.setAttrName("artist");
@@ -93,7 +88,7 @@ public class ManageMusic_CD {
 			throw new XmlValidationFailException(e);
 		}
 		
-	}*/
+	}
 	
 
 	//TODO: Artist setzen in CD/NOT NUL constraint über music_cd_artist???
@@ -118,11 +113,13 @@ public class ManageMusic_CD {
 			HashSet<Label> labelSet = new HashSet<Label>();
 			HashSet<Artist> artistSet = new HashSet<Artist>();
 			HashSet<Title> titleSet = new HashSet<Title>();
+			List<String> artistList = new ArrayList<>();
 			try {
 				cd.setItem_id(xt.getAttributeValue(itemNode, "asin"));
 			} catch (XmlDataException e) {
 				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(itemNode));
 			}
+			
 			
 			//artist
 			xt.visitChildElementNodesDFS(itemNode, (node, level) -> {										
@@ -136,7 +133,7 @@ public class ManageMusic_CD {
 								artist.setArtist(xt.getTextContentOfLeafNode(nd));		//try catch falls Inhalt fehlt?										
 							}finally{
 								artistSet.add(artist);
-								
+								artistList.add(artist.getArtist());
 							}
 						}
 					});
@@ -154,7 +151,7 @@ public class ManageMusic_CD {
 								artist.setArtist(xt.getTextContentOfLeafNode(nd));		//try catch falls Inhalt fehlt!								
 							}finally{
 								artistSet.add(artist);
-								
+								artistList.add(artist.getArtist());
 							}
 						}
 					});
@@ -211,6 +208,8 @@ public class ManageMusic_CD {
 				
 
 				//test
+				this.testMusic_CD(cd, artistList);
+				cd.setArtist(artistList.get(0));
 				
 				//insert				
 				this.addCD(cd, factory);
