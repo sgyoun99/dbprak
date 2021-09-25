@@ -376,11 +376,12 @@ public class Testtat implements ExecutableCommand {
             String inputString = "";
             int cat_id = 0;
             String catName = null;
+            //main category
             String rootCatQuery = "SELECT DISTINCT B.category_id, B.name FROM Category A JOIN A.over_categories B WHERE B.category_id NOT IN (SELECT C.category_id FROM Category D JOIN D.sub_categories C) ORDER BY B.category_id";      
             List<?> rootCatList = session.createQuery(rootCatQuery).list();
             Map<Integer,String> catMap = new HashMap<>();
 
-			System.out.println(" < ID >\t< Sub Category >");
+			System.out.println(" < ID >\t< Category >");
             for(int i=0; i<rootCatList.size(); i++) {
                 Object[] row = (Object[]) rootCatList.get(i);
                 catMap.put((Integer)row[0], (String)row[1]);
@@ -395,13 +396,16 @@ public class Testtat implements ExecutableCommand {
 				//cat_id = scan.nextInt();
 				inputString = scan.nextLine();
 				try {
-					cat_id = Integer.parseInt(inputString); //check int
-					catName = catMap.get(cat_id); 
+					int tmpCatId = Integer.parseInt(inputString); //check int
+					catName = catMap.get(tmpCatId); 
 					if(catName == null) {
 						//check existence
 						throw new NullPointerException(" is not in the list.");
+					} else {
+						//success
+						cat_id = tmpCatId;
+						break; 
 					}
-					break; 
 				} catch (NullPointerException e) {
 					System.out.println(inputString + e.getMessage());
 					continue;
@@ -422,6 +426,7 @@ public class Testtat implements ExecutableCommand {
                 	fin = true;
                 	break;
                 }
+                catMap = new HashMap<>();
 				System.out.println(" < ID >\t< Sub Category >");
                 for(int i=0; i<catQList.size(); i++) {
                     Object[] row = (Object[]) catQList.get(i);
@@ -432,7 +437,7 @@ public class Testtat implements ExecutableCommand {
                 }
 //                System.out.println("Stay with " + cat_id + "?");
                 while(true) {
-					System.out.println("Press 'Y/y' to list all products under category " + cat_id + "(" + catMap.get(cat_id) +")");
+					System.out.println("Press 'Y/y' to list all products under category " + cat_id + "(" + catName +")");
 					System.out.println("Or enter category id for searching further categories.");
 					System.out.print(">>");
 					inputString = scan.nextLine();
@@ -474,7 +479,7 @@ public class Testtat implements ExecutableCommand {
                         catStack.push(((Integer) catQList.get(i)));              
                 }
             }            
-            System.out.println("\nThe following items are associated with category: " + cat_id + "(" + catMap.get(cat_id) +")");
+            System.out.println("\nThe following items are associated with category: " + cat_id + "(" + catName +")");
             Boolean thereareItems = false;
             while(!catList.isEmpty()) {
                 int categoryId = catList.get(0);
@@ -488,7 +493,7 @@ public class Testtat implements ExecutableCommand {
                 }
             }
             
-            String s = thereareItems ? "\n" : "We are sorry but there are no items associated with category: " + cat_id + "\n";
+            String s = thereareItems ? "\n" : "We are sorry but there are no items associated with category: " + cat_id + "(" + catName +")\n";
 
             System.out.println(s);
             tx.commit();
