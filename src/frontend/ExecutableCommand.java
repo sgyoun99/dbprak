@@ -12,9 +12,9 @@ public interface ExecutableCommand {
 
 	public void getProducts(SessionFactory factory, String pattern);
 
-	public void getCategoryTree(SessionFactory factory);
+	public void getCategoryTree(SessionFactory factory, int startCat);
 	
-	public void getProductsByCategoryPath(SessionFactory factory, int startCat);
+	public void getProductsByCategoryPath(SessionFactory factory);
 	
 	public void getTopProducts(SessionFactory factory, int limit);
 	

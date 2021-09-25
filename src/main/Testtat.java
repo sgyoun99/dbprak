@@ -8,6 +8,7 @@ import csv.*;
 import java.sql.Date;
 
 import java.util.List;
+import java.util.Map;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Stack;
@@ -16,6 +17,7 @@ import javax.management.InvalidAttributeValueException;
 import javax.persistence.NoResultException;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import java.time.LocalDate;
@@ -370,29 +372,93 @@ public class Testtat implements ExecutableCommand {
 
         try{
             tx = session.beginTransaction();
-            Boolean fin = false;
-            String rootCatQuery = "SELECT DISTINCT B.category_id, B.name FROM Category A JOIN A.over_categories B WHERE B.category_id NOT IN (SELECT C.category_id FROM Category D JOIN D.sub_categories C)";      
+            Scanner scan = new Scanner(System.in);
+            String inputString = "";
+            int cat_id = 0;
+            String catName = null;
+            String rootCatQuery = "SELECT DISTINCT B.category_id, B.name FROM Category A JOIN A.over_categories B WHERE B.category_id NOT IN (SELECT C.category_id FROM Category D JOIN D.sub_categories C) ORDER BY B.category_id";      
             List<?> rootCatList = session.createQuery(rootCatQuery).list();
+            Map<Integer,String> catMap = new HashMap<>();
+
+			System.out.println(" < ID >\t< Sub Category >");
             for(int i=0; i<rootCatList.size(); i++) {
                 Object[] row = (Object[]) rootCatList.get(i);
-                System.out.println((Integer) row[0]  + "\t" + (String) row[1]);
+                catMap.put((Integer)row[0], (String)row[1]);
+                System.out.print(String.format("-%6s\t", (Integer)row[0]));
+                System.out.println((String)row[1]);
             }
-            Scanner scan = new Scanner(System.in);
-            int cat_id = scan.nextInt();
+
+            // receive input: main category id
+            while(true) {
+				System.out.println("Please enter category id(number).");
+				System.out.print(">>");
+				//cat_id = scan.nextInt();
+				inputString = scan.nextLine();
+				try {
+					cat_id = Integer.parseInt(inputString); //check int
+					catName = catMap.get(cat_id); 
+					if(catName == null) {
+						//check existence
+						throw new NullPointerException(" is not in the list.");
+					}
+					break; 
+				} catch (NullPointerException e) {
+					System.out.println(inputString + e.getMessage());
+					continue;
+				} catch (Exception e) {
+					System.out.println(inputString + " is invalid input.");
+					continue;
+				}
+            }
+
+            //sub-category
+            Boolean fin = false;
             while(!fin){
                 System.out.println();
-                String catQueryString = "SELECT B.category_id, B.name FROM Category A Join A.sub_categories B WHERE A.category_id = " + cat_id;
+                String catQueryString = "SELECT B.category_id, B.name FROM Category A Join A.sub_categories B WHERE A.category_id = " + cat_id + " ORDER BY B.category_id";
                 List<?> catQList = session.createQuery(catQueryString).list();
+                if(catQList.size() == 0) {
+                	// reached at the lowest sub-category
+                	fin = true;
+                	break;
+                }
+				System.out.println(" < ID >\t< Sub Category >");
                 for(int i=0; i<catQList.size(); i++) {
                     Object[] row = (Object[]) catQList.get(i);
-                    System.out.println((Integer) row[0]  + "\t" + (String) row[1]);
+					catMap.put((Integer)row[0], (String)row[1]);
+					System.out.print(String.format("-%6s\t", (Integer)row[0]));
+					System.out.println((String)row[1]);
+//                    System.out.println(" - " + (Integer) row[0]  + "\t" + (String) row[1]);
                 }
-                System.out.println("Stay with " + cat_id + "?");
-                int answer = scan.nextInt();
-                if(answer == cat_id) {
-                    fin = true;
-                } else {
-                    cat_id = answer;
+//                System.out.println("Stay with " + cat_id + "?");
+                while(true) {
+					System.out.println("Press 'Y/y' to list all products under category " + cat_id + "(" + catMap.get(cat_id) +")");
+					System.out.println("Or enter category id for searching further categories.");
+					System.out.print(">>");
+					inputString = scan.nextLine();
+					if("y".equals(inputString.toLowerCase())) {
+						fin = true;
+						break;
+					} else {
+						try {
+							int tmpCatId = Integer.parseInt(inputString); //check int
+							catName = catMap.get(tmpCatId); 
+							if(catName == null) {
+								//check existence
+								throw new NullPointerException(" is not in the list.");
+							} else {
+								//success
+								cat_id = tmpCatId;
+								break; 
+							}
+						} catch (NullPointerException e) {
+							System.out.println(inputString + e.getMessage());
+							continue;
+						} catch (Exception e) {
+							System.out.println(inputString + " is invalid input.");
+							continue;
+						}
+					}
                 }
             }
 
@@ -408,7 +474,7 @@ public class Testtat implements ExecutableCommand {
                         catStack.push(((Integer) catQList.get(i)));              
                 }
             }            
-            System.out.println("\nThe following items are associated with category: " + cat_id);
+            System.out.println("\nThe following items are associated with category: " + cat_id + "(" + catMap.get(cat_id) +")");
             Boolean thereareItems = false;
             while(!catList.isEmpty()) {
                 int categoryId = catList.get(0);
@@ -428,7 +494,7 @@ public class Testtat implements ExecutableCommand {
             tx.commit();
         }catch (HibernateException e) {
             if (tx!=null) tx.rollback();
-            System.out.println("Ooops! Something went wrong while getting trolls ... ^^' ");
+            System.out.println("Ooops! Something went wrong while getting products by category path ... ^^' ");
         } finally {
             session.close();
         }
