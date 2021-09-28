@@ -89,11 +89,6 @@ public class AddReviewState implements State {
 		new Testtat().addNewReview(App.sessionFactory, item_id, customer, summary, content, rating);
 	}
 
-	@Override
-	public void responseResult() {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public void runState() {

@@ -72,7 +72,6 @@ public class HomeState implements State {
 //			command.getCategoryTree();
 			break;
 		case "7":
-//			command.getProductsByCategoryPath();
 			new ProductByCategoryPathState().runState();
 			break;
 		case "8":
@@ -90,6 +89,10 @@ public class HomeState implements State {
 		case "12":
 			new GetOffersState().runState();
 			break;
+		case "13":
+			//TODO purchase
+			//tmp to Home
+			new HomeState().runState();
 		case "q":
 			//end program
 			new FinishState().executeCommand();
@@ -102,12 +105,6 @@ public class HomeState implements State {
 		}
 	}
 
-
-	@Override
-	public void responseResult() {
-		// TODO Auto-generated method stub
-		
-	}
 
 
 	@Override

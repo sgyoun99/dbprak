@@ -12,7 +12,9 @@ public class ProductsState implements State {
 
 	@Override
 	public void requestInput() {
-		System.out.println("Enter Product Title. ('' and '*' is allowed. It is case-insensitive)");
+		System.out.println("Enter starting pattern of Product Title.");
+		System.out.println("Wildcards '%', '_' are available.");
+		System.out.println("(Try _ello% for example)");
 		System.out.print(">>");
 		inputString = sc.nextLine();
 
@@ -29,11 +31,6 @@ public class ProductsState implements State {
 		new Testtat().getProducts(App.sessionFactory, inputString);
 	}
 
-	@Override
-	public void responseResult() {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public void runState() {

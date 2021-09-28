@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.Stack;
 
 import javax.management.InvalidAttributeValueException;
+import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
 import java.util.Arrays;
@@ -29,7 +30,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.Query;
 
-
+import main.App;
 
 public class Testtat implements ExecutableCommand {
 
@@ -162,18 +163,22 @@ public class Testtat implements ExecutableCommand {
      */
     public void getProducts(SessionFactory factory, String pattern) {
 //        if(pattern.length() < 5){
-        if(pattern.length() < 4){
+//        if(pattern.length() < 4){
 //            System.out.println("\nThe pattern has to include at least 5 characters.\n");
-            System.out.println("\nThe pattern has to include at least 4 characters.\n");
-
+//            System.out.println("\nThe pattern has to include at least 4 characters.\n");
+    	if(false) {
+    		//TODO what to check? nothing? because '' is also allowed.
         } else {
             Session session = factory.openSession();
             Transaction tx = null;
-
             try{
                 tx = session.beginTransaction();
               //String queryString = "FROM Item I WHERE I.title LIKE '%" + pattern + "%'";
-                String queryString = "FROM Item I WHERE lower(I.title) LIKE '%" + pattern.toLowerCase() + "%'";
+              //String queryString = "FROM Item I WHERE lower(I.title) LIKE '%" + pattern.toLowerCase() + "%'";
+				String queryString = "FROM Item I WHERE lower(I.title) LIKE '" + pattern.toLowerCase() + "'";
+				
+
+				//TODO update to hibernate version
                 List<?> productsList = session.createQuery(queryString).list();            
                 if(!productsList.isEmpty()) {
                     System.out.println("\nThe following items include the pattern '" + pattern + "':");
@@ -181,8 +186,9 @@ public class Testtat implements ExecutableCommand {
                         Item item = (Item) productsList.get(i);
                         System.out.println(item.getItem_id() + "\t" + item.getTitle());
                     }
+                    System.out.println("There are total " + productsList.size() + " result(s).");
                 } else {
-                    System.out.println("\nWe are sorry but it seems there are no products fitting this pattern: " + pattern);
+                    System.out.println("\nWe are sorry but it seems there are no products fitting this pattern: '" + pattern + "'.");
                 }     
                 System.out.println();       
                 tx.commit();
@@ -449,9 +455,7 @@ public class Testtat implements ExecutableCommand {
 					catMap.put((Integer)row[0], (String)row[1]);
 					System.out.print(String.format("-%6s\t", (Integer)row[0]));
 					System.out.println((String)row[1]);
-//                    System.out.println(" - " + (Integer) row[0]  + "\t" + (String) row[1]);
                 }
-//                System.out.println("Stay with " + cat_id + "?");
                 while(true) {
 					System.out.println("Press 'Y/y' to list all products under category " + cat_id + "(" + catName +")");
 					System.out.println("Or enter category id for searching further categories.");
@@ -505,8 +509,9 @@ public class Testtat implements ExecutableCommand {
                 for(int i=0; i<itemList.size(); i++) {
                     thereareItems = true;
                     Object[] row = (Object[]) itemList.get(i);
-                    //TODO
+                    //only item_id
 //                    System.out.println((String) row[1]  + ": (" + categoryId + " - " + (String) row[0] + ")");
+                    //Detail information
                     System.out.println("getProdcut::" + (String)row[1]);
                     this.getProduct(factory, (String)row[1]);
                 }
@@ -618,13 +623,13 @@ public class Testtat implements ExecutableCommand {
 	@Override
 	public void init() {
 		// TODO Auto-generated method stub
-		
+		// it is implemented in InitState.java
 	}
 
 	@Override
 	public void finish() {
 		// TODO Auto-generated method stub
-		
+		// it is implemented in FinishState.java
 	}
 
 

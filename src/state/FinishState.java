@@ -33,12 +33,6 @@ public class FinishState implements State {
 		}
 	}
 
-	@Override
-	public void responseResult() {
-		// TODO Auto-generated method stub
-		
-	}
-
 
 	@Override
 	public void printStateMessage() {

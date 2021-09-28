@@ -9,7 +9,5 @@ public interface CommandLineInterface {
 
 	public void executeCommand();
 
-	public void responseResult();
-	
 	
 }

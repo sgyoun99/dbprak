@@ -45,11 +45,6 @@ public class GetTrollsState implements State {
 		new Testtat().getTrolls(App.sessionFactory, rating);;
 	}
 
-	@Override
-	public void responseResult() {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public void runState() {

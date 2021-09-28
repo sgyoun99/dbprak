@@ -30,12 +30,6 @@ public class ProductByCategoryPathState implements State {
 	}
 
 	@Override
-	public void responseResult() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void runState() {
 		printStateMessage();
 		requestInput();
