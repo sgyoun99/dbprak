@@ -175,7 +175,12 @@ public class Testtat implements ExecutableCommand {
                 tx = session.beginTransaction();
               //String queryString = "FROM Item I WHERE I.title LIKE '%" + pattern + "%'";
               //String queryString = "FROM Item I WHERE lower(I.title) LIKE '%" + pattern.toLowerCase() + "%'";
-				String queryString = "FROM Item I WHERE lower(I.title) LIKE '" + pattern.toLowerCase() + "'";
+				String queryString = "";
+                if(pattern.equals("")) {
+					queryString = "FROM Item";
+                } else {
+					queryString = "FROM Item I WHERE lower(I.title) LIKE '" + pattern.toLowerCase() + "'";
+                }
 				
 
 				//TODO update to hibernate version
