@@ -209,7 +209,7 @@ public class ManageMusic_CD {
 
 				//test
 				this.testMusic_CD(cd, artistList);
-				cd.setArtist(artistList.get(0));
+//				cd.setArtist(artistList.get(0));
 				
 				//insert				
 				this.addCD(cd, factory);
