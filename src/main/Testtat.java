@@ -7,6 +7,8 @@ import csv.*;
 
 import java.sql.Date;
 
+import java.lang.Math;
+
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
@@ -82,17 +84,23 @@ public class Testtat implements ExecutableCommand {
                 String additionalDetails = "";
                 switch(searchItem.getProductgroup()) {
                     case Book:
-                        List<?> authorList = session.createQuery("SELECT B.author FROM Book A JOIN A.authors B WHERE A.item_id = '" + item_id + "'").list();
-                        List<?> pubList = session.createQuery("SELECT B.publisher FROM Book A JOIN A.publishers B WHERE A.item_id = '" + item_id + "'").list();
+                        //List<?> authorList = session.createQuery("SELECT B.author FROM Book A JOIN A.authors B WHERE A.item_id = '" + item_id + "'").list();
+                        //List<?> pubList = session.createQuery("SELECT B.publisher FROM Book A JOIN A.publishers B WHERE A.item_id = '" + item_id + "'").list();
                         Book book = (Book) session.get(Book.class, item_id);
-                        for(int i=0; i<authorList.size(); i++) {
+                        /*for(int i=0; i<authorList.size(); i++) {
                             additionalDetails += "Author: " + authorList.get(i) + "\n";
                         }
                         for(int i=0; i<pubList.size(); i++) {
                             additionalDetails += "Publisher: " + pubList.get(i) + "\n";
-                        }
+                        }*/
 
                         if(book != null) {
+				for (Iterator iterator = book.getAuthors().iterator(); iterator.hasNext();) {
+				    additionalDetails += "Author: " + ((Author) iterator.next()).getAuthor() + "\n";
+				}
+				for (Iterator iterator = book.getPublishers().iterator(); iterator.hasNext();) {
+				    additionalDetails += "Publisher: " + ((Publisher) iterator.next()).getPublisher() + "\n";
+				}
 							String pubDate;
 							if(book.getPublication_date() == null) {
 								pubDate = "-";
@@ -103,24 +111,41 @@ public class Testtat implements ExecutableCommand {
                         }
                         break;
                     case Music_CD:
-                        List<?> artistList = session.createQuery("SELECT B.artist FROM Music_CD A JOIN A.artists B WHERE A.item_id = '" + item_id + "'").list();
-                        String releaseDate = "-";
-                        Date date =  ((Date) session.createQuery("SELECT A.release_date FROM Music_CD A WHERE A.item_id = '" + item_id + "'").uniqueResult());
-                        if(date != null) {
-                        	releaseDate = date.toString();
-                        }
-                        additionalDetails += "ReleaseDate: " + releaseDate + "\n"; 
-                        List<?> titleList = session.createQuery("SELECT A.title FROM Title A WHERE A.item_id = '" + item_id + "'").list();                                               
-                        for(int i=0; i<artistList.size(); i++) {
-                            additionalDetails += "Artist: " + artistList.get(i) + "\n";
-                        }
-                        for(int i=0; i<titleList.size(); i++) {
-                            additionalDetails += "Titel " + (i+1) + ": " + titleList.get(i) + "\n";
-                        }                        
+			Music_CD music_cd = (Music_CD) session.get(Music_CD.class, item_id);
+			if(music_cd != null) {
+				/*List<?> artistList = session.createQuery("SELECT B.artist FROM Music_CD A JOIN A.artists B WHERE A.item_id = '" + item_id + "'").list();
+				String releaseDate = "-";
+				Date date =  ((Date) session.createQuery("SELECT A.release_date FROM Music_CD A WHERE A.item_id = '" + item_id + "'").uniqueResult());
+				if(date != null) {
+					releaseDate = date.toString();
+				}
+				additionalDetails += "ReleaseDate: " + releaseDate + "\n"; 
+				List<?> titleList = session.createQuery("SELECT A.title FROM Title A WHERE A.item_id = '" + item_id + "'").list();                                               
+				for(int i=0; i<artistList.size(); i++) {
+				    additionalDetails += "Artist: " + artistList.get(i) + "\n";
+				}
+				for(int i=0; i<titleList.size(); i++) {
+				    additionalDetails += "Titel " + (i+1) + ": " + titleList.get(i) + "\n";
+				}  */
+				String releaseDate = (music_cd.getRelease_date() != null) ? music_cd.getRelease_date().toString() : " - ";
+                        	additionalDetails += "ReleaseDate: " + releaseDate + "\n";
+				for (Iterator iterator = music_cd.getArtists().iterator(); iterator.hasNext();) {
+				    additionalDetails += "Artist: " + ((Artist) iterator.next()).getArtist() + "\n";
+				}
+				for (Iterator iterator = music_cd.getLabels().iterator(); iterator.hasNext();) {
+				    additionalDetails += "Label: " + ((Label) iterator.next()).getLabel() + "\n";
+				}
+				additionalDetails += "ReleaseDate: " + music_cd.getRelease_date() + "\n";
+				int titleNr = 1;
+				for (Iterator iterator = music_cd.getTitles().iterator(); iterator.hasNext();) {
+				    additionalDetails += "Title: " + ((titleNr) + ":    ").substring(0,5) + ((Title) iterator.next()).getTitle() + "\n";
+				    titleNr++;
+				}
+			}
                         break;
                     case DVD:
                         Dvd dvd = (Dvd) session.get(Dvd.class, item_id);
-                        List<?> creatorList = session.createQuery("SELECT B.creator FROM Dvd A JOIN A.creators B WHERE A.item_id = '" + item_id + "'").list();
+                        /*List<?> creatorList = session.createQuery("SELECT B.creator FROM Dvd A JOIN A.creators B WHERE A.item_id = '" + item_id + "'").list();
                         List<?> actorsList = session.createQuery("SELECT B.actor FROM Dvd A JOIN A.actors B WHERE A.item_id = '" + item_id + "'").list();
                         List<?> directorList = session.createQuery("SELECT B.director FROM Dvd A JOIN A.directors B WHERE A.item_id = '" + item_id + "'").list();
                         for(int i=0; i<actorsList.size(); i++) {
@@ -131,13 +156,22 @@ public class Testtat implements ExecutableCommand {
                         }
                         for(int i=0; i<creatorList.size(); i++) {
                             additionalDetails += "Creator: " + creatorList.get(i) + "\n";
+                        }*/
+			for (Iterator iterator = dvd.getActors().iterator(); iterator.hasNext();) {
+                            additionalDetails += "Actor: " + ((Actor) iterator.next()).getActor() + "\n";
+                        }
+                        for (Iterator iterator = dvd.getCreators().iterator(); iterator.hasNext();) {
+                            additionalDetails += "Creator: " + ((Creator) iterator.next()).getCreator() + "\n";
+                        }
+                        for (Iterator iterator = dvd.getDirectors().iterator(); iterator.hasNext();) {
+                            additionalDetails += "Director: " + ((Director) iterator.next()).getDirector() + "\n";
                         }
                         additionalDetails += "Format: " + dvd.getFormat() + "\nRegiocode: " + dvd.getRegioncode() + "\nRunnigtime: " + dvd.getRunningtime() + "\n";
                         break;
                     default:
                         break;
                 }
-                String rating = (searchItem.getRating()==0.0) ? "not rated" : searchItem.getRating()+"";
+                String rating = (searchItem.getRating()==0.0) ? "not rated" : ((Double)((Math.round(searchItem.getRating()*100))/100.0)) +"";
                 System.out.println( "\nItem: " + searchItem.getItem_id() + 
                                     "\nTitle: " + searchItem.getTitle() + 
                                     "\nRating: " + rating + 
@@ -233,7 +267,14 @@ public class Testtat implements ExecutableCommand {
             }else{
                 Date review_date = new Date(System.currentTimeMillis());
                 Review review = new Review(item_id, customer, review_date, summary, content, rating);			
-                session.save(review); 			
+                session.save(review); 		
+		
+		//update Rating in Items
+		String updateRating = "SELECT AVG(A.rating) FROM Review A WHERE A.item_id = '" + item_id + "'";
+                Double newRating = (Double) session.createQuery(updateRating).uniqueResult();                 
+                reviewItem.setRating(newRating);
+                session.update(reviewItem);
+		
                 System.out.println("New Review added\nfor " + item_id + " by " + customer + "\nrating: " + rating + "\n" + summary + "\n" + content + "\n");
             }
             tx.commit();
@@ -312,7 +353,7 @@ public class Testtat implements ExecutableCommand {
             System.out.println("Our TOP " + limit + " Products are:\nItemID\t\tTitle\t\t\t\t\t\tRating\tSalesrank");
 			for(int i=0; i<topProductList.size(); i++) {
                 Object[] row = (Object[]) topProductList.get(i);
-                System.out.println((String) row[0] + "\t" + ((String) row[1] + "                                        ").substring(0,40) + "\t" + (Double) row[2] + "\t" +  (Integer) row[3]);
+                System.out.println((String) row[0] + "\t" + ((String) row[1] + "                                        ").substring(0,40) + "\t" + ((Double)((Math.round(((Double) row[2])*100))/100.0)) + "\t" +  (Integer) row[3]);
             }
             System.out.println();
             tx.commit();
@@ -377,7 +418,7 @@ public class Testtat implements ExecutableCommand {
 			for(int i=0; i<trollList.size(); i++) {
                 Object[] row = (Object[]) trollList.get(i);
                 if( (((Double) row[1])<limit)  &&  (!((String) row[0]).equals("guest")) ){
-                    System.out.println(((String) row[0] + "                              ").substring(0,30) + "\t" + (Double) row[1]);
+                    System.out.println(((String) row[0] + "                              ").substring(0,30) + "\t" + ((Double)((Math.round(((Double) row[1])*100))/100.0)));
                 }
             }
             System.out.println();
