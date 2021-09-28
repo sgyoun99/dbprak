@@ -69,7 +69,7 @@ public class HomeState implements State {
 			new ProductsState().runState();
 			break;
 		case "6":
-//			command.getCategoryTree();
+			new CategoryTreeState().runState();
 			break;
 		case "7":
 			new ProductByCategoryPathState().runState();
