@@ -90,9 +90,8 @@ public class HomeState implements State {
 			new GetOffersState().runState();
 			break;
 		case "13":
-			//TODO purchase
-			//tmp to Home
-			new HomeState().runState();
+			new PurchaseState().runState();
+			break;
 		case "q":
 			//end program
 			new FinishState().executeCommand();
@@ -122,6 +121,7 @@ public class HomeState implements State {
 		System.out.println("10: addNewReview");
 		System.out.println("11: getTrolls");
 		System.out.println("12: getOffers");
+		System.out.println("13: purchase");
 		System.out.println(" q: quit Program");
 		System.out.print(  ">>");
 

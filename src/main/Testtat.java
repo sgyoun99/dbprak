@@ -320,7 +320,7 @@ public class Testtat implements ExecutableCommand {
                             shopName = (String) row[1];
                         }
                     }
-                    System.out.println("You can find " + is.getItem_id() + " in our Shop in " + shopName + " for " + is.getPrice() + is.getCurrency() + " in " + is.getCondition() + " condition\n");                 
+                    System.out.println("You can find " + is.getItem_id() + " in our Shop in " + shopName + "(shop_id:" + is.getShop_id()+ ") for " + is.getPrice() + is.getCurrency() + " in " + is.getCondition() + " condition\n");                 
                 }
                 if(shopName.equals("")){
                     System.out.println("We are sorry but it seems there are currently no offers for " + item_id + " in our shops\n");
@@ -649,12 +649,14 @@ public class Testtat implements ExecutableCommand {
             tx = session.beginTransaction();
             Item boughtItem = (Item) session.get(Item.class, item_id);
             Customer buyingCustomer = (Customer) session.get(Customer.class, customer_name);
-            if(boughtItem!=null && buyingCustomer!=null) {
+            Shop shop = (Shop) session.get(Shop.class, shop_id);
+            if(boughtItem!=null && buyingCustomer!=null && shop != null) {
                 Purchase newPurchase = new Purchase(customer_name, item_id, shop_id, (new Date(System.currentTimeMillis())));
                 session.save(newPurchase);
                 System.out.println("Congratulations, "+ customer_name + "! You successfully bought " + item_id + "!");
             } else {
-                System.out.println("We are sorry, but you are either not one of our customers or this item does not exist.");
+//                System.out.println("We are sorry, but you are either not one of our customers or this item does not exist.");
+                System.out.println("We are sorry, please check Product ID, Customer Name or Shop ID.");
             }			
             System.out.println();
             tx.commit();
