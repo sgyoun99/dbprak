@@ -12,7 +12,7 @@
       
       <id name = "item_id" type = "string" column = "item_id"/>
         
-      <property name = "artist" column = "artist" type = "string"/>
+      <!--<property name = "artist" column = "artist" type = "string"/>-->
       <property name = "release_date" column = "release_date" type = "date"/>
 
       <set name = "artists" table = "music_cd_artist" cascade="all">
