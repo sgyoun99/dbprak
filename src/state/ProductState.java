@@ -5,11 +5,19 @@ import java.util.Scanner;
 import main.App;
 import main.Testtat;
 
+/**
+ * Class for the state to retrieve product with given product id
+ */
 public class ProductState implements State {
 	
+	//Scanner for user input
 	Scanner sc = new Scanner(System.in);
+	//it stores user input as string
 	String inputString = "";
 
+	/**
+	 * Method to request user input
+	 */
 	@Override
 	public void requestInput() {
 		System.out.println("Enter Product ID.");
@@ -18,11 +26,18 @@ public class ProductState implements State {
 		
 	}
 
+	/**
+	 * Method to validate user input
+	 * returns false to the null input
+	 */
 	@Override
 	public boolean isValidInput() {
 		return this.inputString != null && this.inputString.length() > 0;
 	}
 
+	/**
+	 * Method to invoke the method getProduct
+	 */
 	@Override
 	public void executeCommand() {
 		String item_id = "";
@@ -37,6 +52,9 @@ public class ProductState implements State {
 	}
 
 
+	/**
+	 * Method for entry point of the State
+	 */
 	@Override
 	public void runState() {
 		printStateMessage();
@@ -44,12 +62,18 @@ public class ProductState implements State {
 		executeCommand();
 	}
 
+	/**
+	 * Method to show state message
+	 */
 	@Override
 	public void printStateMessage() {
 		// TODO Auto-generated method stub
 		
 	}
 
+	/**
+	 * Method to run next state
+	 */
 	@Override
 	public void runNextState() {
 		new HomeState().runState();

@@ -11,11 +11,18 @@ import main.Config;
 
 public class InitState implements State {
 
-	private Scanner sc = new Scanner(System.in);
-	private String inputString = "";
+	//Scanner for user input
+	Scanner sc = new Scanner(System.in);
+	//it stores user input as string
+	String inputString = "";
+	//it stores the designated hibernate cfg file under src directory
 	private String hibernateFileLocation = "";
+	//flag for standard hibernate.cfg.xml
 	private boolean isStandardConfig = true;
 
+	/**
+	 * Method for entry point of the State
+	 */
 	@Override
 	public void runState() {
 		printStateMessage();
@@ -24,6 +31,9 @@ public class InitState implements State {
 	}
 
 
+	/**
+	 * Method to initiate hibernate according to the user input
+	 */
 	@Override
 	public void executeCommand() {
 		
@@ -86,12 +96,18 @@ public class InitState implements State {
 	}
 
 
+	/**
+	 * Method to show state message
+	 */
 	@Override
 	public void printStateMessage() {
 		System.out.println("[Initiallize Database]");
 		
 	}
 
+	/**
+	 * Method to request user input
+	 */
 	@Override
 	public void requestInput() {
 		System.out.println("*** Available commands ***");
@@ -105,11 +121,18 @@ public class InitState implements State {
 
 	}
 
+	/**
+	 * Method to run next state
+	 */
 	@Override
 	public void runNextState() {
 		new HomeState().runState();
 	}
 
+	/**
+	 * Method to set up Configuration file for hibernate
+	 * @throws Exception When it is not possible to initiate hibernate with the given configuration
+	 */
 	private void setUpProperty() throws Exception {
 		try {
 			if(this.isStandardConfig) {
@@ -129,20 +152,25 @@ public class InitState implements State {
 		}
 	}
 	
+	/**
+	 * Method to invoke the method setUpProperty, only when it is not initialized yet.
+	 */
 	private void initDB() {
 		if(App.sessionFactory == null) {
 			try {
-				//TODO remove it later
-				//App.sessionFactory = new Configuration().configure().buildSessionFactory();
 				this.setUpProperty();
 			} catch (Exception e) { 
 				System.out.println("Failed to init.");
 			}
 		} else {
-			System.out.println("Database is aleady initiallized.");
+			System.out.println("Database is aleady initialized.");
 		}
 	}
 
+	/**
+	 * Method to validate user input file.
+	 * Returns true when the file exists.
+	 */
 	@Override
 	public boolean isValidInput() {
 		File file = new File(this.hibernateFileLocation);

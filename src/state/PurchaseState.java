@@ -7,6 +7,7 @@ import javax.persistence.NoResultException;
 import main.App;
 import main.Testtat;
 
+//it is implemented, but not to be shown in the 3rd Testtat.
 public class PurchaseState implements State {
 
 	boolean toHome = false;

@@ -5,13 +5,21 @@ import java.util.Scanner;
 import main.App;
 import main.Testtat;
 
+/**
+ * Class for the state to retrieve users with lowest average rating
+ */
 public class GetTrollsState implements State {
 
-	Scanner sc = new Scanner(System.in);
-	String inputString = "";
+	//flag for returning to home
 	boolean toHome = false;
+	//Scanner for user input
+	Scanner sc = new Scanner(System.in);
+	//it stores user input as string
+	String inputString = "";
 
-
+	/**
+	 * Method to request user input
+	 */
 	@Override
 	public void requestInput() {
 		System.out.println("Enter Rating. or 'home' to go back to [Home]");
@@ -23,6 +31,9 @@ public class GetTrollsState implements State {
 		}
 	}
 
+	/**
+	 * Method to validate user input
+	 */
 	@Override
 	public boolean isValidInput() {
 		switch (inputString) {
@@ -39,6 +50,9 @@ public class GetTrollsState implements State {
 		}
 	}
 
+	/**
+	 * Method to invoke the method getTrolls
+	 */
 	@Override
 	public void executeCommand() {
 		int rating = Integer.parseInt(inputString);
@@ -46,6 +60,9 @@ public class GetTrollsState implements State {
 	}
 
 
+	/**
+	 * Method for entry point of the State
+	 */
 	@Override
 	public void runState() {
 		printStateMessage();
@@ -58,11 +75,17 @@ public class GetTrollsState implements State {
 		}
 	}
 
+	/**
+	 * Method to show state message
+	 */
 	@Override
 	public void printStateMessage() {
 		System.out.println("[List of Trolls]");
 	}
 
+	/**
+	 * Method to run next state
+	 */
 	@Override
 	public void runNextState() {
 		new HomeState().runState();

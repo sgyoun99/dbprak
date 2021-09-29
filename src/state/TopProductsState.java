@@ -5,11 +5,19 @@ import java.util.Scanner;
 import main.App;
 import main.Testtat;
 
+/**
+ * Class for the state to retrieve highst rated top-k products
+ */
 public class TopProductsState implements State {
 
+	//Scanner for user input
 	Scanner sc = new Scanner(System.in);
+	//it stores user input as string
 	String inputString = "";
 
+	/**
+	 * Method to request user input
+	 */
 	@Override
 	public void requestInput() {
 		System.out.println("Enter a limit(number).");
@@ -18,6 +26,10 @@ public class TopProductsState implements State {
 		
 	}
 
+	/**
+	 * Method to validate user input
+	 * returns false to the null input
+	 */
 	@Override
 	public boolean isValidInput() {
 		int input;
@@ -29,6 +41,9 @@ public class TopProductsState implements State {
 		return 0 < input && input < Integer.MAX_VALUE;
 	}
 
+	/**
+	 * Method to invoke the method getTopProducts
+	 */
 	@Override
 	public void executeCommand() {
 		if(isValidInput()) {
@@ -42,6 +57,9 @@ public class TopProductsState implements State {
 	}
 
 
+	/**
+	 * Method for entry point of the State
+	 */
 	@Override
 	public void runState() {
 		printStateMessage();
@@ -49,12 +67,18 @@ public class TopProductsState implements State {
 		executeCommand();
 	}
 
+	/**
+	 * Method to show state message
+	 */
 	@Override
 	public void printStateMessage() {
 		System.out.println("[Top Products]");
 		
 	}
 
+	/**
+	 * Method to run next state
+	 */
 	@Override
 	public void runNextState() {
 		new HomeState().runState();
