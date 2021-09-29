@@ -1,3 +1,8 @@
+/**
+ * entity-class for Purchase
+ * not currently used
+ * @version 21-09-23
+ */
 
 package entity;
 

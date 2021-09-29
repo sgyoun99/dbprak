@@ -1,8 +1,8 @@
 /**
- * Class needed to read item-data from file
- * and write to DB table "item"
- * @version 03.06.2021
+ * entity-class for Item
+ * @version 21-09-23
  */
+
 package entity;
 
 import java.util.Set;
@@ -139,27 +139,5 @@ public class Item {
         	return this.purchases;
     	}
 
-	
-
-
-	
-
-	
-
-	/**
-	 * not currently used for main-program
-	 */
-/*	public static void main(String[] args) throws Exception {
-		
-		DropTables.dropTables();
-		CreateTables.createTables();
-		
-		Item item = new Item();
-		item.dresden();
-		item.leipzig();
-		
-	}*/
-	/*
-	 */
 	
 }

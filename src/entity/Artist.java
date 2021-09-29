@@ -1,4 +1,7 @@
-
+/**
+ * entity-class for Artist
+ * @version 21-09-23
+ */
 
 package entity;
 

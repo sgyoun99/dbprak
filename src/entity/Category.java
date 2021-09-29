@@ -1,7 +1,6 @@
 /**
- * Classes to read Categories from file and insert into the DB in 
- * category, sub_category and item_category
- * @version 03-07-2021
+ * entity-class for Category
+ * @version 21-09-23
  */
 
 package entity;
@@ -19,23 +18,18 @@ import java.io.*;
 import java.util.Stack;
 import java.util.Set;
 
-//import JDBCTools.JDBCTool;
 import exception.SQLKeyDuplicatedException;
 import exception.XmlDataException;
 import exception.XmlInvalidValueException;
 import exception.XmlNoAttributeException;
 import exception.XmlNullNodeException;
 import exception.XmlValidationFailException;
+
 import main.Config;
-//import main.CreateTables;
-//import main.DropTables;
 import main.ErrType;
 import main.ErrorLogger;
 
 
-/**
- * Class to read Categories from file and insert them into the DB
- */
 public class Category {
 
 	private int category_id;

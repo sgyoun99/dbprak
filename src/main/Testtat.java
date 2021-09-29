@@ -1,3 +1,8 @@
+/**
+ * class that contains all the methods for testat3
+ * @version 21-09-28
+ */
+
 package main;
 
 import entity.*;
@@ -40,38 +45,42 @@ public class Testtat implements ExecutableCommand {
     /*TestDaten:
     Testtat test = new Testtat();
 
-        test.getProduct(factory, "B000026NO5");
-        test.getProduct(factory, "B000026N65");
+    test.getProduct(factory, "B000026NO5");
+    test.getProduct(factory, "B000026N65");
+    test.getProduct(factory, "3898357007");
+    test.getProduct(factory, "B00066KWNS");
 
-        test.getProducts(factory, "Sherlock");
-        test.getProducts(factory, "Sherlick");
-        test.getProducts(factory, "g");
+    test.getProducts(factory, "Sherlock");
+    test.getProducts(factory, "Sherlick");
+    test.getProducts(factory, "g");
 
-        test.getProductsByCategoryPath(factory, 3);
-        test.getProductsByCategoryPath(factory, 0);
-        test.getProductsByCategoryPath(factory, 17);
+    //test.getProductsByCategoryPath(factory, 3);
+    //test.getProductsByCategoryPath(factory, 0);
+    //test.getProductsByCategoryPath(factory, 17);
 
-        test.addNewReview(factory, "B000026NO5", "baerchen76", "COOL", "WOW WAS THIS COOL!", 3);
-        test.addNewReview(factory, "B000026NO5", "baerchen77", "COOL", "WOW WAS THIS COOL!", 2);
-        test.addNewReview(factory, "B000026N65", "baerchen76", "COOL", "WOW WAS THIS COOL!", 5);
+    test.addNewReview(factory, "B000026NO5", "baerchen76", "COOL", "WOW WAS THIS COOL!", 3);
+    test.addNewReview(factory, "B000026NO5", "baerchen77", "COOL", "WOW WAS THIS COOL!", 2);
+    test.addNewReview(factory, "B000026N65", "baerchen76", "COOL", "WOW WAS THIS COOL!", 5);
 
-        test.getOffers(factory, "B00066KWNS");
-        test.getOffers(factory, "3405156211");
-        test.getOffers(factory, "B000026N65");
-        test.getOffers(factory, "B00005AT2N"); // in 2 shops with different price
+    test.getOffers(factory, "B00066KWNS");
+    test.getOffers(factory, "3405156211");
+    test.getOffers(factory, "B000026N65");
+    test.getOffers(factory, "B00005AT2N"); // in 2 shops with different price
 
-        test.getTopProducts(factory, 15);
+    test.getTopProducts(factory, 15);
 
-        test.getSimilarCheaperProduct(factory, "6304498969");
-        test.getSimilarCheaperProduct(factory, "3937825061");
-        test.getSimilarCheaperProduct(factory, "B000026N65");
+    test.getSimilarCheaperProduct(factory, "6304498969");
+    test.getSimilarCheaperProduct(factory, "3937825061");
+    test.getSimilarCheaperProduct(factory, "B000026N65");
 
-        test.getTrolls(factory, 2);
+    test.getTrolls(factory, 2);
     
     */
 
     /**
-     * get details to a given Item_Id
+     * Method that prints all details to a given Item_Id to the terminal
+     * @param factory
+     * @param item_id
      */
     public void getProduct(SessionFactory factory, String item_id) {
         Session session = factory.openSession();
@@ -81,26 +90,19 @@ public class Testtat implements ExecutableCommand {
             tx = session.beginTransaction();
             Item searchItem = (Item) session.get(Item.class, item_id);
             if(searchItem!=null) {
+
+                //add further Details depending on Productgroup
                 String additionalDetails = "";
                 switch(searchItem.getProductgroup()) {
                     case Book:
-                        //List<?> authorList = session.createQuery("SELECT B.author FROM Book A JOIN A.authors B WHERE A.item_id = '" + item_id + "'").list();
-                        //List<?> pubList = session.createQuery("SELECT B.publisher FROM Book A JOIN A.publishers B WHERE A.item_id = '" + item_id + "'").list();
                         Book book = (Book) session.get(Book.class, item_id);
-                        /*for(int i=0; i<authorList.size(); i++) {
-                            additionalDetails += "Author: " + authorList.get(i) + "\n";
-                        }
-                        for(int i=0; i<pubList.size(); i++) {
-                            additionalDetails += "Publisher: " + pubList.get(i) + "\n";
-                        }*/
-
                         if(book != null) {
-				for (Iterator iterator = book.getAuthors().iterator(); iterator.hasNext();) {
-				    additionalDetails += "Author: " + ((Author) iterator.next()).getAuthor() + "\n";
-				}
-				for (Iterator iterator = book.getPublishers().iterator(); iterator.hasNext();) {
-				    additionalDetails += "Publisher: " + ((Publisher) iterator.next()).getPublisher() + "\n";
-				}
+                            for (Iterator iterator = book.getAuthors().iterator(); iterator.hasNext();) {
+                                additionalDetails += "Author: " + ((Author) iterator.next()).getAuthor() + "\n";
+                            }
+                            for (Iterator iterator = book.getPublishers().iterator(); iterator.hasNext();) {
+                                additionalDetails += "Publisher: " + ((Publisher) iterator.next()).getPublisher() + "\n";
+                            }
 							String pubDate;
 							if(book.getPublication_date() == null) {
 								pubDate = "-";
@@ -111,53 +113,27 @@ public class Testtat implements ExecutableCommand {
                         }
                         break;
                     case Music_CD:
-			Music_CD music_cd = (Music_CD) session.get(Music_CD.class, item_id);
-			if(music_cd != null) {
-				/*List<?> artistList = session.createQuery("SELECT B.artist FROM Music_CD A JOIN A.artists B WHERE A.item_id = '" + item_id + "'").list();
-				String releaseDate = "-";
-				Date date =  ((Date) session.createQuery("SELECT A.release_date FROM Music_CD A WHERE A.item_id = '" + item_id + "'").uniqueResult());
-				if(date != null) {
-					releaseDate = date.toString();
-				}
-				additionalDetails += "ReleaseDate: " + releaseDate + "\n"; 
-				List<?> titleList = session.createQuery("SELECT A.title FROM Title A WHERE A.item_id = '" + item_id + "'").list();                                               
-				for(int i=0; i<artistList.size(); i++) {
-				    additionalDetails += "Artist: " + artistList.get(i) + "\n";
-				}
-				for(int i=0; i<titleList.size(); i++) {
-				    additionalDetails += "Titel " + (i+1) + ": " + titleList.get(i) + "\n";
-				}  */
-				String releaseDate = (music_cd.getRelease_date() != null) ? music_cd.getRelease_date().toString() : " - ";
-                        	additionalDetails += "ReleaseDate: " + releaseDate + "\n";
-				for (Iterator iterator = music_cd.getArtists().iterator(); iterator.hasNext();) {
-				    additionalDetails += "Artist: " + ((Artist) iterator.next()).getArtist() + "\n";
-				}
-				for (Iterator iterator = music_cd.getLabels().iterator(); iterator.hasNext();) {
-				    additionalDetails += "Label: " + ((Label) iterator.next()).getLabel() + "\n";
-				}
-				additionalDetails += "ReleaseDate: " + music_cd.getRelease_date() + "\n";
-				int titleNr = 1;
-				for (Iterator iterator = music_cd.getTitles().iterator(); iterator.hasNext();) {
-				    additionalDetails += "Title: " + ((titleNr) + ":    ").substring(0,5) + ((Title) iterator.next()).getTitle() + "\n";
-				    titleNr++;
-				}
-			}
+                        Music_CD music_cd = (Music_CD) session.get(Music_CD.class, item_id);
+                        if(music_cd != null) {
+                            String releaseDate = (music_cd.getRelease_date() != null) ? music_cd.getRelease_date().toString() : " - ";
+                            additionalDetails += "ReleaseDate: " + releaseDate + "\n";
+                            for (Iterator iterator = music_cd.getArtists().iterator(); iterator.hasNext();) {
+                                additionalDetails += "Artist: " + ((Artist) iterator.next()).getArtist() + "\n";
+                            }
+                            for (Iterator iterator = music_cd.getLabels().iterator(); iterator.hasNext();) {
+                                additionalDetails += "Label: " + ((Label) iterator.next()).getLabel() + "\n";
+                            }
+                            //additionalDetails += "ReleaseDate: " + music_cd.getRelease_date() + "\n";
+                            int titleNr = 1;
+                            for (Iterator iterator = music_cd.getTitles().iterator(); iterator.hasNext();) {
+                                additionalDetails += "Title: " + ((titleNr) + ":    ").substring(0,5) + ((Title) iterator.next()).getTitle() + "\n";
+                                titleNr++;
+                            }
+                        }
                         break;
                     case DVD:
-                        Dvd dvd = (Dvd) session.get(Dvd.class, item_id);
-                        /*List<?> creatorList = session.createQuery("SELECT B.creator FROM Dvd A JOIN A.creators B WHERE A.item_id = '" + item_id + "'").list();
-                        List<?> actorsList = session.createQuery("SELECT B.actor FROM Dvd A JOIN A.actors B WHERE A.item_id = '" + item_id + "'").list();
-                        List<?> directorList = session.createQuery("SELECT B.director FROM Dvd A JOIN A.directors B WHERE A.item_id = '" + item_id + "'").list();
-                        for(int i=0; i<actorsList.size(); i++) {
-                            additionalDetails += "Actor: " + actorsList.get(i) + "\n";
-                        }
-                        for(int i=0; i<directorList.size(); i++) {
-                            additionalDetails += "Director: " + directorList.get(i) + "\n";
-                        }
-                        for(int i=0; i<creatorList.size(); i++) {
-                            additionalDetails += "Creator: " + creatorList.get(i) + "\n";
-                        }*/
-			for (Iterator iterator = dvd.getActors().iterator(); iterator.hasNext();) {
+                        Dvd dvd = (Dvd) session.get(Dvd.class, item_id);                        
+			            for (Iterator iterator = dvd.getActors().iterator(); iterator.hasNext();) {
                             additionalDetails += "Actor: " + ((Actor) iterator.next()).getActor() + "\n";
                         }
                         for (Iterator iterator = dvd.getCreators().iterator(); iterator.hasNext();) {
@@ -185,8 +161,6 @@ public class Testtat implements ExecutableCommand {
         }catch (HibernateException e) {
             if (tx!=null) tx.rollback();
             System.out.println("Ooops! Something went wrong while getting the Product ... ^^' ");
-//        }catch (Exception e) {
-        	e.printStackTrace();
         } finally {
             session.close();
         }
@@ -194,30 +168,19 @@ public class Testtat implements ExecutableCommand {
 
     /**
      * get all Products that match the titlepattern
+     * if the given pattern is shorter than 4 characters the method is cut short
+     * @param factory
+     * @param pattern
      */
     public void getProducts(SessionFactory factory, String pattern) {
-//        if(pattern.length() < 5){
-//        if(pattern.length() < 4){
-//            System.out.println("\nThe pattern has to include at least 5 characters.\n");
-//            System.out.println("\nThe pattern has to include at least 4 characters.\n");
-    	if(false) {
-    		//TODO what to check? nothing? because '' is also allowed.
+    	if(pattern.length() < 4) {
+    		System.out.println("The pattern has to include at least 4 characters. Please insert a valid pattern");
         } else {
             Session session = factory.openSession();
             Transaction tx = null;
             try{
                 tx = session.beginTransaction();
-              //String queryString = "FROM Item I WHERE I.title LIKE '%" + pattern + "%'";
-              //String queryString = "FROM Item I WHERE lower(I.title) LIKE '%" + pattern.toLowerCase() + "%'";
-				String queryString = "";
-                if(pattern.equals("")) {
-					queryString = "FROM Item";
-                } else {
-					queryString = "FROM Item I WHERE lower(I.title) LIKE '" + pattern.toLowerCase() + "'";
-                }
-				
-
-				//TODO update to hibernate version
+				String queryString = "FROM Item I WHERE lower(I.title) LIKE '" + pattern.toLowerCase() + "'";				
                 List<?> productsList = session.createQuery(queryString).list();            
                 if(!productsList.isEmpty()) {
                     System.out.println("\nThe following items include the pattern '" + pattern + "':");
@@ -225,11 +188,10 @@ public class Testtat implements ExecutableCommand {
                         Item item = (Item) productsList.get(i);
                         System.out.println(item.getItem_id() + "\t" + item.getTitle());
                     }
-                    System.out.println("There are total " + productsList.size() + " result(s).");
+                    System.out.println("There are total " + productsList.size() + " result(s).\n");
                 } else {
-                    System.out.println("\nWe are sorry but it seems there are no products fitting this pattern: '" + pattern + "'.");
-                }     
-                System.out.println();       
+                    System.out.println("\nWe are sorry but it seems there are no products fitting this pattern: '" + pattern + "'.\n");
+                }           
                 tx.commit();
             }catch (HibernateException e) {
                 if (tx!=null) tx.rollback();
@@ -241,36 +203,41 @@ public class Testtat implements ExecutableCommand {
     }
 
     /**
-     * add new Reviews to the DB
+     * method to add new Reviews to the DB
+     * @param factory
+     * @param item_id
+     * @param customer
+     * @param summary
+     * @param content
+     * @param int
      */
-    public void addNewReview(SessionFactory factory, String item_id, String customer, String summary, String content, int rating)
-		throws NoResultException {
-
+    public void addNewReview(SessionFactory factory, String item_id, String customer, String summary, String content, int rating) throws NoResultException {
         Session session = factory.openSession();
 		Transaction tx = null;
 
         try {
             tx = session.beginTransaction();
 
-            //ensures that this is either a valid customer or an anonymous review
+            //ensures that this is either a valid customer
+            //use "guest" to leave an "anon" review
             Customer reviewCustomer = (Customer) session.get(Customer.class, customer);
             if(reviewCustomer==null) {  
-//                customer = "guest";
             	throw new NoResultException("Customer " + customer + " does not exists.");
             } 
 
             Item reviewItem = (Item) session.get(Item.class, item_id);
             if(reviewItem==null) {
                 System.out.println("We are sorry but we can not add your Review for item " + item_id + "\nIt seems that this item is not listet in our database. If you are sure that this is the correct item_id please contact our Helpcenter.\n");
-                //Fehlermeldung weil kein existentes Item in DB
+                //error if the item doesn't exist
             	throw new NoResultException("Product ID " + item_id + " does not exists.");
             }else{
+                //add Review with actual date
                 Date review_date = new Date(System.currentTimeMillis());
                 Review review = new Review(item_id, customer, review_date, summary, content, rating);			
                 session.save(review); 		
 		
-		//update Rating in Items
-		String updateRating = "SELECT AVG(A.rating) FROM Review A WHERE A.item_id = '" + item_id + "'";
+                //update Rating in Items
+                String updateRating = "SELECT AVG(A.rating) FROM Review A WHERE A.item_id = '" + item_id + "'";
                 Double newRating = (Double) session.createQuery(updateRating).uniqueResult();                 
                 reviewItem.setRating(newRating);
                 session.update(reviewItem);
@@ -292,7 +259,10 @@ public class Testtat implements ExecutableCommand {
 
 
     /**
-     * get Offers for a given Item
+     * method to get all offers for a given Item
+     * prints shop_name (location), price, currency and condition to the terminal
+     * @param factory
+     * @param item_id
      */
     public void getOffers(SessionFactory factory, String item_id) {
 		Session session = factory.openSession();
@@ -300,29 +270,19 @@ public class Testtat implements ExecutableCommand {
 
         try{
             tx = session.beginTransaction();
+            //check if item exists
             if( ((Item) session.get(Item.class, item_id))==null){
                 System.out.println("\nWe are sorry but it seems that " + item_id + " is not listet in our database. Please check your input and contact our Helpcenter\n");
             } else {
-                String shopQueryString = "SELECT S.shop_id, S.shop_name FROM Shop S";
-                List<?> shopList = session.createQuery(shopQueryString).list();
+            //get offers, if any exist
+                String offerQueryString = "SELECT S.shop_name, I.price, I.currency, I.condition FROM Shop S JOIN S.shop_items I WHERE I.item_id = '" + item_id + "' AND I.availabiliti = true" ;
+                List<?> offerList = session.createQuery(offerQueryString).list();
 
-                String queryString = "FROM Item_Shop I WHERE I.item_id = :param_item_id AND I.availabiliti = true";
-                Query query = session.createQuery(queryString);
-                query.setParameter("param_item_id", item_id);
-                List offerList = query.list();
-
-                String shopName = "";
-                for(Iterator iterator = offerList.iterator(); iterator.hasNext();) {
-                    Item_Shop is = (Item_Shop) iterator.next();                   
-                    for(int i=0; i<shopList.size(); i++) {
-                        Object[] row = (Object[]) shopList.get(i);
-                        if((Integer) row[0] == is.getShop_id()) {
-                            shopName = (String) row[1];
-                        }
-                    }
-                    System.out.println("You can find " + is.getItem_id() + " in our Shop in " + shopName + "(shop_id:" + is.getShop_id()+ ") for " + is.getPrice() + is.getCurrency() + " in " + is.getCondition() + " condition\n");                 
+                for(int i=0; i<offerList.size(); i++) {
+                    Object[] row = (Object[]) offerList.get(i);
+                    System.out.println("You can find " + item_id + " in our Shop in " + (String) row[0] + " for " + (Double) row[1] + (String) row[2] + " in " + (String) row[3] + " condition");                    
                 }
-                if(shopName.equals("")){
+                if(offerList.size()<1) {
                     System.out.println("We are sorry but it seems there are currently no offers for " + item_id + " in our shops\n");
                 }
             }
@@ -337,7 +297,9 @@ public class Testtat implements ExecutableCommand {
 
 
     /**
-     * returns the topProducts in the DB, ordered by rating and salesranking, limited to limit
+     * method that returns the topProducts in the DB, ordered by rating and salesranking, limited to limit
+     * @param factory
+     * @param limit
      */
     public void getTopProducts(SessionFactory factory, int limit) {
 		Session session = factory.openSession();
@@ -366,7 +328,9 @@ public class Testtat implements ExecutableCommand {
     }
 
     /**
-     * checks if any of the similar Products are cheaper than the one checked for
+     * method that checks if any of the similar Products are cheaper than the one checked for
+     * @param factory
+     * @param item_id
      */
     public void getSimilarCheaperProduct(SessionFactory factory, String item_id) {
         Session session = factory.openSession();
@@ -374,22 +338,21 @@ public class Testtat implements ExecutableCommand {
 
         try{
             tx = session.beginTransaction();
+            //check whether item exists
             if(((Item) session.get(Item.class, item_id))==null) {
                 System.out.println("\nWe are sorry, but Item " + item_id + " does not exist in our Database. Please check your input and contact our Helpcenter.\n");
             } else {
-                System.out.println(); 
-
                 String s = "SELECT B.item_id FROM Item A JOIN A.sim_items B WHERE A.item_id = '" + item_id + "' AND " +
                             "(SELECT C.price FROM Item_Shop C WHERE C.item_id = B.item_id AND C.price <> 0.0) < " +
                             "(SELECT MIN(D.price) FROM Item_Shop D WHERE D.item_id = '" + item_id + "')";
                 List<?> simList = session.createQuery(s).list();
-                Boolean cheaperExists = (simList.size()>0) ? true : false;
+                
                 for(int i=0; i<simList.size(); i++) {  
-                    System.out.print("There is a cheaper option for " + item_id + ": "); 
+                    System.out.print("\nThere is a cheaper similar option for " + item_id + ": "); 
                     getOffers(factory, (String) simList.get(i));                               
                 }
-                if(!cheaperExists) {
-                    System.out.println("We are sorry, it seems that there is no cheaper option for: " + item_id);
+                if(simList.size()<1) {
+                    System.out.println("\nWe are sorry but it seems there is no cheaper similar option for: " + item_id);
                 }   
                 System.out.println();
             }
@@ -403,7 +366,9 @@ public class Testtat implements ExecutableCommand {
     }
 
     /**
-     * get all reviewers where average rating is below limit
+     * method that prints all reviewers where average rating is below limit to terminal
+     * @param factory
+     * @param limit
      */
     public void getTrolls(SessionFactory factory, int limit) {
 		Session session = factory.openSession();
@@ -432,7 +397,9 @@ public class Testtat implements ExecutableCommand {
     }
 
     /**
-     * get all products associated with the given category
+     * method that prints all products associated with the chosen category to the terminal
+     * chose category starting by getting offered all categories without over_category, then chose a sub_category until you reach the one you want
+     * @param factory
      */
     public void getProductsByCategoryPath(SessionFactory factory) {
 		Session session = factory.openSession();
@@ -444,7 +411,7 @@ public class Testtat implements ExecutableCommand {
             String inputString = "";
             int cat_id = 0;
             String catName = null;
-            //main category
+            //get and print all main categories to the terminal
             String rootCatQuery = "SELECT DISTINCT B.category_id, B.name FROM Category A JOIN A.over_categories B WHERE B.category_id NOT IN (SELECT C.category_id FROM Category D JOIN D.sub_categories C) ORDER BY B.category_id";      
             List<?> rootCatList = session.createQuery(rootCatQuery).list();
             Map<Integer,String> catMap = new HashMap<>();
@@ -483,7 +450,8 @@ public class Testtat implements ExecutableCommand {
 				}
             }
 
-            //sub-category
+            //get the sub-category you want
+            //terminates once a sub_category has been chosen or there are no more sub_categories
             Boolean fin = false;
             while(!fin){
                 System.out.println();
@@ -533,6 +501,7 @@ public class Testtat implements ExecutableCommand {
                 }
             }
 
+            //get all sub_categories of the chosen category, including sub_..._sub_categories
             Stack<Integer> catStack = new Stack<Integer>();
             ArrayList<Integer> catList = new ArrayList<>(Arrays.asList(cat_id));
             catStack.push(cat_id);
@@ -544,7 +513,8 @@ public class Testtat implements ExecutableCommand {
                         catList.add(((Integer) catQList.get(i)));
                         catStack.push(((Integer) catQList.get(i)));              
                 }
-            }            
+            }        
+            //get all items associated with the chosen category and its sub_categories, prints item_id to terminal     
             System.out.println("\nThe following items are associated with category: " + cat_id + "(" + catName +")");
             Boolean thereareItems = false;
             while(!catList.isEmpty()) {
@@ -564,7 +534,6 @@ public class Testtat implements ExecutableCommand {
             }
             
             String s = thereareItems ? "\n" : "We are sorry but there are no items associated with category: " + cat_id + "(" + catName +")\n";
-
             System.out.println(s);
             tx.commit();
         }catch (HibernateException e) {
@@ -576,32 +545,12 @@ public class Testtat implements ExecutableCommand {
     }
 
 
-    private void rekCat(SessionFactory factory, int cat_id) {
-        Session session = factory.openSession();
-		Transaction tx = null;
-
-        try{
-            tx = session.beginTransaction();
-            String subCatQuery = "SELECT A.category_id FROM Category B JOIN B.sub_categories A WHERE B.category_id = " + cat_id;
-            List<Integer> subCatList = session.createQuery(subCatQuery).list();
-            if(!subCatList.isEmpty()) {
-                System.out.print(" " + cat_id + " [ ");
-                for(Integer subCat : subCatList) {
-                    rekCat(factory, subCat);
-                }
-                System.out.print(" ] ");
-            } else {
-                System.out.print(" " + cat_id + " ");
-            }            
-            tx.commit();
-        }catch (HibernateException e) {
-            if (tx!=null) tx.rollback();
-            System.out.println("Ooops! Something went wrong while getting the CategoryTree ... ^^' ");
-        } finally {
-            session.close();
-        }
-    }
-
+    /**
+     * method to return all over_categories from a given category and print them to terminal
+     * root-category (category without over-category) is last
+     * @param factory
+     * @param catId
+     */
     public void getCategoryTree(SessionFactory factory, int catId) {
         Session session = factory.openSession();
         Transaction tx = null;
@@ -641,7 +590,7 @@ public class Testtat implements ExecutableCommand {
     /**
      * jetzt wird was eingekauft!
      */
-    public void purchaseItem(SessionFactory factory, String item_id, String customer_name, int shop_id) {
+    /*public void purchaseItem(SessionFactory factory, String item_id, String customer_name, int shop_id) {
         Session session = factory.openSession();
 		Transaction tx = null;
 
@@ -666,7 +615,7 @@ public class Testtat implements ExecutableCommand {
         } finally {
             session.close();
         }
-    }
+    }*/
 
 	@Override
 	public void init() {

@@ -1,8 +1,8 @@
 /**
- * Class to read Shops with their attributes from file
- * and insert them into DB table shop
- * @version 30.06.2021
+ * entity-class for Shop
+ * @version 21-09-23
  */
+
 package entity;
 
 import java.util.Set;

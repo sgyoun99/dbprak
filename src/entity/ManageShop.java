@@ -1,7 +1,7 @@
 /**
  * Class to read Shops with their attributes from file
  * and insert them into DB table shop
- * @version 30.06.2021
+ * @version 21-09-23
  */
 package entity;
 
@@ -29,11 +29,13 @@ import main.ErrorLogger;
 
 public class ManageShop {
 
+	/**
+	 * method managing insertion of shops into DB
+	 */
     public void manageShops(SessionFactory factory) {
        insertShop(readShop(Config.DRESDEN_ENCODED), factory);
        insertShop(readShop(Config.LEIPZIG), factory);
-	   //int i = getShopId(factory, "Leipzig", "Am Brühl", "04109");
-       System.out.println("\033[1;34m    *\033[35m*\033[33m*\033[32m* \033[91mShops finished \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
+       System.out.println("\033[1;34m*\033[35m*\033[33m*\033[32m*\033[91mShops finished \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
     }
 	
 		
@@ -107,9 +109,6 @@ public class ManageShop {
 	
 
 
-	/*public int getShopId() {
-		return this.getShopId(this.shop_name, this.street, this.zip);
-	}*/
 	
 	/**
 	 * get shopId from DB with name and address
@@ -130,36 +129,16 @@ public class ManageShop {
 			q.setParameter("street", street);
 			q.setParameter("shop_name", shop_name);
 			List shops = q.list();
-			//System.out.println(((Shop) shops.get(0)).getShop_name() + " " +((Shop) shops.get(0)).getShop_id());
 			shopId = ((Shop) shops.get(0)).getShop_id();
 			tx.commit();
 		} catch (HibernateException e) {
 			if (tx!=null) tx.rollback();
-			e.printStackTrace(); 
+			//e.printStackTrace(); 
 		} catch (Exception e) {
 		} finally {
 			session.close(); 
-			//System.out.println("\033[1;34m    *\033[35m*\033[33m*\033[32m* \033[91mshop_id = " + shopId + " \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
 			return shopId;
 		}
-	}
-
-	
-	/**
-	 * not used for main program
-	 */
-	public static void main(String[] args) {
-		/*Shop shop = new Shop(Config.DRESDEN_ENCODED);
-		shop.readShop();
-		shop.insertShop();
-		int shop_id = shop.getShopId(shop.getShop_name(), shop.getStreet(), shop.getZip());
-		System.out.println(shop_id);
-		shop = new Shop(Config.LEIPZIG);
-		shop.readShop();
-		shop.insertShop();
-		shop_id = shop.getShopId(shop.getShop_name(), shop.getStreet(), shop.getZip());
-		System.out.println(shop_id);
-		shop.selectShop();*/
 	}
 
 }

@@ -1,3 +1,8 @@
+/**
+ * entity-class for Error
+ * @version 21-09-23
+ */
+
 package entity;
 
 import main.ErrType;

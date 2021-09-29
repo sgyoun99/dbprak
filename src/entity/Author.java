@@ -1,7 +1,6 @@
 /**
- * Classes needed to read for Books all data from file
- * and write it in the associated tables
- * @version 03.07.2021
+ * entity-class for Author
+ * @version 21-09-23
  */
 
 package entity;

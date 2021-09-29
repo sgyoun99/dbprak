@@ -1,7 +1,6 @@
 /**
- * Classes needed to read item-shop-data from file and write to DB
- * table item_shop
- * @version 03.06.2021
+ * entity-class for Item_Shop
+ * @version 21-09-23
  */
 package entity;
 
@@ -103,19 +102,5 @@ public class Item_Shop implements Serializable {
 	 }
 	
 	
-	/**
-	 * not in use for main-program
-	 */
-	public static void main(String[] args) throws Exception {
-	/*	DropTables.dropTable(CreateTables.Errors);
-		CreateTables.createTable(CreateTables.Errors);
-		DropTables.dropTable(CreateTables.Item_Shop);
-		CreateTables.createTable(CreateTables.Item_Shop);
-		
-
-		Item_Shop is = new Item_Shop();
-		is.dresden();
-		is.leipzig();*/
-		
-	}
+	
 }

@@ -1,8 +1,8 @@
 /**
- * class needed to read all music_cd related data from file
- * and write to DB in the associated tables
- * @version 03.06.2021
+ * entity-class for Music_CD
+ * @version 21-09-28
  */
+
 package entity;
 
 import java.util.Set;
@@ -12,7 +12,6 @@ import java.util.Iterator;
 
 public class Music_CD {
 	private String item_id;
-	//private String artist;
 	private Date release_date;
 	
 	private Set artists;
@@ -20,9 +19,8 @@ public class Music_CD {
 	private Set titles;
 
 	public Music_CD() {}
-	public Music_CD(String item_id,/* String artist,*/ Date release_date) {
+	public Music_CD(String item_id, Date release_date) {
 		this.item_id = item_id;
-		//this.artist = artist;
 		this.release_date = release_date;
 	}
 
@@ -32,12 +30,6 @@ public class Music_CD {
 	public void setItem_id(String item_id) {
 		this.item_id = item_id;
 	}
-	/*public String getArtist() {
-		return artist;
-	}
-	public void setArtist(String artist) {
-		this.artist = artist;
-	}*/
 	public Date getRelease_date() {
 		return release_date;
 	}

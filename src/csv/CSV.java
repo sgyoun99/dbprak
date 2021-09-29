@@ -48,7 +48,7 @@ public class CSV{
             csvFile.remove(0); 
             trimQuotes();
             changeMod();
-            System.out.println("\033[1;34m*\033[35m*\033[33m*\033[32m* \033[91m csv_file read in \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
+            System.out.println("\033[1;34m*\033[35m*\033[33m*\033[32m* \033[91m.csv_file read in \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
         }catch(FileNotFoundException e){
             System.out.println("csv_file not found, cannot be read");
         }

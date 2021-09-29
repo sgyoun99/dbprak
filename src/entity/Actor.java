@@ -1,7 +1,6 @@
 /**
- * Classes needed to read the DVD-related data from file and
- * write it in the associated tables in DB
- * @version 03.06.2021
+ * entity-class for Actor
+ * @version 21-09-23
  */
 package entity;
 

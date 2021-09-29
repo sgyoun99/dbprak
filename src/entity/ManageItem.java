@@ -1,7 +1,7 @@
 /**
  * Class needed to read item-data from file
- * and write to DB table "item"
- * @version 03.06.2021
+ * and write to DB table "item" and "similar_items"
+ * @version 21-09-23
  */
 package entity;
 
@@ -23,7 +23,6 @@ import org.hibernate.Transaction;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
-//import JDBCTools.JDBCTool;
 import XmlTools.XmlTool;
 import exception.SQLKeyDuplicatedException;
 import exception.XmlDataException;
@@ -39,13 +38,16 @@ import main.Pgroup;
 
 public class ManageItem {
 
+	/**
+	 * method managing the reading and writing of data
+	 */
 	public void readIn(SessionFactory factory){   
 
       	dresden(factory);
 		leipzig(factory);
 		getSimItem(factory, Config.DRESDEN_ENCODED, "Dresden");
 		getSimItem(factory, Config.LEIPZIG, "Leipzig");
-		System.out.println("\033[1;34m    *\033[35m*\033[33m*\033[32m* \033[91mItems finished \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
+		System.out.println("\033[1;34m*\033[35m*\033[33m*\033[32m*\033[91mItems finished \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
 
 	}
 
@@ -86,13 +88,16 @@ public class ManageItem {
 		}
 	}
 
+	/**
+	 * method that adds forwarded items to the DB
+	 */
 	private void addItem(Item item, SessionFactory factory) {
 		Session session = factory.openSession();
 		Transaction tx = null;
 		
 		try {
 			tx = session.beginTransaction();
-			item.setRating(0.0);
+			item.setRating(0.0);	//gets added after Reviews are read and added to DB
 			session.save(item); 
 			tx.commit();
 		} catch (HibernateException e) {
@@ -106,7 +111,7 @@ public class ManageItem {
 	}
 	
 	/**
-	 * method to read item-data from file and write to DB table "item"
+	 * method to read item-data from file Dresden and write to DB table "item"
 	 * extra method needed because of different file structure
 	 */
 	private void dresden(SessionFactory factory) {
@@ -159,25 +164,14 @@ public class ManageItem {
 				e.setLocation(location);
 				e.setItem_id(item.getItem_id());
 				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-			} /*catch (SQLException ex) {
-				if(ex.getMessage().contains("duplicate key value")) {
-					SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
-					e.setAttrName("item_id");
-					e.setItem_id(item.getItem_id());
-					e.setLocation(location);
-					e.setMessage("List Empty");
-					ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-				} else {
-					ErrorLogger.write(location, item.getItem_id(), ErrType.SQL, "", ex, xt.getNodeContentDFS(itemNode));
-				}
-			}*/ catch (Exception e) {
+			} catch (Exception e) {
 				ErrorLogger.write(location, item.getItem_id(), ErrType.PROGRAM, "", e, xt.getNodeContentDFS(itemNode));
 			}
 		});
 	}
 	
 	/**
-	 * read item-data from file and write to DB table "item"
+	 * read item-data from file Leipzig and write to DB table "item"
 	 * extra method needed because of different file structure
 	 */
 	private void leipzig(SessionFactory factory) {
@@ -222,26 +216,14 @@ public class ManageItem {
 				e.setLocation(location);
 				e.setItem_id(item.getItem_id());
 				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-			} /*catch (SQLException ex) {
-				if(ex.getMessage().contains("duplicate key value")) {
-					SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
-					e.setAttrName("item_id");
-					e.setItem_id(item.getItem_id());
-					e.setLocation(location);
-					e.setMessage("List Empty");
-					ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-				} else {
-					ErrorLogger.write(location, item.getItem_id(), ErrType.SQL, "", ex, xt.getNodeContentDFS(itemNode));
-				}
-			} */catch (Exception e) {
+			} catch (Exception e) {
 				ErrorLogger.write(location, item.getItem_id(), ErrType.PROGRAM, "", e, xt.getNodeContentDFS(itemNode));
 			}
 		});
 	}
 	
 	/**
-	 * add Sim_items to DB
-	 * nicht in batches sonst Abbruch bei Hiberate Fehler
+	 * add Similar_items to DB from itemMap
 	 */
 	private void addSimItems(SessionFactory factory, HashMap<String,ArrayList<String>> simItemMap) {
 		for(Map.Entry<String, ArrayList<String>> set : simItemMap.entrySet()) {
@@ -276,7 +258,9 @@ public class ManageItem {
 		}
 	}
 
-
+	/**
+	 * read similar_items from file dresden/leipzig and add to HashMap
+	 */
 	private void getSimItem(SessionFactory factory, String xmlPath, String location) {	
 		HashMap<String,ArrayList<String>> item_simItem_map = new HashMap<String,ArrayList<String>>();
 		System.out.println(">> Similar_Items " + location + " ...");
@@ -319,20 +303,11 @@ public class ManageItem {
 			} catch (XmlNoAttributeException e) {
 				e.setLocation(location);
 				ErrorLogger.write(e, xt.getNodeContentDFS(node));
-			}/* catch (XmlValidationFailException e) {
-				e.setLocation(location);
-				ErrorLogger.write(e, xt.getNodeContentDFS(node));
-			} catch (SQLException e) {
-				if(!e.getMessage().contains("duplicate key value")) {
-					ErrorLogger.write(location, ErrType.SQL, e, xt.getNodeContentDFS(node));
-				}
-			}*/ catch (Exception e) {
+			} catch (Exception e) {
 				ErrorLogger.write(location, ErrType.PROGRAM, e, xt.getNodeContentDFS(node));
 			}	
 
 		}));
-
-		//test?
 		
 		//insert into DB
 		addSimItems(factory, item_simItem_map);

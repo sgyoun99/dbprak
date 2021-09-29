@@ -1,6 +1,6 @@
 /**
- * read the reviews from file and write in Table Reviews in DB
- * @version 21-06-02
+ * Review-class (entity, sorted under csv for convenience)
+ * @version 21-09-23
  */
 package csv;
 
@@ -16,7 +16,6 @@ public class Review{
     private String content;
     private int rating;
 
-//    private Set customers;
 
     public Review() {}
     public Review(String item_id, String customer_name, Date review_date, String summary, String content, int rating) {
@@ -71,11 +70,5 @@ public class Review{
 		this.rating = rating;
 	}
 
-//    public Set getCustomers() {
-//		return this.customers;
-//	}
-//	public void setCustomers(Set customers) {
-//		this.customers = customers;
-//	}
 
 }

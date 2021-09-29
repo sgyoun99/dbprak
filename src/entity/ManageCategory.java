@@ -1,7 +1,7 @@
 /**
  * Classes to read Categories from file and insert into the DB in 
  * category, sub_category and item_category
- * @version 03-07-2021
+ * @version 21-09-23
  */
 
 package entity;
@@ -26,7 +26,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.Query;
 
-//import JDBCTools.JDBCTool;
 import exception.SQLKeyDuplicatedException;
 import exception.XmlDataException;
 import exception.XmlInvalidValueException;
@@ -34,8 +33,6 @@ import exception.XmlNoAttributeException;
 import exception.XmlNullNodeException;
 import exception.XmlValidationFailException;
 import main.Config;
-//import main.CreateTables;
-//import main.DropTables;
 import main.ErrType;
 import main.ErrorLogger;
 
@@ -78,8 +75,10 @@ class Category_relation{
 	public String getName(){
 		return this.name;
 	}
-
 }
+
+
+
 
 /**
  * Class to read Categories from file and insert them into the DB
@@ -92,14 +91,14 @@ public class ManageCategory {
 
 
 	/**
-	 * function that manages reading and inserting category, sub_category, item_category
+	 * method that manages reading data from file and inserting it into DB tables category, sub_category, item_category
 	 */
 	public void manageCategories(SessionFactory factory) {
 		readCategory();
 		insertCategory(factory, categoryList);
 		addOverCategories(factory, categoryList);
 		addItems(factory, itemList);
-		System.out.println("\033[1;34m    *\033[35m*\033[33m*\033[32m* \033[91mCategories finished \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
+		System.out.println("\033[1;34m*\033[35m*\033[33m*\033[32m*\033[91mCategories finished \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
 	}
 		
 	/**
@@ -111,8 +110,8 @@ public class ManageCategory {
 	}
 	
 	/**
-	 * insert Category into DB
-	 * ACHTUNG: batches weil sehr viele Kategorien
+	 * insert Category into DB from ArrayList
+	 * added in batches
 	 */
 	public void insertCategory(SessionFactory factory, ArrayList<Category_relation> categoryList) {
 		Session session = factory.openSession();
@@ -140,8 +139,7 @@ public class ManageCategory {
 	}
 
 	/**
-	 * insert into sub_category
-	 * Keine Batch sondern for-Schleife außen weil sonst dieselbe Kategory evtl häufiger gleichzeitig geupdated werden soll -> funktioniert nicht
+	 * insert data into sub_category from ArrayList
 	 */
 	public void addOverCategories(SessionFactory factory, ArrayList<Category_relation> categoryList){
 		for(int i=0; i<categoryList.size(); i++) {
@@ -154,7 +152,7 @@ public class ManageCategory {
 						Category cat = new Category(categoryList.get(i).getOwnId(), categoryList.get(i).getName());
 						HashSet<Category> catSet = new HashSet<Category>();
 						Category parentCat = session.get(Category.class, categoryList.get(i).getParent());
-						if(parentCat!=null){
+						if(parentCat!=null){	//ist null bei Kategorien ohne over_category
 							catSet.add(parentCat);
 							cat.setOver_categories(catSet);			
 							session.update(cat); 
@@ -172,10 +170,7 @@ public class ManageCategory {
 
 
 	/**
-	 * insert into sub_category
-	 * Keine Batch sondern for-Schleife außen weil sonst dieselbe Kategory evtl häufiger gleichzeitig geupdated werden soll -> funktioniert nicht
-	 * evtl IdNode ändern und namen hinzufügen?
-	 * ACHTUNG: Fehler, wenn das item nicht existiert! Abfangen
+	 * insert items and category into item_category
 	 */
 	public void addItems(SessionFactory factory, ArrayList<String[]> itemList){
 		for(String[] item : itemList) {
@@ -262,19 +257,6 @@ public class ManageCategory {
 		categoryList.remove(0);
 		
 	} 
-
-	/**
-	 * not currently in use
-	 */
-	public static void main(String[] args) throws Exception {
-		
-//		DropTables.dropTables();
-//		CreateTables.createTables();
-
-		//Category category = new Category();
-		//category.readCategory();
-
-	}
 	
 	
 }

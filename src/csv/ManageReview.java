@@ -1,6 +1,10 @@
 /**
- * read the reviews from file and write in Table Reviews in DB
- * @version 21-06-02
+ * Application class
+ * read the reviews from file 
+ * create dummy-Customers based on reviews
+ * write in Table Reviews in DB
+ * update Item.rating
+ * @version 21-09-23
  */
 package csv;
 
@@ -24,7 +28,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.Query;
 
-//import JDBCTools.JDBCTool;
 import main.ErrorLogger;
 import main.ErrType;
 
@@ -33,25 +36,25 @@ import main.ErrType;
 public class ManageReview{
 
     private CSV csvFile;
-    private HashMap<String, Double> ratingHM = new HashMap<>();;
+    private HashMap<String, Double> ratingHM = new HashMap<>();
 
     /**
-     * function managing reading in csv file and writing reviews to DB
+     * function managing reading in csv file, creating customers and writing reviews to DB
      */
     public void manageReviews(SessionFactory factory) {
         this.csvFile = new CSV();
         this.csvFile.readFile();
         insertCustomers(factory);
-        System.out.println("\033[1;34m*\033[35m*\033[33m*\033[32m* \033[91m Customers finished \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
+        System.out.println("\033[1;34m*\033[35m*\033[33m*\033[32m* \033[91mCustomers created \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
         insertReviews(factory);
-        System.out.println("\033[1;34m*\033[35m*\033[33m*\033[32m* \033[91m reviews fully written \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
+        System.out.println("\033[1;34m*\033[35m*\033[33m*\033[32m* \033[91mReviews fully written \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
         addRatings(factory);
-        System.out.println("\033[1;34m*\033[35m*\033[33m*\033[32m* \033[91m ratings added \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
+        System.out.println("\033[1;34m*\033[35m*\033[33m*\033[32m* \033[91mRatings added \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
     }
 
 
     /**
-     * add all customers in reviews
+     * add all customers that have left reviews
      * dummy Addresses/Accounts
      */
     public void insertCustomers(SessionFactory factory) {
@@ -61,8 +64,7 @@ public class ManageReview{
             
             try {
                 tx = session.beginTransaction();
-                Customer customer = new Customer(csvFile.getFile().get(i)[4], "Street"+i, i, 11111, i+"city", "Account"+i);			
-//              session.save(customer); 			
+                Customer customer = new Customer(csvFile.getFile().get(i)[4], "Street"+i, i, 11111, i+"city", "Account"+i);						
                 session.saveOrUpdate(customer); 			
                 
                 tx.commit();
@@ -92,12 +94,9 @@ public class ManageReview{
             
             try {
                 tx = session.beginTransaction();
-                //Customer reviewCustomer = (Customer) session.get(Customer.class, csvFile.getFile().get(i)[4]);
                 Review review = new Review(csvFile.getFile().get(i)[0], csvFile.getFile().get(i)[4], Date.valueOf(csvFile.getFile().get(i)[3]), csvFile.getFile().get(i)[5], csvFile.getFile().get(i)[6], Integer.valueOf(csvFile.getFile().get(i)[1]));			
                 session.save(review); 			
                 tx.commit();
-//            } catch (HibernateException e) {
-                //TODO change HibernateExceptions to ???
             } catch (Exception e) {
                 if (tx!=null) {
                     tx.rollback();
@@ -119,7 +118,7 @@ public class ManageReview{
     }
 
     /**
-     * Function to get teh averages of the ratings from the DB (review) and add them to the Review HashMap
+     * Function to get the averages of the ratings from the DB (table review) and add them to the Review HashMap
      */
     private void getRating(SessionFactory factory) {
         Session session = factory.openSession();
@@ -137,7 +136,7 @@ public class ManageReview{
         }catch (HibernateException e) {
             if (tx!=null) tx.rollback();
             System.out.println("HibernateException for getting Ratings");
-            e.printStackTrace();
+            //e.printStackTrace();
         } finally {
             session.close();
         }
@@ -153,20 +152,21 @@ public class ManageReview{
             Session session = factory.openSession();
             Transaction tx = null;
             
-                try {
-                    tx = session.beginTransaction();
-                    Item item = (Item)session.get(Item.class, set.getKey()); 
-                    if(item!=null){
-                        item.setRating(set.getValue());
-                        session.update(item); 
-                    }
-                    tx.commit();
-                } catch (HibernateException e) {
-                    if (tx!=null) tx.rollback();
-                    e.printStackTrace(); 
-                } finally {
-                    session.close(); 
+            try {
+                tx = session.beginTransaction();
+                Item item = (Item)session.get(Item.class, set.getKey()); 
+                if(item!=null){
+                    item.setRating(set.getValue());
+                    session.update(item); 
                 }
+                tx.commit();
+            } catch (HibernateException e) {
+                if (tx!=null) tx.rollback();
+                System.out.println("HibernateException for adding Ratings");
+                //e.printStackTrace(); 
+            } finally {
+                session.close(); 
+            }
         }
     }  
 

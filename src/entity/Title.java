@@ -1,3 +1,7 @@
+/**
+ * entity-class for Title
+ * @version 21-09-23
+ */
 
 package entity;
 

@@ -1,7 +1,7 @@
 /**
  * Classes needed to read item-shop-data from file and write to DB
  * table item_shop
- * @version 03.06.2021
+ * @version 21-09-23
  */
 package entity;
 
@@ -20,7 +20,6 @@ import org.hibernate.Transaction;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
-//import JDBCTools.JDBCTool;
 import XmlTools.XmlTool;
 import exception.SQLKeyDuplicatedException;
 import exception.XmlInvalidValueException;
@@ -34,15 +33,18 @@ import main.ErrorLogger;
 
 public class ManageItem_Shop {
 
+	/**
+	 * method controlling reading data from file and writing it to DB
+	 */
 	public void manageShopItems(SessionFactory factory){
 		dresden(factory);
 		leipzig(factory);
-		System.out.println("\033[1;34m    *\033[35m*\033[33m*\033[32m* \033[91mItem_Shop finished \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
+		System.out.println("\033[1;34m*\033[35m*\033[33m*\033[32m*\033[91mItem_Shop finished \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
 		
 	}
 	
 	/**
-	 * add ShopItem
+	 * add ShopItems to DB
 	 */
 	private void addShopItem(Item_Shop shop_item, SessionFactory factory) {
 		Session session = factory.openSession();
@@ -64,7 +66,7 @@ public class ManageItem_Shop {
 	
 	
 	/**
-	 * check read-in data is valid
+	 * check if read-in data is valid
 	 */
 	public static Predicate<Double> pred_price = price -> price >= 0 && price<9999999 ;
 	public static Predicate<String> pred_currency = curr -> Arrays.asList("EUR","").contains(curr);
@@ -80,6 +82,9 @@ public class ManageItem_Shop {
 	}; 
 	public Predicate<String> pred_condition = cond -> Arrays.asList("new","","second-hand").contains(cond);
 	
+	/**
+	 * test data
+	 */
 	public void test(Item_Shop item_shop) throws XmlValidationFailException {
 		try {
 			if(!ManageItem.pred_item_id.test(item_shop.getItem_id())) {
@@ -166,18 +171,7 @@ public class ManageItem_Shop {
 						e.setLocation(location);
 						e.setItem_id(item_shop.getItem_id());
 						ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-					} /*catch (SQLException ex) {
-						if(ex.getMessage().contains("duplicate key value")) {
-							SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
-							e.setAttrName("");
-							e.setItem_id(item_shop.getItem_id());
-							e.setLocation(location);
-							e.setMessage("duplicate key value");
-							ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-						} else {
-							ErrorLogger.write(location, item_shop.getItem_id(), ErrType.SQL, "", ex, xt.getNodeContentDFS(itemNode));
-						}
-					}*/ catch (Exception e) {
+					} catch (Exception e) {
 						ErrorLogger.write(location, item_shop.getItem_id(), ErrType.PROGRAM, "", e, xt.getNodeContentDFS(itemNode));
 					}			
 				});
@@ -243,18 +237,7 @@ public class ManageItem_Shop {
 						e.setLocation(location);
 						e.setItem_id(item_shop.getItem_id());
 						ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-					}/* catch (SQLException ex) {
-						if(ex.getMessage().contains("duplicate key value")) {
-							SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
-							e.setAttrName("");
-							e.setItem_id(item_shop.getItem_id());
-							e.setLocation(location);
-							e.setMessage("duplicate key value");
-							ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-						} else {
-							ErrorLogger.write(location, item_shop.getItem_id(), ErrType.SQL, "", ex, xt.getNodeContentDFS(itemNode));
-						}
-					}*/ catch (Exception e) {
+					} catch (Exception e) {
 						ErrorLogger.write(location, item_shop.getItem_id(), ErrType.PROGRAM, "", e, xt.getNodeContentDFS(itemNode));
 					}		
 				});
@@ -266,20 +249,4 @@ public class ManageItem_Shop {
 		});
 	}
 	
-	
-	/**
-	 * not in use for main-program
-	 */
-	public static void main(String[] args) throws Exception {
-		/*DropTables.dropTable(CreateTables.Errors);
-		CreateTables.createTable(CreateTables.Errors);
-		DropTables.dropTable(CreateTables.Item_Shop);
-		CreateTables.createTable(CreateTables.Item_Shop);
-		
-
-		Item_Shop is = new Item_Shop();
-		is.dresden();
-		is.leipzig();*/
-		
-	}
 }

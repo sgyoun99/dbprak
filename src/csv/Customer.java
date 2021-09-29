@@ -1,3 +1,7 @@
+/**
+ * Customer-class (entity, sorted under csv for convenience)
+ * @version 21-09-23
+ */
 
 package csv;
 
@@ -5,7 +9,6 @@ import java.io.Serializable;
 import java.util.Set;
 
 public class Customer implements Serializable{
-    //private int customer_id;
     private String customer_name;
     private String street;
     private int nr;
@@ -26,12 +29,7 @@ public class Customer implements Serializable{
         this.account_number = account_number;
     }
 
-/*    public void setCustomer_id(int customer_id) {
-        this.customer_id = customer_id;
-    }
-    public int getCustomer_id() {
-        return this.customer_id;
-    }*/
+
     public void setCustomer_name(String customer_name) {
         this.customer_name = customer_name;
     }

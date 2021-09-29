@@ -1,7 +1,7 @@
 /**
  * Classes needed to read for Books all data from file
- * and write it in the associated tables
- * @version 03.07.2021
+ * and insert it into the associated tables
+ * @version 21-09-23
  */
 
 package entity;
@@ -22,7 +22,6 @@ import org.hibernate.Transaction;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
-//import JDBCTools.JDBCTool;
 import XmlTools.XmlTool;
 import exception.SQLKeyDuplicatedException;
 import exception.XmlDataException;
@@ -45,7 +44,7 @@ public class ManageBook {
 	public void manageBooks(SessionFactory factory) {
 		book(Config.LEIPZIG, factory);
 		book(Config.DRESDEN_ENCODED, factory);
-		System.out.println("\033[1;34m    *\033[35m*\033[33m*\033[32m* \033[91mBooks finished \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
+		System.out.println("\033[1;34m *\033[35m*\033[33m*\033[32m* \033[91mBooks finished \033[32m*\033[33m*\033[35m*\033[34m*\033[0m");
 	}
 
 	/**
@@ -108,38 +107,12 @@ public class ManageBook {
 		
 	}
 	
-	//check if publisher exists (author always true => no check)
-	//public static Predicate<String> pred_author = author -> true; //allow
-	//public static Predicate<String> pred_publisher = publisher -> publisher != null;
-	/*public void testAuthor(Author author) throws XmlValidationFailException {
-		try {
-			if(!pred_author.test(getAuthor())) {
-				XmlInvalidValueException e = new XmlInvalidValueException("author Error: \""+getAuthor()+"\""); 
-				e.setAttrName("author");
-				throw e;
-			}
-		} catch (XmlInvalidValueException e) {
-			throw new XmlValidationFailException(e);
-		}
-	}
-	public void testPublisher(Publisher publisher) throws XmlValidationFailException {
-		try {
-			if(!pred_publisher.test(publisher.getPublisher())) {
-				XmlInvalidValueException e = new XmlInvalidValueException("publisher Error. publisher is null.");
-				e.setAttrName("publisher");
-				throw e;
-			}
-		} catch (XmlInvalidValueException e) {
-			throw new XmlValidationFailException(e);
-		}
-	}*/
 	
 	/**
 	 * reads book-data from file and writes it to DB table "book"
 	 */
 	private void book(String xmlPath, SessionFactory factory) {
 		String location = "Book(" + xmlPath + ")";
-		//System.out.println(">> Book " + this.location + " ...");
 		XmlTool xt = new XmlTool(xmlPath);
 		xt.getNodesByNameDFS(xt.getDocumentNode(), "item").stream().filter(itemNode -> {
 			try {
@@ -163,11 +136,11 @@ public class ManageBook {
 				ErrorLogger.write(location, ErrType.XML, e, xt.getNodeContentDFS(itemNode));
 			}
 			
+			//get the authors from file, add to Set
 			xt.getNodesByNameDFS(itemNode, "author").forEach(node -> {
 				Author author = new Author();
 				try {
 					author.setAuthor(xt.getNodeContentForceNotNull(node));
-					//this.testAuthor(author);
 					authorSet.add(author);
 				} catch (IllegalArgumentException e) {
 					ErrorLogger.write(location, book.getItem_id(), ErrType.PROGRAM, "author" ,e, xt.getNodeContentDFS(itemNode));
@@ -178,11 +151,12 @@ public class ManageBook {
 					ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
 				}
 			});
+
+			//get the publishers from file, add to Set
 			xt.getNodesByNameDFS(itemNode, "publisher").forEach(node -> {
 				Publisher publisher = new Publisher();
 				try {
 					publisher.setPublisher(xt.getNodeContentForceNotNull(node));
-					//this.testPublisher(publisher);
 					publisherSet.add(publisher);
 				} catch (IllegalArgumentException e) {
 					ErrorLogger.write(location, book.getItem_id(), ErrType.PROGRAM, "publisher" ,e, xt.getNodeContentDFS(itemNode));
@@ -220,32 +194,12 @@ public class ManageBook {
 				e.setLocation(location);
 				e.setItem_id(book.getItem_id());
 				ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-			} /*catch (SQLException ex) {
-				if(ex.getMessage().contains("duplicate key value")) {
-
-					ErrorLogger.checkDuplicate(book);
-					
-					SQLKeyDuplicatedException e = new SQLKeyDuplicatedException();
-					e.setAttrName("item_id");
-					e.setItem_id(book.getItem_id());
-					e.setLocation(location);
-					e.setMessage("duplicate key value");
-					ErrorLogger.write(e, xt.getNodeContentDFS(itemNode));
-				} else {
-					ErrorLogger.write(location, book.getItem_id(), ErrType.SQL, "", ex, xt.getNodeContentDFS(itemNode));
-				}
-			}*/ catch (Exception e) {
+			} catch (Exception e) {
 				ErrorLogger.write(location, book.getItem_id(), ErrType.PROGRAM, "", e, xt.getNodeContentDFS(itemNode));
 			}
 			
 		});
 	}	
-	
-	
-	
-	
-	
-
-	
+		
 	
 }

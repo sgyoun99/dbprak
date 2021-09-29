@@ -69,7 +69,7 @@ public class PurchaseState implements State {
 
 	@Override
 	public void executeCommand() {
-		new Testtat().purchaseItem(App.sessionFactory, item_id, customer, shop_id);
+		//new Testtat().purchaseItem(App.sessionFactory, item_id, customer, shop_id);
 	}
 
 
