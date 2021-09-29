@@ -1,5 +1,4 @@
-1. set all user name and password for Postgres to "postgres"
-	(only for Testtat 1 and 2)
+1. set all user name and password for Postgres to "postgres" (only for Testtat 1 and 2)
 
 2. set classpath
     all jar under ./jar
@@ -7,12 +6,8 @@
     	and all jar from hibernate required lib
 
 3. compile
-    dbprak/src$ javac -d ../bin ../src/*/*.java
-    or
-    dbprak/bin$ javac -d ../bin ../src/*/*.java
-    or
-    dbprak$ javac -d bin src/*/*.java
+    src$ javac ./*/*.java
 
 4. run 
-    bin$ java main.App
+    src$ java main.App
     
