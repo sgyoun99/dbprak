@@ -7,10 +7,16 @@ import javax.persistence.NoResultException;
 import main.App;
 import main.Testtat;
 
+/**
+ * Class for the state to add review
+ */
 public class AddReviewState implements State {
 
+	//flag for returning to home
 	boolean toHome = false;
+	//Scanner for user input
 	Scanner sc = new Scanner(System.in);
+	//it stores user input as string
 	String inputString = "";
 	String item_id = "";
 	String customer = "guest";
@@ -19,6 +25,9 @@ public class AddReviewState implements State {
 	int rating = 5;
 	
 	
+	/**
+	 * Method to request user input
+	 */
 	@Override
 	public void requestInput() {
 		System.out.println("Please fill the information below and then enter add.");
@@ -68,6 +77,9 @@ public class AddReviewState implements State {
 
 	}
 
+	/**
+	 * Method to validate user input
+	 */
 	@Override
 	public boolean isValidInput() {
 		//test rating 1/2/3/4/5
@@ -84,12 +96,18 @@ public class AddReviewState implements State {
 		}
 	}
 
+	/**
+	 * Method to invoke the method addNewReview
+	 */
 	@Override
 	public void executeCommand() {
 		new Testtat().addNewReview(App.sessionFactory, item_id, customer, summary, content, rating);
 	}
 
 
+	/**
+	 * Method for entry point of the State
+	 */
 	@Override
 	public void runState() {
 		printStateMessage();
@@ -108,12 +126,18 @@ public class AddReviewState implements State {
 		}
 	}
 
+	/**
+	 * Method to show state message
+	 */
 	@Override
 	public void printStateMessage() {
 		System.out.println("[Add new review]");
 
 	}
 
+	/**
+	 * Method to run next state
+	 */
 	@Override
 	public void runNextState() {
 		new HomeState().runState();

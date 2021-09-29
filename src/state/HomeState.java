@@ -16,7 +16,9 @@ public class HomeState implements State {
 	//it stores user input as string
 	private String inputString = "";
 
-	// to show message with the state of Hibernate and DB
+	/**
+	 * Method to show message with the state of Hibernate and DB
+	 */
 	@Override
 	public void printStateMessage() {
 		System.out.print("\n[Home]\t\t\t\t");
@@ -31,7 +33,9 @@ public class HomeState implements State {
 	
 	
 	
-	// entry point of the State
+	/**
+	 * Method for entry point of the State
+	 */
 	@Override
 	public void runState() {
 		printStateMessage();
@@ -61,7 +65,9 @@ public class HomeState implements State {
 	}
 
 
-	// to enter the state according to user input and run next State
+	/**
+	 * Method to enter the state according to user input and run next State
+	 */
 	@Override
 	public void executeCommand() {
 
@@ -132,7 +138,9 @@ public class HomeState implements State {
 	}
 
 
-	// to request user input
+	/**
+	 * Method to request user input
+	 */
 	@Override
 	public void requestInput() {
 		System.out.println("*** Available commands ***");
@@ -157,7 +165,9 @@ public class HomeState implements State {
 
 	}
 
-	// to start the next State(Home)
+	/**
+	 * Method to start the next State(Home)
+	 */
 	@Override
 	public void runNextState() {
 		new HomeState().runState();
@@ -170,7 +180,9 @@ public class HomeState implements State {
 		return false;
 	}
 	
-	// to load Media XML when it is not loaded yet
+	/**
+	 * Method to load Media XML when it is not loaded yet
+	 */
 	private void loadMedia() {
 		if(App.isDbInitiallized) {
 			if(App.isMediaLoaded) {

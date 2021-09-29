@@ -2,7 +2,7 @@ package frontend;
 
 
 /**
- * defines the least requirement of the CLI
+ * Interface to define the least requirement of the CLI
  */
 public interface CommandLineInterface {
 	

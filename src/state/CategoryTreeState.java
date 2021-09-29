@@ -5,13 +5,22 @@ import java.util.Scanner;
 import main.App;
 import main.Testtat;
 
+/**
+ * Class for the state to retrieve category tree
+ */
 public class CategoryTreeState implements State {
 
-	Scanner sc = new Scanner(System.in);
-	String inputString = "";
+	//flag for returning to home
 	boolean toHome = false;
+	//Scanner for user input
+	Scanner sc = new Scanner(System.in);
+	//it stores user input as string
+	String inputString = "";
 
 
+	/**
+	 * Method to request user input
+	 */
 	@Override
 	public void requestInput() {
 		System.out.println("Enter Category ID(a number). or 'home' to go back to [Home]");
@@ -23,6 +32,9 @@ public class CategoryTreeState implements State {
 		}
 	}
 
+	/**
+	 * Method to validate user input
+	 */
 	@Override
 	public boolean isValidInput() {
 		
@@ -41,6 +53,9 @@ public class CategoryTreeState implements State {
 		}
 	}
 
+	/**
+	 * Method to invoke the method getCategoryTree
+	 */
 	@Override
 	public void executeCommand() {
 		int categoryId = Integer.parseInt(inputString);
@@ -48,6 +63,9 @@ public class CategoryTreeState implements State {
 	}
 
 
+	/**
+	 * Method for entry point of the State
+	 */
 	@Override
 	public void runState() {
 		printStateMessage();
@@ -60,11 +78,17 @@ public class CategoryTreeState implements State {
 		}
 	}
 
+	/**
+	 * Method to show state message
+	 */
 	@Override
 	public void printStateMessage() {
 		System.out.println("[Category Tree]");
 	}
 
+	/**
+	 * Method to run next state
+	 */
 	@Override
 	public void runNextState() {
 		new HomeState().runState();
