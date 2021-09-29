@@ -47,9 +47,17 @@ public class InitState implements State {
 				new HomeState().runState();
 			} else {
 				this.isStandardConfig = true;
-				initDB();
-				App.isDbInitiallized = true;
-				App.isMediaLoaded = false;
+				
+				try {
+					initDB();
+					App.isDbInitiallized = true;
+					App.isMediaLoaded = false;
+				} catch(Exception e) {
+					App.isDbInitiallized = false;
+					App.isMediaLoaded = false;
+					e.printStackTrace();
+				}
+				
 				runNextState();
 			}
 			break;
@@ -68,8 +76,13 @@ public class InitState implements State {
 					System.out.println("File does not exist.");
 					new InitState().runState();
 				} else {
-					initDB();
-					App.isDbInitiallized = true;
+					try {
+						initDB();
+						App.isDbInitiallized = true;
+					} catch(Exception e) {
+						App.isDbInitiallized = false;
+						e.printStackTrace();
+					}
 					runNextState();
 				}
 			}
@@ -77,9 +90,15 @@ public class InitState implements State {
 		case "testmode":
 			this.isStandardConfig = false;
 			this.hibernateFileLocation = Config.SRC_LOCATION + "/"+"hibernate_update.cfg.xml";
-			this.initDB();
-			App.isDbInitiallized = true;
-			App.isMediaLoaded = true;
+			try {
+				this.initDB();
+				App.isDbInitiallized = true;
+				App.isMediaLoaded = true;
+			} catch (Exception e) {
+				App.isDbInitiallized = false;
+				App.isMediaLoaded = false;
+				e.printStackTrace();
+			}
 			System.out.print("\033[32m");
 			System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 			System.out.println("@@@ Now initiallized hibernate with hibernate_update.cfg.xml   @@@");
@@ -154,13 +173,15 @@ public class InitState implements State {
 	
 	/**
 	 * Method to invoke the method setUpProperty, only when it is not initialized yet.
+	 * @throws Exception when failed to init.
 	 */
-	private void initDB() {
+	private void initDB() throws Exception {
 		if(App.sessionFactory == null) {
 			try {
 				this.setUpProperty();
 			} catch (Exception e) { 
 				System.out.println("Failed to init.");
+				throw e;
 			}
 		} else {
 			System.out.println("Database is aleady initialized.");
