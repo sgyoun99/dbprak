@@ -2,23 +2,23 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="lib" path="/Users/HALEY/eclipse-workspace2/DB_PRAK/jar/byte-buddy-1.11.12.jar"/>
-	<classpathentry kind="lib" path="/Users/HALEY/eclipse-workspace2/DB_PRAK/jar/hibernate-core-5.5.7.Final.jar"/>
-	<classpathentry kind="lib" path="/Users/HALEY/eclipse-workspace2/DB_PRAK/jar/classmate-1.5.1.jar"/>
-	<classpathentry kind="lib" path="/Users/HALEY/eclipse-workspace2/DB_PRAK/jar/hibernate-commons-annotations-5.1.2.Final.jar"/>
-	<classpathentry kind="lib" path="/Users/HALEY/eclipse-workspace2/DB_PRAK/jar/jandex-2.2.3.Final.jar"/>
-	<classpathentry kind="lib" path="/Users/HALEY/eclipse-workspace2/DB_PRAK/jar/javassist-3.27.0-GA.jar"/>
-	<classpathentry kind="lib" path="/Users/HALEY/eclipse-workspace2/DB_PRAK/jar/javax.persistence-api-2.2.jar"/>
-	<classpathentry kind="lib" path="/Users/HALEY/eclipse-workspace2/DB_PRAK/jar/jboss-transaction-api_1.2_spec-1.1.1.Final.jar"/>
-	<classpathentry kind="lib" path="/Users/HALEY/eclipse-workspace2/DB_PRAK/jar/FastInfoset-1.2.15.jar"/>
-	<classpathentry kind="lib" path="/Users/HALEY/eclipse-workspace2/DB_PRAK/jar/istack-commons-runtime-3.0.7.jar"/>
-	<classpathentry kind="lib" path="/Users/HALEY/eclipse-workspace2/DB_PRAK/jar/javax.activation-api-1.2.0.jar"/>
-	<classpathentry kind="lib" path="/Users/HALEY/eclipse-workspace2/DB_PRAK/jar/jaxb-api-2.3.1.jar"/>
-	<classpathentry kind="lib" path="/Users/HALEY/eclipse-workspace2/DB_PRAK/jar/jaxb-runtime-2.3.1.jar"/>
-	<classpathentry kind="lib" path="/Users/HALEY/eclipse-workspace2/DB_PRAK/jar/stax-ex-1.8.jar"/>
-	<classpathentry kind="lib" path="/Users/HALEY/eclipse-workspace2/DB_PRAK/jar/txw2-2.3.1.jar"/>
-	<classpathentry kind="lib" path="/Users/HALEY/eclipse-workspace2/DB_PRAK/jar/antlr-2.7.7.jar"/>
-	<classpathentry kind="lib" path="/Users/HALEY/eclipse-workspace2/DB_PRAK/jar/jboss-logging-3.4.2.Final.jar"/>
-	<classpathentry kind="lib" path="/Users/HALEY/eclipse-workspace2/DB_PRAK/jar/postgresql-42.2.18.jar"/>
+	<classpathentry kind="lib" path="./jar/byte-buddy-1.11.12.jar"/>
+	<classpathentry kind="lib" path="./jar/hibernate-core-5.5.7.Final.jar"/>
+	<classpathentry kind="lib" path="./jar/classmate-1.5.1.jar"/>
+	<classpathentry kind="lib" path="./jar/hibernate-commons-annotations-5.1.2.Final.jar"/>
+	<classpathentry kind="lib" path="./jar/jandex-2.2.3.Final.jar"/>
+	<classpathentry kind="lib" path="./jar/javassist-3.27.0-GA.jar"/>
+	<classpathentry kind="lib" path="./jar/javax.persistence-api-2.2.jar"/>
+	<classpathentry kind="lib" path="./jar/jboss-transaction-api_1.2_spec-1.1.1.Final.jar"/>
+	<classpathentry kind="lib" path="./jar/FastInfoset-1.2.15.jar"/>
+	<classpathentry kind="lib" path="./jar/istack-commons-runtime-3.0.7.jar"/>
+	<classpathentry kind="lib" path="./jar/javax.activation-api-1.2.0.jar"/>
+	<classpathentry kind="lib" path="./jar/jaxb-api-2.3.1.jar"/>
+	<classpathentry kind="lib" path="./jar/jaxb-runtime-2.3.1.jar"/>
+	<classpathentry kind="lib" path="./jar/stax-ex-1.8.jar"/>
+	<classpathentry kind="lib" path="./jar/txw2-2.3.1.jar"/>
+	<classpathentry kind="lib" path="./jar/antlr-2.7.7.jar"/>
+	<classpathentry kind="lib" path="./jar/jboss-logging-3.4.2.Final.jar"/>
+	<classpathentry kind="lib" path="./jar/postgresql-42.2.18.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
